@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .registration {
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+            margin-bottom: 20px;
+        }
+
+        .msg-principal {
+            color: #000;
+            text-align: center;
+            font-size: 23px;
+            padding: 17px;
+        }
+
+        .text-principal {
+            text-align: center;
+            color: #363636;
+            font-weight: 600;
+            margin: 22px;
+        }
+
+        .text-destaque {
+            margin-bottom: 16px;
+        }
+
+        .text-destaque span {
+            font-weight: bold;
+        }
+
+        .text-auxiliar {
+            font-weight: 400;
+            max-width: 350px;
+            margin: 18px auto;
+        }
+
+        .footer {
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 11px 22px;
+            border-radius: 4px;
+            align-items: center;
+        }
+
+        .footer div {
+            text-align: center;
+        }
+
+        .footer a {
+            margin: 0 15px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="registration">
+        <div class="msg-principal">
+            <span>Convite para o Quadro</span>
+        </div>
+
+        <div class="text-principal">
+            <p class="text-destaque"> Olá, <span> {{name}}</span> </p>
+
+            <p class="text-destaque">Você foi convidado para participar do quadro {{grid}}, clique no link abaixo e aceite o seu convite.</p>
+            </br>
+            </br> 
+            <p class="text-destaque">Este convite é válido por 48hrs.</p>
+            <a class="text-destaque" href="https://app.pokercontroll.com.br/invite/{{code}}?login=1"
+                style="font-size:20px;">https://app.pokercontroll.com.br/invite/{{code}}?login=1</a>
+
+            <p class="text-auxiliar">Atenciosamente</p>
+
+            <p class="text-auxiliar">Equipe pokercontroll</p>
+        </div>
+    </div>
+</body>

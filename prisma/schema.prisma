@@ -1,0 +1,157 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(uuid())
+  name         String
+  photo        String?
+  email        String    @unique
+  phone_number String
+  password     String
+  type         String
+  club_id      String
+  club         Club      @relation(fields: [club_id], references: [id], onDelete: Cascade)
+  create_at    DateTime? @default(now())
+  update_at    DateTime? @default(now())
+
+  @@map("users")
+}
+
+model Club {
+  id           String    @id @default(uuid())
+  name         String
+  photo        String?
+  username     String    @unique
+  balance      Float     @default(0)  
+  create_at    DateTime? @default(now())
+  update_at    DateTime? @default(now())
+  users        User[]
+  clients      Client[]
+  cashs        Cash[]
+  tournaments  Tournament[]
+  products     Product[]
+  orders       Order[]
+  transactions Transaction[]
+
+  @@map("clubs")
+}
+
+model Client {
+  id           String    @id @default(uuid())
+  name         String
+  photo        String?   @default("") 
+  chair        String?   @default("")
+  phone_number String?   @default("")
+  cpf          String?   @default("")
+  address      String?   @default("")
+  credit       Float
+  balance      Float
+  club_id      String
+  visible      Boolean   @default(true)
+  observation  String?   @default("")
+  club         Club      @relation(fields: [club_id], references: [id], onDelete: Cascade)
+  create_at    DateTime? @default(now())
+  update_at    DateTime? @default(now())
+  transactions Transaction[]
+  orders       Order[]
+
+  @@map("clients")
+}
+
+model Transaction {
+  id           String    @id @default(uuid())
+  type         String
+  paid         Boolean
+  value        Float
+  method       String
+  operation    String    @default("entrada")
+  client_id    String
+  observation  String?
+  date_payment DateTime? @default(now())
+  client       Client    @relation(fields: [client_id], references: [id], onDelete: Cascade)
+  club_id      String
+  club         Club    @relation(fields: [club_id], references: [id], onDelete: Cascade)
+  create_at    DateTime? @default(now())
+  update_at    DateTime? @default(now())
+
+  @@map("transactions")
+}
+
+model Cash {
+  id           String    @id @default(uuid())
+  name         String
+  interval     Int 
+  closed       Boolean 
+  entrada      String
+  recompra     Float
+  balance      Float
+  club_id      String
+  club         Club      @relation(fields: [club_id], references: [id], onDelete: Cascade)
+  create_at    DateTime? @default(now())
+  update_at    DateTime? @default(now())
+
+  @@map("cashs")
+}
+
+model Tournament {
+  id           String    @id @default(uuid())
+  name         String
+  interval     Int 
+  closed       Boolean 
+  entrada      String
+  recompra     Float
+  balance      Float
+  club_id      String
+  club         Club      @relation(fields: [club_id], references: [id], onDelete: Cascade)
+  create_at    DateTime? @default(now())
+  update_at    DateTime? @default(now())
+
+  @@map("tournaments")
+}
+
+model Product {
+  id           String    @id @default(uuid())
+  name         String
+  amount       Int 
+  value        Float
+  photo        String?
+  club_id      String
+  club         Club      @relation(fields: [club_id], references: [id], onDelete: Cascade)
+  create_at    DateTime? @default(now())
+  update_at    DateTime? @default(now())
+
+  @@map("products")
+}
+
+model Order {
+  id             String    @id @default(uuid())
+  name           String
+  value          Float
+  client_id      String
+  client         Client    @relation(fields: [client_id], references: [id], onDelete: Cascade)
+  club_id        String
+  club           Club      @relation(fields: [club_id], references: [id], onDelete: Cascade)
+  create_at      DateTime? @default(now())
+  update_at      DateTime? @default(now())
+  products_order ProductOrder[]
+
+  @@map("orders")
+}
+
+model ProductOrder {
+  id           String    @id @default(uuid())
+  name         String
+  value        Float
+  order_id     String
+  order        Order    @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  create_at    DateTime? @default(now())
+  update_at    DateTime? @default(now())
+
+  @@map("product_orders")
+}
