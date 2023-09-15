@@ -42,10 +42,8 @@ class AuthUserService {
                 id: user.id,
                 name: user.name,
                 email: user.email,
-                photo: user.photo,
+                club_id: user.club_id,
                 type: user.type,
-                photo_url: photo_url,
-                phone_number: user.phone_number
             },
             token
         })

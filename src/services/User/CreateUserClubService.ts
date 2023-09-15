@@ -1,6 +1,5 @@
 import { hash } from 'bcryptjs';
 import prismaClient from '../../prisma'
-import S3Storage from '../../utils/S3Storage';
 
 interface UserRequest {
     name: string;
@@ -10,7 +9,7 @@ interface UserRequest {
     club_id: string;
 }
 
-class CreateUserService {
+class CreateUserClubService {
     async execute({ name, email, password, type, club_id}: UserRequest) {
 
         if (!email || !name || !type || !password) {
@@ -48,4 +47,4 @@ class CreateUserService {
     }
 }
 
-export { CreateUserService }
+export { CreateUserClubService }

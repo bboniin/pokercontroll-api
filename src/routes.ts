@@ -34,6 +34,14 @@ import { MoveTournamentController } from './controllers/Tournament/MoveTournamen
 import { ExitClientTournamentController } from './controllers/Tournament/ExitClientTournamentController'
 import { BuyTournamentController } from './controllers/Tournament/BuyTournamentController'
 import { RewardTournamentController } from './controllers/Tournament/RewardTournamentController'
+import { ListProductsController } from './controllers/Product/ListProductsController'
+import { DeleteProductController } from './controllers/Product/DeleteProductController'
+import { EditProductController } from './controllers/Product/EditProductController'
+import { CreateProductController } from './controllers/Product/CreateProductController'
+import { CreateUserClubController } from './controllers/User/CreateUserClubController'
+import { EditUserClubController } from './controllers/User/EditUserClubController'
+import { ListUsersClubController } from './controllers/User/ListUsersClubController'
+import { DeleteUserClubController } from './controllers/User/DeleteUserClubController'
 
 const upload = multer(uploadConfig)
 
@@ -42,12 +50,8 @@ const router = Router()
 // Routes Publics
 
 router.post('/session', new AuthUserController().handle)
-router.post('/user', new CreateUserController().handle)
 
 router.use(isAuthenticated)
-
-router.get('/user/:id', new GetUserController().handle)
-router.put('/user', upload.single("file"), new EditUserController().handle)
 
 router.get('/transactions', new ListTransactionsController().handle)
 router.get('/confirmed-transaction/:id', new ConfirmedTransactionController().handle)
@@ -73,6 +77,17 @@ router.post('/move-tournament', new MoveTournamentController().handle)
 router.post('/buy-tournament', new BuyTournamentController().handle)
 router.post('/reward-tournament', new RewardTournamentController().handle)
 router.delete('/exit-tournament/:client_id', new ExitClientTournamentController().handle)
+
+
+router.post('/product', upload.single("file"), new CreateProductController().handle)
+router.put('/product/:product_id', upload.single("file"),  new EditProductController().handle)
+router.get('/products', new ListProductsController().handle)
+router.delete('/product/:product_id', new DeleteProductController().handle)
+
+router.post('/user', new CreateUserClubController().handle)
+router.put('/user/:user_id',  new EditUserClubController().handle)
+router.get('/users', new ListUsersClubController().handle)
+router.delete('/user/:user_id', new DeleteUserClubController().handle)
 
 
 export { router }
