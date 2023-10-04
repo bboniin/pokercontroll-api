@@ -42,6 +42,19 @@ import { CreateUserClubController } from './controllers/User/CreateUserClubContr
 import { EditUserClubController } from './controllers/User/EditUserClubController'
 import { ListUsersClubController } from './controllers/User/ListUsersClubController'
 import { DeleteUserClubController } from './controllers/User/DeleteUserClubController'
+import { CreateOrderService } from './services/Order/CreateOrderService'
+import { CreateOrderController } from './controllers/Order/CreateOrderController'
+import { ListOrdersController } from './controllers/Order/ListOrdersController'
+import { GetOrderController } from './controllers/Order/GetOrderController'
+import { GetProductController } from './controllers/Product/GetProductController'
+import { CreateTournamentController } from './controllers/Tournament/CreateTournamentController'
+import { EditTournamentController } from './controllers/Tournament/EditTournamentController'
+import { ListTournamentsController } from './controllers/Tournament/ListTournamentsController'
+import { GetTournamentController } from './controllers/Tournament/GetTournamentController'
+import { AddTournamentController } from './controllers/Tournament/AddTournamentController'
+import { FinishTournamentController } from './controllers/Tournament/FinishTournamentController'
+import { InitialTournamentController } from './controllers/Tournament/InitialTournamentController'
+import { EndRegisterTournamentController } from './controllers/Tournament/EndRegisterTournamentController'
 
 const upload = multer(uploadConfig)
 
@@ -73,14 +86,23 @@ router.get('/clear-cash', new ClearCashController().handle)
 router.delete('/exit-cash/:client_id', new ExitClientCashController().handle)
 
 router.get('/clients-tournament', new ClientsTournamentController().handle)
+router.post('/add-tournament', new AddTournamentController().handle)
 router.post('/move-tournament', new MoveTournamentController().handle)
+router.get('/tournament/:tournament_id', new GetTournamentController().handle)
+router.get('/tournaments', new ListTournamentsController().handle)
+router.put('/tournament/:tournament_id', new EditTournamentController().handle)
+router.post('/tournament', new CreateTournamentController().handle)
 router.post('/buy-tournament', new BuyTournamentController().handle)
 router.post('/reward-tournament', new RewardTournamentController().handle)
-router.delete('/exit-tournament/:client_id', new ExitClientTournamentController().handle)
+router.put('/exit-tournament/:client_id', new ExitClientTournamentController().handle)
 
+router.put('/end-register/:tournament_id', new EndRegisterTournamentController().handle)
+router.put('/initial-tournament/:tournament_id', new InitialTournamentController().handle)
+router.put('/finish-tournament/:tournament_id', new FinishTournamentController().handle)
 
 router.post('/product', upload.single("file"), new CreateProductController().handle)
 router.put('/product/:product_id', upload.single("file"),  new EditProductController().handle)
+router.get('/product/:product_id', new GetProductController().handle)
 router.get('/products', new ListProductsController().handle)
 router.delete('/product/:product_id', new DeleteProductController().handle)
 
@@ -89,5 +111,8 @@ router.put('/user/:user_id',  new EditUserClubController().handle)
 router.get('/users', new ListUsersClubController().handle)
 router.delete('/user/:user_id', new DeleteUserClubController().handle)
 
+router.post('/order', new CreateOrderController().handle)
+router.get('/order/:order_id', new GetOrderController().handle)
+router.get('/orders', new ListOrdersController().handle)
 
 export { router }

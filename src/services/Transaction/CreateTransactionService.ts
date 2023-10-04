@@ -48,7 +48,6 @@ class CreateTransactionService {
             }
         })
 
-
         if (!client) {
             throw new Error("Cliente não encontrado")
         }
@@ -80,7 +79,7 @@ class CreateTransactionService {
                 if (((client.balance - value) * -1) > client.credit ) {
                     throw new Error("Crédito insuficiente para essa transação")
                 } else {
-                    await prismaClient.transaction.create({
+                    const transaction = await prismaClient.transaction.create({
                         data: {
                             type: type,
                             value: value,
@@ -102,9 +101,10 @@ class CreateTransactionService {
                             balance: client.balance - value
                         }
                     })
+                    return transaction
                 }
             } else {
-                await prismaClient.transaction.create({
+                const transaction = await prismaClient.transaction.create({
                     data: {
                         type: type,
                         value: value,
@@ -126,9 +126,10 @@ class CreateTransactionService {
                         balance: club.balance + value
                     }
                 })
+            return transaction
             }
         } else {
-            await prismaClient.transaction.create({
+            const transaction = await prismaClient.transaction.create({
                 data: {
                     type: type,
                     value: value,
@@ -151,11 +152,11 @@ class CreateTransactionService {
                         }
                     })
                 }
+            return transaction
         }
         
         
 
-        return ("Transação realizada com sucesso")
     }
 }
 

@@ -34,14 +34,14 @@ class EditTransactionService {
             data["observation"] = observation
         }
         
-        const Transaction = await prismaClient.transaction.update({
+        const transaction = await prismaClient.transaction.update({
             where: {
               id: id  
             },
             data: data
         })
 
-        return (Transaction)
+        return (transaction)
      }
 }
 
