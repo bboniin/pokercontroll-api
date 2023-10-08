@@ -42,7 +42,6 @@ import { CreateUserClubController } from './controllers/User/CreateUserClubContr
 import { EditUserClubController } from './controllers/User/EditUserClubController'
 import { ListUsersClubController } from './controllers/User/ListUsersClubController'
 import { DeleteUserClubController } from './controllers/User/DeleteUserClubController'
-import { CreateOrderService } from './services/Order/CreateOrderService'
 import { CreateOrderController } from './controllers/Order/CreateOrderController'
 import { ListOrdersController } from './controllers/Order/ListOrdersController'
 import { GetOrderController } from './controllers/Order/GetOrderController'
@@ -55,6 +54,11 @@ import { AddTournamentController } from './controllers/Tournament/AddTournamentC
 import { FinishTournamentController } from './controllers/Tournament/FinishTournamentController'
 import { InitialTournamentController } from './controllers/Tournament/InitialTournamentController'
 import { EndRegisterTournamentController } from './controllers/Tournament/EndRegisterTournamentController'
+import { ListPassportController } from './controllers/Transaction/ListPassportController'
+import { ListJackpotController } from './controllers/Transaction/ListJackpotController'
+import { ConfirmedJackpotController } from './controllers/Transaction/ConfirmedJackpotController'
+import { ConfirmedPassportController } from './controllers/Transaction/ConfirmedPassportController'
+import { StructureTournamentController } from './controllers/Tournament/StructureTournamentController'
 
 const upload = multer(uploadConfig)
 
@@ -67,7 +71,11 @@ router.post('/session', new AuthUserController().handle)
 router.use(isAuthenticated)
 
 router.get('/transactions', new ListTransactionsController().handle)
-router.get('/confirmed-transaction/:id', new ConfirmedTransactionController().handle)
+router.get('/jackpots', new ListJackpotController().handle)
+router.get('/passports', new ListPassportController().handle)
+router.put('/confirmed-transaction/:id', new ConfirmedTransactionController().handle)
+router.put('/confirmed-jackpot/:id', new ConfirmedJackpotController().handle)
+router.put('/confirmed-passport/:id', new ConfirmedPassportController().handle)
 router.post('/transaction', new CreateTransactionController().handle)
 router.put('/transaction/:id',  new EditTransactionController().handle)
 
@@ -85,12 +93,13 @@ router.post('/reward-cash', new RewardCashController().handle)
 router.get('/clear-cash', new ClearCashController().handle)
 router.delete('/exit-cash/:client_id', new ExitClientCashController().handle)
 
-router.get('/clients-tournament', new ClientsTournamentController().handle)
+router.get('/clients-tournament/:tournament_id', new ClientsTournamentController().handle)
 router.post('/add-tournament', new AddTournamentController().handle)
 router.post('/move-tournament', new MoveTournamentController().handle)
 router.get('/tournament/:tournament_id', new GetTournamentController().handle)
 router.get('/tournaments', new ListTournamentsController().handle)
 router.put('/tournament/:tournament_id', new EditTournamentController().handle)
+router.put('/structure-tournament/:tournament_id', new StructureTournamentController().handle)
 router.post('/tournament', new CreateTournamentController().handle)
 router.post('/buy-tournament', new BuyTournamentController().handle)
 router.post('/reward-tournament', new RewardTournamentController().handle)

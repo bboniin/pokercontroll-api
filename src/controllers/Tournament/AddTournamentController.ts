@@ -3,14 +3,14 @@ import { AddTournamentService } from '../../services/Tournament/AddTournamentSer
 
 class AddTournamentController {
     async handle(req: Request, res: Response) {
-        const { id, chair, tournament_id } = req.body
+        const { id, chair, tournament_id, timechip } = req.body
 
         let club_id = req.club_id
 
         const addTournamentService = new AddTournamentService
 
         const client = await addTournamentService.execute({
-            chair, id, tournament_id, club_id
+            chair, id, tournament_id, club_id, timechip
         })
 
         if (client["photo"]) {

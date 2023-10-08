@@ -2,18 +2,28 @@ import prismaClient from '../../prisma'
 
 interface TransactionRequest {
     club_id: string;
-    filter: Object;
 }
 
 class ListTransactionsService {
-    async execute({ club_id, filter }: TransactionRequest) {
+    async execute({ club_id }: TransactionRequest) {
 
-        const transactions = await prismaClient.transaction.findMany({
+        const transactions = await prismaClient.club.findUnique({
             where: {
-                ...filter, club_id: club_id,
+                id: club_id,
             },
-            orderBy: {
-                create_at: "asc"
+            include: {
+                transactions: {
+                    where: {
+                        NOT: [{
+                            type: "jackpot",
+                        },{
+                            type: "passport",
+                        }]
+                    },
+                    orderBy: {
+                        create_at: "desc"
+                    },
+                }
             }
         })
 

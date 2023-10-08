@@ -19,6 +19,21 @@ class InitialTournamentService {
             throw new Error("Torneio não encontrado")
         }
 
+        const tournamentInit = await prismaClient.tournament.findFirst({
+            where: {
+                OR: [{
+                    status: "inscricao"
+                },{
+                    status: "final"
+                }]
+            }
+        })
+
+
+        if (tournamentInit) {
+            throw new Error("Há torneio em andamento, finalize-o para iniciar outro")
+        }
+
         const tournamentC = await prismaClient.tournament.update({
             where: {
                 id: tournament_id,

@@ -4,12 +4,14 @@ import { ListClientsChairService } from '../../services/Client/ListClientsChairS
 class ListClientsChairController {
     async handle(req: Request, res: Response) {
 
+        const { tournament_id } = req.query
+
         let club_id = req.club_id
 
         const listClientsChairService = new ListClientsChairService
 
         const clients = await listClientsChairService.execute({
-            club_id
+            club_id, tournament_id: tournament_id ? String(tournament_id) : ""
         })
 
         clients.map((item) => {

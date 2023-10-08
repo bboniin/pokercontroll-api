@@ -28,6 +28,8 @@ model Club {
   photo        String?
   username     String    @unique
   balance      Float     @default(0)  
+  passport     Float     @default(0)  
+  jackpot      Float     @default(0)  
   create_at    DateTime? @default(now())
   update_at    DateTime? @default(now())
   users        User[]
@@ -108,15 +110,21 @@ model Tournament {
   status                 String    @default("criado")
   buyin_value            Float
   buyin_token            Int
+  buyin                  Int       @default(0)
   rebuy_value            Float
   rebuy_token            Int
+  rebuy                  Int       @default(0)
   rebuyDuplo_value       Float
   rebuyDuplo_token       Int
+  rebuyDuplo             Int       @default(0)
   addOn_value            Float
   addOn_token            Int
+  addOn                  Int       @default(0)
   timechip               Int
   chairs                 Int
   total_tokens           Int
+  rake                   Float     @default(0)
+  max_rebuy              Int       @default(0)
   totalAward_guaranteed  Float
   totalAward_accumulated Float
   datetime_initial       DateTime? @default(now())
@@ -165,6 +173,12 @@ model ClientTournament {
   date_out      DateTime?   @default(now())
   award         Float       @default(0)
   client_id     String
+  rebuy         Int         @default(0)
+  buyin         Int         @default(0)
+  rebuyDuplo    Int         @default(0)
+  addOn         Int         @default(0)
+  passport      Boolean     @default(false)
+  jackpot       Boolean     @default(false)
   exit          Boolean     @default(false)
   client        Client      @relation(fields: [client_id], references: [id], onDelete: Cascade)
   tournament_id String

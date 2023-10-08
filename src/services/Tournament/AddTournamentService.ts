@@ -4,11 +4,12 @@ interface TournamentRequest {
     id: string;
     chair: string;
     club_id: string;
+    timechip: boolean;
     tournament_id: string;
 }
 
 class AddTournamentService {
-    async execute({ id, chair, club_id, tournament_id }: TournamentRequest) {
+    async execute({ id, chair, club_id, tournament_id, timechip}: TournamentRequest) {
 
         if (!id || !chair || !tournament_id) {
             throw new Error("Id do cliente, do torneio e posição da mesa é obrigatório")
@@ -21,13 +22,13 @@ class AddTournamentService {
             }
         })
 
-        const clientTournament = await prismaClient.clientTournament.findFirst({
+        const clientTournamentGet = await prismaClient.clientTournament.findFirst({
             where: {
                 client_id: id,
                 tournament_id: tournament_id,
         }})
 
-        if (clientTournament) {
+        if (clientTournamentGet) {
             throw new Error("Cliente já participou desse torneio e foi eliminado")
         }
 
@@ -44,7 +45,7 @@ class AddTournamentService {
             }
         })
 
-        await prismaClient.clientTournament.create({
+        const clientTournament = await prismaClient.clientTournament.create({
             data: {
                 client_id: client.id,
                 tournament_id: tournament_id,
@@ -53,7 +54,24 @@ class AddTournamentService {
             }
         })
 
-        return (client)
+        if (timechip) {
+            const tournament = await prismaClient.tournament.findUnique({
+                where: {
+                    id: tournament_id,
+                }
+            })
+            
+            await prismaClient.tournament.update({
+                where: {
+                    id: tournament["id"],
+                },
+                data: {
+                    total_tokens: tournament['total_tokens']+tournament['timechip'],
+                }
+            })
+        }
+
+        return ({...client, clientTournament: clientTournament})
     }
 }
 

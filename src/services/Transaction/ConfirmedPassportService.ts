@@ -13,11 +13,11 @@ const methods = {
     "debito": true,
 }
 
-class ConfirmedTransactionService {
+class ConfirmedPassportService {
     async execute({ id,  club_id, method}: TransactionRequest) {
 
         if (!club_id || !id || !method) {
-            throw new Error("Id da cobrança e do clube é obrigatório")
+            throw new Error("id da cobrança e do clube é obrigatório")
         }
 
         const transaction = await prismaClient.transaction.findFirst({
@@ -69,7 +69,7 @@ class ConfirmedTransactionService {
                     id: club_id,
                 },
                 data: {
-                    balance: club.balance + transaction.value
+                    passport: club.passport + transaction.value
                 }
             })
         } else {
@@ -86,7 +86,7 @@ class ConfirmedTransactionService {
                     id: club_id,
                 },
                 data: {
-                    balance: club.balance - transaction.value
+                    passport: club.passport - transaction.value
                 }
             })
         }
@@ -95,4 +95,4 @@ class ConfirmedTransactionService {
      }
 }
 
-export { ConfirmedTransactionService }
+export { ConfirmedPassportService }

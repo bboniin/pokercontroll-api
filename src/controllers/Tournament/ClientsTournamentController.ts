@@ -3,13 +3,14 @@ import { ClientsTournamentService } from '../../services/Tournament/ClientsTourn
 
 class ClientsTournamentController {
     async handle(req: Request, res: Response) {
-
+        
+        const { tournament_id } = req.params
         let club_id = req.club_id
 
         const clientsTournamentService = new ClientsTournamentService
 
         const clients = await clientsTournamentService.execute({
-            club_id
+            club_id, tournament_id
         })
 
         clients.map((item) => {
