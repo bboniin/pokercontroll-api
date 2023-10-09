@@ -11,6 +11,7 @@ const methods = {
     "pix": true,
     "credito": true,
     "debito": true,
+    "clube": true,
 }
 
 class ConfirmedTransactionService {

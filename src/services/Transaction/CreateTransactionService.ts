@@ -14,6 +14,7 @@ interface TransactionRequest {
 
 const types = {
     "cash": true,
+    "torneio": true,
     "torneio-buyin": true,
     "torneio-rebuy": true,
     "torneio-rebuy-duplo": true,

@@ -3,15 +3,29 @@ import prismaClient from '../../prisma'
 interface TournamentRequest {
     client_id: string;
     club_id: string;
+    position: number;
     tournament_id: string;
 }
 
 class ExitClientTournamentService {
-    async execute({ client_id, club_id, tournament_id }: TournamentRequest) {
+    async execute({ client_id, club_id, tournament_id, position }: TournamentRequest) {
 
         if (!client_id || !tournament_id) {
             throw new Error("Id do cliente e do torneio é obrigatório")
         }
+
+        const tournamentGet = await prismaClient.tournament.findUnique({
+            where: {
+                id: tournament_id,
+            }, include: {
+                clients_tournament: true
+            }
+        })
+
+        if (!tournamentGet) {
+            throw new Error("Torneio não foi encontrado")
+        }
+
 
         const chairClient = await prismaClient.client.findFirst({
             where: {
@@ -27,6 +41,17 @@ class ExitClientTournamentService {
             throw new Error("Cliente não foi encontrado")
         }
 
+        const chairClientPosition = await prismaClient.clientTournament.findFirst({
+            where: {
+                tournament_id: tournament_id,
+                position: position
+            }
+        })
+
+        if (chairClientPosition) {
+            throw new Error("Outro jogador já foi eliminado nessa posição")
+        }
+
         const client = await prismaClient.client.update({
             where: {
                 id: client_id,
@@ -35,6 +60,9 @@ class ExitClientTournamentService {
                 chair: "",
             }
         })
+
+
+        const award = position ? parseFloat(tournamentGet.award.split("-")[position-1]) : 0
 
         const clientTournament = await prismaClient.clientTournament.findFirst({
             where: {
@@ -49,7 +77,8 @@ class ExitClientTournamentService {
             data: {
                 date_out: new Date(),
                 exit: true,
-                award: 0
+                position: position || 9999,
+                award: award || 0
             }
         })
 
@@ -61,7 +90,7 @@ class ExitClientTournamentService {
             }
         })
 
-        return (tournament)
+        return ({tournament, award: award})
     }
 }
 

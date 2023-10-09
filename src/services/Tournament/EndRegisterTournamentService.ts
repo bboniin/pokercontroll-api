@@ -3,11 +3,12 @@ import prismaClient from '../../prisma'
 interface TournamentRequest {
     club_id: string;
     award: string;
+    staff: number;
     tournament_id: string;
 }
 
 class EndRegisterTournamentService {
-    async execute({ tournament_id, club_id, award}: TournamentRequest) {
+    async execute({ tournament_id, club_id, award, staff}: TournamentRequest) {
 
         if (!award) {
             throw new Error("Modelo de recompensa é obrigátorio")
@@ -15,7 +16,12 @@ class EndRegisterTournamentService {
         const tournament = await prismaClient.tournament.findFirst({
             where: {
                 club_id: club_id,
-                id: tournament_id
+                id: tournament_id,
+                OR: [{
+                    status: "inscricao"
+                },{
+                    status: "final"
+                }]
             }
         })
 
@@ -30,6 +36,7 @@ class EndRegisterTournamentService {
             data: {
                 status: "final",
                 award: award,
+                staff: staff
             },
             include: {
                 clients_tournament: true,

@@ -23,6 +23,9 @@ class ClientsTournamentService {
                     where: {
                         tournament_id: tournament_id,
                     },
+                    include: {
+                        client: true
+                    }
                 },
             }
         })

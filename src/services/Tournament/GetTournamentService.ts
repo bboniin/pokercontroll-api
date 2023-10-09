@@ -18,7 +18,14 @@ class GetTournamentService {
                     club_id: club_id
             },
             include: {
-                clients_tournament: true
+                clients_tournament: {
+                    orderBy: {
+                        date_out: "desc"
+                    },
+                    include: {
+                        client: true
+                    }
+                }
             }
         })
        

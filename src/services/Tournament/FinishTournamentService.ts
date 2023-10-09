@@ -19,6 +19,17 @@ class FinishTournamentService {
             throw new Error("Torneio não encontrado")
         }
 
+        const clientTournament = await prismaClient.clientTournament.findFirst({
+            where: {
+                exit: false,
+                tournament_id: tournament_id
+            }
+        })
+
+        if (clientTournament) {
+            throw new Error("Elimine todos os jogadores para finalizar o torneio")
+        }
+        
         const tournamentC = await prismaClient.tournament.update({
             where: {
                 id: tournament_id,
@@ -27,7 +38,14 @@ class FinishTournamentService {
                 status: "encerrado"
             },
             include: {
-                clients_tournament: true,
+                clients_tournament: {
+                    orderBy: {
+                        date_out: "desc"
+                    },
+                    include: {
+                        client: true
+                    }
+                }
             }
         })
 

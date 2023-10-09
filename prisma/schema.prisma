@@ -124,6 +124,7 @@ model Tournament {
   chairs                 Int
   total_tokens           Int
   rake                   Float     @default(0)
+  staff                  Float     @default(0)
   max_rebuy              Int       @default(0)
   totalAward_guaranteed  Float
   totalAward_accumulated Float
@@ -180,6 +181,7 @@ model ClientTournament {
   passport      Boolean     @default(false)
   jackpot       Boolean     @default(false)
   exit          Boolean     @default(false)
+  position      Int         @default(9999)
   client        Client      @relation(fields: [client_id], references: [id], onDelete: Cascade)
   tournament_id String
   tournament    Tournament  @relation(fields: [tournament_id], references: [id], onDelete: Cascade)
