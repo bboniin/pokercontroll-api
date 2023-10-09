@@ -11,7 +11,7 @@ class EndRegisterTournamentController {
         const endRegisterTournamentService = new EndRegisterTournamentService
 
         const tournament = await endRegisterTournamentService.execute({
-            tournament_id, club_id, award, staff
+            tournament_id, club_id, award, staff: isNaN(parseFloat(staff)) ? 0 : parseFloat(staff)
         })
 
         return res.json(tournament)
