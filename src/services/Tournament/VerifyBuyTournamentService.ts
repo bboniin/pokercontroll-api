@@ -7,13 +7,15 @@ interface TransactionRequest {
     buyin: number;
     rebuy: number;
     rebuyDuplo: number;
+    dealer: number;
+    super_addOn: number;
     tournament: object;
     client_id: string;
 }
 
 
 class VerifyBuyTournamentService {
-    async execute({ client_id, passport, jackpot, addOn, buyin, rebuy, rebuyDuplo, tournament }: TransactionRequest) {
+    async execute({ client_id, passport, dealer, super_addOn, jackpot, addOn, buyin, rebuy, rebuyDuplo, tournament }: TransactionRequest) {
         
         const client = await prismaClient.clientTournament.findFirst({
             where: {
@@ -31,6 +33,18 @@ class VerifyBuyTournamentService {
                 throw new Error("Passport já foi adquirido por esse jogador")
             }
         }
+
+        if (dealer) {
+            if(client.dealer) {
+                throw new Error("Dealer já foi adquirido por esse jogador")
+            }
+        }
+        
+        if (super_addOn) {
+            if(client.super_addOn) {
+                throw new Error("Super ADD ON já foi adquirido por esse jogador")
+            }
+        }
         
         if (jackpot){
             if(client.jackpot) {
@@ -46,11 +60,24 @@ class VerifyBuyTournamentService {
             throw new Error("Buyin já foi adquirido por esse jogador")
         }}
 
-        if (rebuy || rebuyDuplo) {
-            if ((rebuy + (rebuyDuplo*2) + client.rebuy + (client.rebuyDuplo*2)) > tournament["max_rebuy"]) {
-                throw new Error("Número máximo de rebuys atingido")
-            } 
+        if (tournament["is_rebuy"]) {
+            if (rebuy || rebuyDuplo) {
+                if ((rebuy + (rebuyDuplo*2) + client.rebuy + (client.rebuyDuplo*2)) > tournament["max_rebuy"]) {
+                    throw new Error("Número máximo de rebuys atingido")
+                } 
+            }
+        } else {
+            if (rebuy){
+                if(client.rebuy) {
+                throw new Error("Reentrada já foi adquirido por esse jogador")
+            }}
+            if (rebuyDuplo){
+                if(client.rebuyDuplo) {
+                throw new Error("Reentrada Dupla já foi adquirido por esse jogador")
+            }}
         }
+
+       
     }
 }
 

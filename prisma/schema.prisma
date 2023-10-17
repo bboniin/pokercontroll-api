@@ -30,6 +30,7 @@ model Club {
   balance      Float     @default(0)  
   passport     Float     @default(0)  
   jackpot      Float     @default(0)  
+  dealer      Float     @default(0)  
   create_at    DateTime? @default(now())
   update_at    DateTime? @default(now())
   users        User[]
@@ -39,6 +40,7 @@ model Club {
   products     Product[]
   orders       Order[]
   transactions Transaction[]
+  methods      Method[]
 
   @@map("clubs")
 }
@@ -89,12 +91,10 @@ model Transaction {
 model Cash {
   id           String    @id @default(uuid())
   name         String
-  interval     Int 
   closed       Boolean 
-  entrada      String
-  recompra     Float
-  balance      Float
   club_id      String
+  date_in      DateTime? @default(now())
+  date_out     DateTime? @default(now())
   club         Club      @relation(fields: [club_id], references: [id], onDelete: Cascade)
   create_at    DateTime? @default(now())
   update_at    DateTime? @default(now())
@@ -102,46 +102,76 @@ model Cash {
   @@map("cashs")
 }
 
-model Tournament {
-  id                     String    @id @default(uuid())
-  name                   String
-  intervals              String
-  blinds                 String
-  status                 String    @default("criado")
-  buyin_value            Float
-  buyin_token            Int
-  buyin                  Int       @default(0)
-  rebuy_value            Float
-  rebuy_token            Int
-  rebuy                  Int       @default(0)
-  rebuyDuplo_value       Float
-  rebuyDuplo_token       Int
-  rebuyDuplo             Int       @default(0)
-  addOn_value            Float
-  addOn_token            Int
-  addOn                  Int       @default(0)
-  timechip               Int
-  chairs                 Int
-  total_tokens           Int
-  rake                   Float     @default(0)
-  staff                  Float     @default(0)
-  max_rebuy              Int       @default(0)
-  totalAward_guaranteed  Float
-  totalAward_accumulated Float
-  datetime_initial       DateTime? @default(now())
-  award                  String?
-  club_id                String
-  club                   Club      @relation(fields: [club_id], references: [id], onDelete: Cascade)
-  create_at              DateTime? @default(now())
-  update_at              DateTime? @default(now())
-  clients_tournament     ClientTournament[]
+model Method {
+  id           String    @id @default(uuid())
+  name         String
+  percentage   Boolean 
+  deadline     Int 
+  club_id      String
+  club         Club      @relation(fields: [club_id], references: [id], onDelete: Cascade)
+  create_at    DateTime? @default(now())
+  update_at    DateTime? @default(now())
 
+  @@map("methods")
+}
+
+model Tournament {
+  id                        String    @id @default(uuid())
+  name                      String
+  intervals                 String
+  blinds                    String
+  status                    String    @default("criado")
+  buyin_value               Float
+  buyin_token               Int
+  buyin                     Int       @default(0)
+  rebuy_value               Float
+  rebuy_token               Int
+  rebuy                     Int       @default(0)
+  rebuyDuplo_value          Float
+  rebuyDuplo_token          Int
+  rebuyDuplo                Int       @default(0)
+  addOn_value               Float
+  addOn_token               Int
+  addOn                     Int       @default(0)
+  super_addOn_value         Float     @default(0)
+  super_addOn_token         Int       @default(0)
+  super_addOn               Int       @default(0)
+  timechip                  Int
+  chairs                    Int
+  total_tokens              Int
+  is_rebuy                  Boolean   @default(true)
+  rake                      Float     @default(0)
+  staff                     Float     @default(0)
+  max_buyin_free            Int       @default(0)
+  max_timechip              Int       @default(0)
+  max_in                    Int       @default(0)
+  max_rebuy                 Int       @default(0)
+  max_count                 Int       @default(0)
+  jackpot_value             Float     @default(0)
+  passport_value            Float     @default(0)
+  dealer_value              Float     @default(0)
+  totalAward                Float     @default(0)
+  totalAward_guaranteed     Float
+  totalAward_accumulated    Float
+  percentage_players_award  Float     @default(0)
+  datetime_initial          DateTime? @default(now())
+  datetime_max_buyin_free   DateTime? @default(now())
+  datetime_max_in           DateTime? @default(now())
+  datetime_max_timechip     DateTime? @default(now())
+  award                     String?
+  club_id                   String
+  club                      Club      @relation(fields: [club_id], references: [id], onDelete: Cascade)
+  create_at                 DateTime? @default(now())
+  update_at                 DateTime? @default(now())
+  clients_tournament        ClientTournament[]
+    
   @@map("tournaments")
 }
 
 model Product {
   id           String    @id @default(uuid())
   name         String
+  category     String    @default("")
   amount       Int 
   value        Float
   photo        String?
@@ -178,6 +208,8 @@ model ClientTournament {
   buyin         Int         @default(0)
   rebuyDuplo    Int         @default(0)
   addOn         Int         @default(0)
+  super_addOn   Int         @default(0)
+  dealer        Boolean     @default(false)
   passport      Boolean     @default(false)
   jackpot       Boolean     @default(false)
   exit          Boolean     @default(false)

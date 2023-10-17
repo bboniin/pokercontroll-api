@@ -7,13 +7,14 @@ interface ProductRequest {
     value: number;
     club_id: string;
     amount: number;
+    category: string;
     product_id: string;
 }
 
 class EditProductService {
-    async execute({ name, club_id, value, photo, amount, product_id }: ProductRequest) {
+    async execute({ name, club_id, value, category, photo, amount, product_id }: ProductRequest) {
 
-        if (!product_id || !value || !name || !amount || !club_id) {
+        if (!product_id || !value || !name || !category || !amount || !club_id) {
             throw new Error("Preencha os campos obrigatórios")
         }
 
@@ -31,6 +32,7 @@ class EditProductService {
         let data = {
             name: name,
             value: value,
+            category: category,
             amount: amount,
         }
 

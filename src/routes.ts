@@ -57,8 +57,13 @@ import { EndRegisterTournamentController } from './controllers/Tournament/EndReg
 import { ListPassportController } from './controllers/Transaction/ListPassportController'
 import { ListJackpotController } from './controllers/Transaction/ListJackpotController'
 import { ConfirmedJackpotController } from './controllers/Transaction/ConfirmedJackpotController'
-import { ConfirmedPassportController } from './controllers/Transaction/ConfirmedPassportController'
+import { ConfirmedDealerController } from './controllers/Transaction/ConfirmedPassportController'
 import { StructureTournamentController } from './controllers/Tournament/StructureTournamentController'
+import { ListDealerController } from './controllers/Transaction/ListDealerController'
+import { ConfirmedPassportController } from './controllers/Transaction/ConfirmedDealerController'
+import { CreateCashController } from './controllers/Cash/CreateCashController'
+import { EndCashController } from './controllers/Cash/EndCashController'
+import { GetCashController } from './controllers/Cash/GetCashController'
 
 const upload = multer(uploadConfig)
 
@@ -73,9 +78,11 @@ router.use(isAuthenticated)
 router.get('/transactions', new ListTransactionsController().handle)
 router.get('/jackpots', new ListJackpotController().handle)
 router.get('/passports', new ListPassportController().handle)
+router.get('/dealers', new ListDealerController().handle)
 router.put('/confirmed-transaction/:id', new ConfirmedTransactionController().handle)
 router.put('/confirmed-jackpot/:id', new ConfirmedJackpotController().handle)
 router.put('/confirmed-passport/:id', new ConfirmedPassportController().handle)
+router.put('/confirmed-dealer/:id', new ConfirmedDealerController().handle)
 router.post('/transaction', new CreateTransactionController().handle)
 router.put('/transaction/:id',  new EditTransactionController().handle)
 
@@ -123,5 +130,9 @@ router.delete('/user/:user_id', new DeleteUserClubController().handle)
 router.post('/order', new CreateOrderController().handle)
 router.get('/order/:order_id', new GetOrderController().handle)
 router.get('/orders', new ListOrdersController().handle)
+
+router.post('/cash', new CreateCashController().handle)
+router.put('/cash/:cash_id', new EndCashController().handle)
+router.get('/cash', new GetCashController().handle)
 
 export { router }

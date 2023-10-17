@@ -3,8 +3,10 @@ import { CreateTournamentService } from '../../services/Tournament/CreateTournam
 
 class CreateTournamentController {
     async handle(req: Request, res: Response) {
-        const { name, buyin_value, buyin_token, rebuy_value, rebuy_token, rebuyDuplo_value, rebuyDuplo_token, addOn_value,
-            addOn_token, timechip, chairs, totalAward_guaranteed, timer_round, timer_interval, rounds_to_interval, max_rebuy, rake
+        const { name, buyin_value, buyin_token, rebuy_value, rebuy_token, rebuyDuplo_value, rebuyDuplo_token,
+            addOn_value, addOn_token, timechip, chairs, totalAward_guaranteed, timer_round, timer_interval,
+            rounds_to_interval, max_rebuy, rake, super_addOn_value, super_addOn_token, passport, jackpot, dealer,
+            nivel_max_buyin_free, nivel_max_in, nivel_max_timechip, percentage_players_award, is_rebuy
         } = req.body
 
         let club_id = req.club_id
@@ -31,7 +33,9 @@ class CreateTournamentController {
 
         const tournament = await createTournamentService.execute({
             name, buyin_value, buyin_token, rebuy_value, rebuy_token, rebuyDuplo_value, rebuyDuplo_token, addOn_value,
-            addOn_token, timechip, chairs, totalAward_guaranteed, intervals, club_id, max_rebuy, rake
+            addOn_token, timechip, chairs, totalAward_guaranteed, intervals, club_id, max_rebuy, rake, super_addOn_value,
+            super_addOn_token, passport, jackpot, dealer, nivel_max_buyin_free, nivel_max_in, nivel_max_timechip,
+            percentage_players_award, is_rebuy
         })
 
         return res.json(tournament)

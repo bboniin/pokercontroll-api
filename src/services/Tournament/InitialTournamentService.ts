@@ -1,3 +1,4 @@
+import { addMinutes } from 'date-fns';
 import prismaClient from '../../prisma'
 
 interface TournamentRequest {
@@ -34,13 +35,32 @@ class InitialTournamentService {
             throw new Error("Há torneio em andamento, finalize-o para iniciar outro")
         }
 
+        let minsTimechip = 0
+        let minsIn = 0
+        let minsBuyinFree = 0
+
+        tournament.intervals.split("-").map((item, index) => {
+            if (index < tournament.max_buyin_free) {
+                minsBuyinFree += parseInt(item.substring(1)) 
+            }
+            if (index < tournament.max_in) {
+                minsIn += parseInt(item.substring(1)) 
+            }
+            if (index < tournament.max_timechip) {
+                minsTimechip += parseInt(item.substring(1)) 
+            }
+        })
+
         const tournamentC = await prismaClient.tournament.update({
             where: {
                 id: tournament_id,
             },
             data: {
                 status: "inscricao",
-                datetime_initial: new Date()
+                datetime_initial: new Date(),
+                datetime_max_in: addMinutes(new Date(), minsIn),
+                datetime_max_buyin_free: addMinutes(new Date(), minsBuyinFree),
+                datetime_max_timechip: addMinutes(new Date(), minsTimechip),
             },
             include: {
                 clients_tournament: true,

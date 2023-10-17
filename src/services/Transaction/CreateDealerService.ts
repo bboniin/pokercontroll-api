@@ -13,17 +13,6 @@ interface TransactionRequest {
 }
 
 const types = {
-    "cash": true,
-    "torneio": true,
-    "torneio-buyin": true,
-    "torneio-rebuy": true,
-    "torneio-rebuy-duplo": true,
-    "torneio-add-on": true,
-    "torneio-reentrada": true,
-    "torneio-reentrada-dupla": true,
-    "bar": true,
-    "jackpot": true,
-    "passport": true,
     "dealer": true,
 }
 
@@ -35,7 +24,7 @@ const methods = {
     "clube": true
 }
 
-class CreateTransactionService {
+class CreateDealerService {
     async execute({ type, value, club_id, paid, client_id, method, operation, date_payment, observation }: TransactionRequest) {
         
         const client = await prismaClient.client.findFirst({
@@ -126,7 +115,7 @@ class CreateTransactionService {
                         id: club_id,
                     },
                     data: {
-                        balance: club.balance + value
+                        dealer: club.dealer + value
                     }
                 })
             return transaction
@@ -151,7 +140,7 @@ class CreateTransactionService {
                             id: club_id,
                         },
                         data: {
-                            balance: club.balance - value
+                            dealer: club.dealer - value
                         }
                     })
                 }
@@ -163,4 +152,4 @@ class CreateTransactionService {
     }
 }
 
-export { CreateTransactionService }
+export { CreateDealerService }

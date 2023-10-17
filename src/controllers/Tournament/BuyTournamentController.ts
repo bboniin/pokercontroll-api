@@ -6,10 +6,11 @@ import { VerifyCreditTransactionService } from '../../services/Transaction/Verif
 import { VerifyBuyTournamentService } from '../../services/Tournament/VerifyBuyTournamentService';
 import { CreatePassportService } from '../../services/Transaction/CreatePassportService';
 import { CreateJackpotService } from '../../services/Transaction/CreateJackpotService';
+import { CreateDealerService } from '../../services/Transaction/CreateDealerService';
 
 class BuyTournamentController {
     async handle(req: Request, res: Response) {
-        const { paid, value, passport, jackpot, addOn, buyin, rebuy, rebuyDuplo , method, client_id, date_payment, observation, tournament_id } = req.body
+        const { paid, value, passport, jackpot, dealer, super_addOn, addOn, buyin, rebuy, rebuyDuplo , method, client_id, date_payment, observation, tournament_id } = req.body
 
         let club_id = req.club_id
 
@@ -32,14 +33,22 @@ class BuyTournamentController {
         const verifyBuyTournamentService = new VerifyBuyTournamentService
 
         await verifyBuyTournamentService.execute({
-            client_id, passport, jackpot, addOn, buyin, rebuy, rebuyDuplo, tournament
+            client_id, passport, jackpot, dealer, addOn, super_addOn, buyin, rebuy, rebuyDuplo, tournament
         })
+
+        if (dealer) {
+            const createDealerService = new CreateDealerService
+
+            await createDealerService.execute({
+                paid, value: tournament.dealer_value, type: "dealer", method, client_id, club_id, date_payment, observation, operation: "entrada"
+            })
+        }
 
         if (passport) {
             const createPassportService = new CreatePassportService
 
             await createPassportService.execute({
-                paid, value: 10, type: "passport", method, client_id, club_id, date_payment, observation, operation: "entrada"
+                paid, value: tournament.passport_value, type: "passport", method, client_id, club_id, date_payment, observation, operation: "entrada"
             })
         }
 
@@ -47,7 +56,7 @@ class BuyTournamentController {
             const createJackpotService = new CreateJackpotService
 
             await createJackpotService.execute({
-                paid, value: 10, type: "jackpot", method, client_id, club_id, date_payment, observation, operation: "entrada"
+                paid, value: tournament.jackpot_value, type: "jackpot", method, client_id, club_id, date_payment, observation, operation: "entrada"
             })
         }
 
@@ -61,6 +70,16 @@ class BuyTournamentController {
             token+=tournament.addOn_token
         }
 
+        if (super_addOn) {
+            const createTransactionService = new CreateTransactionService
+
+            await createTransactionService.execute({
+                paid, value: tournament.super_addOn_value, type: "torneio-add-on", method, client_id, club_id, date_payment, observation, operation: "entrada"
+            })
+
+            token+=tournament.super_addOn_token
+        }
+
         if (buyin) {
             const createTransactionService = new CreateTransactionService
 
@@ -72,11 +91,12 @@ class BuyTournamentController {
         }
 
         if (rebuy) {
+            const type = tournament.is_rebuy ? "torneio-rebuy" : "torneio-reentrada"
             for (let i = 0; i < rebuy; i++){
                 const createTransactionService = new CreateTransactionService
 
                 await createTransactionService.execute({
-                    paid, value: tournament.rebuy_value, type: "torneio-rebuy", method, client_id, club_id, date_payment, observation, operation: "entrada"
+                    paid, value: tournament.rebuy_value, type: type, method, client_id, club_id, date_payment, observation, operation: "entrada"
                 })
 
                 token+=tournament.rebuy_token
@@ -84,11 +104,12 @@ class BuyTournamentController {
         }
 
         if (rebuyDuplo) {
+            const type = tournament.is_rebuy ? "torneio-rebuy-duplo" : "torneio-reentrada-dupla"
             for (let i = 0; i < rebuyDuplo; i++){
                 const createTransactionService = new CreateTransactionService
 
                 await createTransactionService.execute({
-                    paid, value: tournament.rebuyDuplo_value, type: "torneio-rebuy-duplo", method, client_id, club_id, date_payment, observation, operation: "entrada"
+                    paid, value: tournament.rebuyDuplo_value, type: type, method, client_id, club_id, date_payment, observation, operation: "entrada"
                 })
 
                 token+=tournament.rebuyDuplo_token
@@ -98,7 +119,7 @@ class BuyTournamentController {
         const buyTournamentService = new BuyTournamentService
 
         const tournamentC = await buyTournamentService.execute({
-            value, token, jackpot, passport, tournament, addOn, buyin, rebuy, rebuyDuplo, client_id
+            value, token, jackpot, passport, dealer, super_addOn, tournament, addOn, buyin, rebuy, rebuyDuplo, client_id
         })
 
         return res.json(tournamentC)

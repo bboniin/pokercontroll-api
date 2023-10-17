@@ -17,19 +17,34 @@ interface TournamentRequest {
     club_id: string;
     max_rebuy: number;
     rake: number;
+    super_addOn_value: number;
+    super_addOn_token: number;
+    passport: number;
+    jackpot: number;
+    dealer: number;
+    nivel_max_buyin_free: number;
+    nivel_max_in: number;
+    nivel_max_timechip: number;
+    percentage_players_award: number;
+    is_rebuy: boolean;
 }
 
 class CreateTournamentService {
-    async execute({ name, buyin_value, buyin_token, rebuy_value, rebuy_token, rebuyDuplo_value, rebuyDuplo_token, addOn_value,
-        addOn_token, timechip, chairs, totalAward_guaranteed, intervals, max_rebuy, rake, club_id }: TournamentRequest) {
+    async execute({ name, buyin_value, buyin_token, rebuy_value, rebuy_token, rebuyDuplo_value, rebuyDuplo_token,
+        addOn_value, addOn_token, timechip, chairs, totalAward_guaranteed, intervals, max_rebuy, rake,
+        super_addOn_value, super_addOn_token, passport, jackpot, dealer, nivel_max_buyin_free, nivel_max_in,
+        nivel_max_timechip, percentage_players_award, is_rebuy, club_id }: TournamentRequest) {
         
         if (!name || !buyin_value || !buyin_token || !rebuy_value ||
             !rebuy_token || !rebuyDuplo_value || !rebuyDuplo_token ||
             !addOn_value || !addOn_token || !timechip || !chairs ||
-            !totalAward_guaranteed || !intervals||  !max_rebuy || !rake || !club_id) {
+            !totalAward_guaranteed || !intervals || !max_rebuy || !rake ||
+            !super_addOn_value || !super_addOn_token || !passport ||
+            !jackpot || !dealer || !nivel_max_in ||
+            !nivel_max_timechip || !percentage_players_award || !club_id
+        ) {
             throw new Error("Preencha os campos obrigatórios")
         }
-
      
         const tournament = await prismaClient.tournament.create({
             data: {
@@ -46,6 +61,16 @@ class CreateTournamentService {
                 max_rebuy: max_rebuy,
                 rake: rake, 
                 chairs: chairs,
+                is_rebuy: is_rebuy,
+                super_addOn_value: super_addOn_value,
+                super_addOn_token: super_addOn_token,
+                passport_value: passport,
+                jackpot_value: jackpot,
+                dealer_value: dealer,
+                max_buyin_free: nivel_max_buyin_free,
+                max_in: nivel_max_in,
+                max_timechip: nivel_max_timechip,
+                percentage_players_award: percentage_players_award,
                 totalAward_guaranteed: totalAward_guaranteed,
                 club_id: club_id,
                 total_tokens: 0,

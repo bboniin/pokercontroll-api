@@ -21,6 +21,9 @@ class CreateOrderService {
                 observation: observation,
                 club_id: club_id,
                 client_id: client_id,
+            }, 
+            include: {
+                client: true
             }
         })
 

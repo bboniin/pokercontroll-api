@@ -11,8 +11,6 @@ class CreateOrderController {
 
         let club_id = req.club_id;
 
-        const createTransactionService = new CreateTransactionService;
-
         const verifyProductService = new VerifyProductService;
 
         await verifyProductService.execute({
@@ -20,9 +18,12 @@ class CreateOrderController {
         });
 
         let value = 0
+
         items.map((item) => {
             value += item.total * item.value
         });
+        
+        const createTransactionService = new CreateTransactionService;
 
         const transaction = await createTransactionService.execute({
             paid, value, type: "bar", method, client_id, club_id, date_payment, observation, operation: "entrada"

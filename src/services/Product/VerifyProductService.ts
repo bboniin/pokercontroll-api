@@ -11,6 +11,8 @@ class VerifyProductService {
             throw new Error("Nenhum produto foi adicionado")
         }
 
+        let error = ""
+
         items.map(async (data) => {
             const itemOrder = await prismaClient.product.findFirst({
                 where: {
@@ -21,10 +23,15 @@ class VerifyProductService {
 
                 }
             })
-            if (!itemOrder) {
-                throw new Error(`Produto \"${data["name"]}\" não tem estoque suficiente`)
+            if (!itemOrder && !error) {
+                error = `Produto \"${data["name"]}\" não tem estoque suficiente`
             }
         })  
+
+
+        if (error) {
+            throw new Error(error)
+        }
        
         return true
     }

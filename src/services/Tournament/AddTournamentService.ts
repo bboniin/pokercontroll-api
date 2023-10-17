@@ -66,7 +66,7 @@ class AddTournamentService {
                     id: tournament["id"],
                 },
                 data: {
-                    total_tokens: tournament['total_tokens']+tournament['timechip'],
+                    total_tokens: tournament['total_tokens'] + tournament['timechip'],
                 }
             })
         }
