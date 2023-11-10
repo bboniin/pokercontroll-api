@@ -10,7 +10,7 @@ class S3Storage {
 
     constructor() {
         this.client = new aws.S3({
-            region: 'us-east-1',
+            region: 'sa-east-1',
         })
     }
 
@@ -27,7 +27,7 @@ class S3Storage {
 
 
         await this.client.putObject({
-            Bucket: 'cdnmatch.fillity.com.br',
+            Bucket: 'pokercontroll',
             Key: filename,
             ACL: 'public-read',
             Body: fileContent,
@@ -42,7 +42,7 @@ class S3Storage {
     async deleteFile(file: string): Promise<void> {
         await this.client
             .deleteObject({
-                Bucket: "cdnmatch.fillity.com.br",
+                Bucket: "pokercontroll",
                 Key: file,
             })
             .promise();
