@@ -19,6 +19,9 @@ class ListJackpotService {
                     orderBy: {
                         create_at: "desc"
                     },
+                    include: {
+                        methods_transaction: true,
+                    }
                 }
             }
         })

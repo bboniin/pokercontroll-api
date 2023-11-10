@@ -5,13 +5,14 @@ interface TournamentRequest {
     club_id: string;
     position: number;
     tournament_id: string;
+    methods_transaction: Array<[]>;
 }
 
 class ExitClientTournamentService {
-    async execute({ client_id, club_id, tournament_id, position }: TournamentRequest) {
+    async execute({ client_id, club_id, tournament_id, position, methods_transaction }: TournamentRequest) {
 
-        if (!client_id || !tournament_id) {
-            throw new Error("Id do cliente e do torneio é obrigatório")
+        if (!client_id || !tournament_id || !methods_transaction.length) {
+            throw new Error("Id do cliente, do torneio e meios de pagamento é obrigatório")
         }
 
         const tournamentGet = await prismaClient.tournament.findUnique({

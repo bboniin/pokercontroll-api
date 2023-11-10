@@ -3,22 +3,14 @@ import prismaClient from '../../prisma'
 interface TransactionRequest {
     id: string;
     club_id: string;
-    method: string;
-}
-
-const methods = {
-    "dinheiro": true,
-    "pix": true,
-    "credito": true,
-    "debito": true,
-    "clube": true,
+    methods_transaction: Array<[]>;
 }
 
 class ConfirmedTransactionService {
-    async execute({ id,  club_id, method}: TransactionRequest) {
+    async execute({ id,  club_id, methods_transaction}: TransactionRequest) {
 
-        if (!club_id || !id || !method) {
-            throw new Error("Id da cobrança e do clube é obrigatório")
+        if (!club_id || !id || methods_transaction.length == 0) {
+            throw new Error("id da cobrança, método de pagamento e do clube é obrigatório")
         }
 
         const transaction = await prismaClient.transaction.findFirst({
@@ -43,9 +35,12 @@ class ConfirmedTransactionService {
             }
         })
 
-        if (!methods[method]) {
-            throw new Error("Método de pagamento é inválido")
+        let valueMethods = transaction.value
+        
+        if (transaction.value == methods_transaction.map((method) => method["value"]).reduce((total, value) => total + value)) {
+            valueMethods = methods_transaction.map((method) => method["value"]*((100-method["percentage"])/100)).reduce((total, value) => total + value)
         }
+    
     
         await prismaClient.transaction.update({
             where: {
@@ -70,7 +65,7 @@ class ConfirmedTransactionService {
                     id: club_id,
                 },
                 data: {
-                    balance: club.balance + transaction.value
+                    balance: club.balance + valueMethods
                 }
             })
         } else {
@@ -87,10 +82,21 @@ class ConfirmedTransactionService {
                     id: club_id,
                 },
                 data: {
-                    balance: club.balance - transaction.value
+                    balance: club.balance - valueMethods
                 }
             })
         }
+
+        methods_transaction.map(async (item) => {
+            await prismaClient.methodsTransaction.create({
+                data: {
+                    name: item["name"],
+                    percentage: item["percentage"],
+                    value: item["value"],
+                    transaction_id: transaction.id
+                }
+            })
+        })
 
         return ("Pagamento confirmado com sucesso")
      }

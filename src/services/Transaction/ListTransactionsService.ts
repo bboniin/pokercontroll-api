@@ -23,6 +23,10 @@ class ListTransactionsService {
                     orderBy: {
                         create_at: "desc"
                     },
+                    include: {
+                        methods_transaction: true,
+                        items_transaction: true
+                    }
                 }
             }
         })

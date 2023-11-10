@@ -7,7 +7,7 @@ import { DiscoutProductService } from '../../services/Product/DiscoutProductServ
 
 class CreateOrderController {
     async handle(req: Request, res: Response) {
-        const { paid, items, method, client_id, date_payment, observation } = req.body
+        const { paid, items, methods_transaction, client_id, date_payment, observation } = req.body
 
         let club_id = req.club_id;
 
@@ -26,7 +26,11 @@ class CreateOrderController {
         const createTransactionService = new CreateTransactionService;
 
         const transaction = await createTransactionService.execute({
-            paid, value, type: "bar", method, client_id, club_id, date_payment, observation, operation: "entrada"
+            paid, value, type: "clube", methods_transaction, items_transaction: [{
+                name: "bar",
+                amount: 1,
+                value: value
+            }], client_id, club_id, date_payment, observation, operation: "entrada"
         });
 
         const createOrderService = new CreateOrderService;

@@ -26,6 +26,8 @@ class FinishTournamentService {
             }
         })
 
+        console.log(clientTournament)
+
         if (clientTournament) {
             throw new Error("Elimine todos os jogadores para finalizar o torneio")
         }

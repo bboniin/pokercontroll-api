@@ -4,14 +4,14 @@ import { ConfirmedJackpotService } from '../../services/Transaction/ConfirmedJac
 class ConfirmedJackpotController {
     async handle(req: Request, res: Response) {
         const { id } = req.params
-        const { method } = req.body
+        const { methods_transaction } = req.body
 
         let club_id = req.club_id
 
         const confirmedJackpotService = new ConfirmedJackpotService
 
         const jackpot = await confirmedJackpotService.execute({
-            id, club_id, method
+            id, club_id, methods_transaction
         })
 
         return res.json(jackpot)

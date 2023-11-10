@@ -5,22 +5,25 @@ import { CreateTransactionService } from '../../services/Transaction/CreateTrans
 class ExitClientTournamentController {
     async handle(req: Request, res: Response) {
         const { client_id } = req.params
-        const { tournament_id, position, paid } = req.body
+        const { tournament_id, position, methods_transaction, paid } = req.body
 
         let club_id = req.club_id
 
         const exitClientTournamentService = new ExitClientTournamentService
 
         const {tournament, award} = await exitClientTournamentService.execute({
-            client_id, club_id, tournament_id, position
+            client_id, club_id, tournament_id, position, methods_transaction
         })
-
 
         if (award) {
             const createTransactionService = new CreateTransactionService
 
             await createTransactionService.execute({
-                paid, value: award, type: "torneio", method: 'clube', client_id, club_id, date_payment: new Date(), observation: "", operation: "saida"
+                paid, value: award, type: "clube", methods_transaction: methods_transaction, items_transaction: [{
+                    name: "torneio",
+                    value: award,
+                    amount: 1
+                }], client_id, club_id, date_payment: new Date(), observation: "", operation: "saida"
             })
         }
 

@@ -41,6 +41,7 @@ model Club {
   orders       Order[]
   transactions Transaction[]
   methods      Method[]
+  categories   Category[]
 
   @@map("clubs")
 }
@@ -69,23 +70,38 @@ model Client {
 }
 
 model Transaction {
-  id           String    @id @default(uuid())
-  type         String
-  paid         Boolean
-  value        Float
-  method       String
-  operation    String    @default("entrada")
-  client_id    String
-  observation  String?
-  order_id     String?   @unique
-  date_payment DateTime? @default(now())
-  client       Client    @relation(fields: [client_id], references: [id], onDelete: Cascade)
-  club_id      String
-  club         Club    @relation(fields: [club_id], references: [id], onDelete: Cascade)
-  create_at    DateTime? @default(now())
-  update_at    DateTime? @default(now())
+  id                  String    @id @default(uuid())
+  type                String    @default("clube")
+  paid                Boolean
+  value               Float
+  operation           String    @default("entrada")
+  client_id           String
+  order_id            String? 
+  observation         String?
+  date_payment        DateTime? @default(now())
+  client              Client    @relation(fields: [client_id], references: [id], onDelete: Cascade)
+  club_id             String
+  club                Club    @relation(fields: [club_id], references: [id], onDelete: Cascade)
+  create_at           DateTime? @default(now())
+  update_at           DateTime? @default(now())
+
+  methods_transaction MethodsTransaction[]
+  items_transaction   ItemsTransaction[]
 
   @@map("transactions")
+}
+
+model ItemsTransaction {
+  id              String    @id @default(uuid())
+  name            String
+  value           Float
+  amount          Int 
+  transaction_id  String
+  transaction     Transaction      @relation(fields: [transaction_id], references: [id], onDelete: Cascade)
+  create_at       DateTime? @default(now())
+  update_at       DateTime? @default(now())
+
+  @@map("items_transaction")
 }
 
 model Cash {
@@ -105,8 +121,9 @@ model Cash {
 model Method {
   id           String    @id @default(uuid())
   name         String
-  percentage   Boolean 
-  deadline     Int 
+  type         String    @default("entrada")
+  identifier   String?  
+  percentage   Float 
   club_id      String
   club         Club      @relation(fields: [club_id], references: [id], onDelete: Cascade)
   create_at    DateTime? @default(now())
@@ -114,6 +131,33 @@ model Method {
 
   @@map("methods")
 }
+
+model MethodsTransaction {
+  id              String    @id @default(uuid())
+  name            String
+  percentage      Float 
+  value           Float
+  transaction_id  String
+  transaction     Transaction      @relation(fields: [transaction_id], references: [id], onDelete: Cascade)
+  create_at       DateTime? @default(now())
+  update_at       DateTime? @default(now())
+
+  @@map("methods_transaction")
+}
+
+model Category {
+  id           String    @id @default(uuid())
+  name         String
+  club_id      String
+  club         Club      @relation(fields: [club_id], references: [id], onDelete: Cascade)
+  create_at    DateTime? @default(now())
+  update_at    DateTime? @default(now())
+
+  products     Product[]
+
+  @@map("categories")
+}
+
 
 model Tournament {
   id                        String    @id @default(uuid())
@@ -164,6 +208,7 @@ model Tournament {
   create_at                 DateTime? @default(now())
   update_at                 DateTime? @default(now())
   clients_tournament        ClientTournament[]
+  transactions_tournament   TransactionTournament[]
     
   @@map("tournaments")
 }
@@ -171,12 +216,13 @@ model Tournament {
 model Product {
   id           String    @id @default(uuid())
   name         String
-  category     String    @default("")
   amount       Int 
   value        Float
   photo        String?
   club_id      String
   club         Club      @relation(fields: [club_id], references: [id], onDelete: Cascade)
+  category_id  String?
+  category     Category?    @relation(fields: [category_id], references: [id], onDelete: SetNull)
   create_at    DateTime? @default(now())
   update_at    DateTime? @default(now())
 
@@ -196,6 +242,22 @@ model Order {
   products_order ProductOrder[]
 
   @@map("orders")
+}
+
+model TransactionTournament {
+  id              String      @id @default(uuid())
+  transaction_id  String
+  rebuy           Int         @default(0)
+  buyin           Int         @default(0)
+  rebuyDuplo      Int         @default(0)
+  addOn           Int         @default(0)
+  super_addOn     Int         @default(0)
+  tournament_id   String
+  tournament      Tournament  @relation(fields: [tournament_id], references: [id], onDelete: Cascade)
+  create_at       DateTime?   @default(now())
+  update_at       DateTime?   @default(now())
+
+  @@map("transactions_tournament")
 }
 
 model ClientTournament {

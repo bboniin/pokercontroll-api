@@ -16,6 +16,9 @@ class GetProductService {
                 where: {
                     id: id,
                     club_id: club_id
+                },
+                include: {
+                    category: true
                 }
             })
        

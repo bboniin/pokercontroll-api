@@ -19,6 +19,9 @@ class ListPassportService {
                     orderBy: {
                         create_at: "desc"
                     },
+                    include: {
+                        methods_transaction: true,
+                    }
                 }
             }
         })

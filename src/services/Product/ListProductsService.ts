@@ -13,6 +13,9 @@ class ListProductsService {
             },
             orderBy: {
                 create_at: "asc"
+            },
+            include: {
+                category: true
             }
         })
 

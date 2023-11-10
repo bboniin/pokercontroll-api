@@ -64,6 +64,15 @@ import { ConfirmedPassportController } from './controllers/Transaction/Confirmed
 import { CreateCashController } from './controllers/Cash/CreateCashController'
 import { EndCashController } from './controllers/Cash/EndCashController'
 import { GetCashController } from './controllers/Cash/GetCashController'
+import { CreateMethodController } from './controllers/Method/CreateMethodController'
+import { EditMethodController } from './controllers/Method/EditMethodController'
+import { ListMethodsController } from './controllers/Method/ListMethodsController'
+import { DeleteMethodController } from './controllers/Method/DeleteMethodController'
+import { CreateCategoryController } from './controllers/Category/CreateCategoryController'
+import { EditCategoryController } from './controllers/Category/EditCategoryController'
+import { ListCategoriesController } from './controllers/Category/ListCategoriesController'
+import { DeleteCategoryController } from './controllers/Category/DeleteCategoryController'
+import { GetReportController } from './controllers/Report/GetReportController'
 
 const upload = multer(uploadConfig)
 
@@ -134,5 +143,17 @@ router.get('/orders', new ListOrdersController().handle)
 router.post('/cash', new CreateCashController().handle)
 router.put('/cash/:cash_id', new EndCashController().handle)
 router.get('/cash', new GetCashController().handle)
+
+router.post('/method', new CreateMethodController().handle)
+router.put('/method/:method_id',  new EditMethodController().handle)
+router.get('/methods', new ListMethodsController().handle)
+router.delete('/method/:method_id', new DeleteMethodController().handle)
+
+router.post('/category', new CreateCategoryController().handle)
+router.put('/category/:category_id',  new EditCategoryController().handle)
+router.get('/categories', new ListCategoriesController().handle)
+router.delete('/category/:category_id', new DeleteCategoryController().handle)
+
+router.post('/reports', new GetReportController().handle)
 
 export { router }

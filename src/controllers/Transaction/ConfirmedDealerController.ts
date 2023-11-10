@@ -4,14 +4,14 @@ import { ConfirmedPassportService } from '../../services/Transaction/ConfirmedPa
 class ConfirmedPassportController {
     async handle(req: Request, res: Response) {
         const { id } = req.params
-        const { method } = req.body
+        const { methods_transaction } = req.body
 
         let club_id = req.club_id
 
         const confirmedPassportService = new ConfirmedPassportService
 
         const passport = await confirmedPassportService.execute({
-            id, club_id, method
+            id, club_id, methods_transaction
         })
 
         return res.json(passport)
