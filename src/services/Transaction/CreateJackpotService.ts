@@ -53,8 +53,6 @@ class CreateJackpotService {
                 valueMethods = methods_transaction["value"]*((100-methods_transaction["percentage"])/100)
             }
         } 
-        
-        console.log(valueMethods)
 
         let transaction = null
 

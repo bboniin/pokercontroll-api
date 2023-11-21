@@ -15,7 +15,11 @@ class GetClientService {
                 visible: true
             },
             include: {
-                transactions: true,
+                transactions: {
+                    include: {
+                        methods_transaction: true
+                    }
+                },
                 client_tournaments: true
             }
         })

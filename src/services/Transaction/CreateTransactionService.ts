@@ -34,8 +34,6 @@ class CreateTransactionService {
                 club_id: club_id
             }
         })
-
-        console.log(methods_transaction)
         
         const club = await prismaClient.club.findUnique({
             where: {

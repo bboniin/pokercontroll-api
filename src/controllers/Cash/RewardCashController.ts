@@ -10,7 +10,7 @@ class RewardCashController {
         const createTransactionService = new CreateTransactionService
 
         const transaction = await createTransactionService.execute({
-            paid, value, type: "clube", methods_transaction: methods_transaction, items_transaction: [{
+            paid, value, type: "clube", methods_transaction: methods_transaction || [], items_transaction: [{
                 name: "cash",
                 amount: 1,
                 value: value

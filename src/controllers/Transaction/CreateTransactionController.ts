@@ -10,7 +10,7 @@ class CreateTransactionController {
         const createTransactionService = new CreateTransactionService
 
         const transaction = await createTransactionService.execute({
-            paid, value, type, methods_transaction, items_transaction, client_id, club_id, date_payment, observation, operation
+            paid, value, type, methods_transaction: methods_transaction || [], items_transaction, client_id, club_id, date_payment, observation, operation
         })
 
         return res.json(transaction)

@@ -19,7 +19,7 @@ class ExitClientTournamentController {
             const createTransactionService = new CreateTransactionService
 
             await createTransactionService.execute({
-                paid, value: award, type: "clube", methods_transaction: methods_transaction, items_transaction: [{
+                paid, value: award, type: "clube", methods_transaction: methods_transaction || [], items_transaction: [{
                     name: "torneio",
                     value: award,
                     amount: 1

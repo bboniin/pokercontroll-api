@@ -138,7 +138,7 @@ class AddTournamentController {
         const createTransactionService = new CreateTransactionService
         
         const transaction = await createTransactionService.execute({
-                paid, value: tournament.rebuyDuplo_value, type: "clube", methods_transaction, items_transaction, client_id: id, club_id, date_payment, observation, operation: "entrada"
+                paid, value: tournament.rebuyDuplo_value, type: "clube", methods_transaction: methods_transaction || [], items_transaction, client_id: id, club_id, date_payment, observation, operation: "entrada"
         })
 
         const buyTournamentService = new BuyTournamentService
