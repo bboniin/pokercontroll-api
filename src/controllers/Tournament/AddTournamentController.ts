@@ -19,20 +19,31 @@ class AddTournamentController {
 
         let club_id = req.club_id
 
-        if (!paid) {
-            const verifyCreditTransactionService = new VerifyCreditTransactionService
-
-            await verifyCreditTransactionService.execute({
-                client_id: id, club_id, value
-            })
-        }
-
         const getTournamentService = new GetTournamentService
 
         const tournament = await getTournamentService.execute({
             id: tournament_id, club_id
         })
 
+        let valueTotal = value
+
+        if (dealer && !dealer_paid) {
+            valueTotal += tournament.dealer_value
+        }
+        if (passport && !passport_paid) {
+            valueTotal += tournament.passport_value
+        }
+        if (jackpot && !jackpot_paid) {
+            valueTotal += tournament.jackpot_value
+        }
+
+        if (!paid) {
+            const verifyCreditTransactionService = new VerifyCreditTransactionService
+
+            await verifyCreditTransactionService.execute({
+                client_id: id, club_id, value: valueTotal || -1
+            })
+        }
 
         const addTournamentService = new AddTournamentService
 
@@ -149,8 +160,8 @@ class AddTournamentController {
 
         const getClientService = new GetClientService
 
-        const client = await getClientService.execute({
-            club_id, client_id: id
+        const {client} = await getClientService.execute({
+            club_id, client_id: id, page: 0
         })
 
         if (client["photo"]) {

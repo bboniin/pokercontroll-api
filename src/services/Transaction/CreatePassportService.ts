@@ -58,7 +58,7 @@ class CreatePassportService {
 
         if (operation == "entrada") {
             if (!paid) {
-                if (((client.balance - value) * -1) > client.credit ) {
+                if (((client.balance - value) * -1)> client.credit ) {
                     throw new Error("Crédito insuficiente para essa transação")
                 } else {
                      transaction = await prismaClient.transaction.create({

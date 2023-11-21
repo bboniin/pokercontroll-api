@@ -73,6 +73,7 @@ import { EditCategoryController } from './controllers/Category/EditCategoryContr
 import { ListCategoriesController } from './controllers/Category/ListCategoriesController'
 import { DeleteCategoryController } from './controllers/Category/DeleteCategoryController'
 import { GetReportController } from './controllers/Report/GetReportController'
+import { AddCashController } from './controllers/Cash/AddCashController'
 
 const upload = multer(uploadConfig)
 
@@ -104,6 +105,7 @@ router.delete('/client/:client_id', new DeleteClientController().handle)
 
 router.get('/clients-cash', new ClientsCashController().handle)
 router.post('/move-cash', new MoveCashController().handle)
+router.post('/add-cash', new AddCashController().handle)
 router.post('/buy-cash', new BuyCashController().handle)
 router.post('/reward-cash', new RewardCashController().handle)
 router.get('/clear-cash', new ClearCashController().handle)
