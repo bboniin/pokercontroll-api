@@ -34,7 +34,7 @@ class CreatePassportService {
         }
 
         if (!type || !client_id || !operation) {
-            throw new Error("Tipo, valor, operação e id do cliente é obrigatório")
+            throw new Error("Tipo, operação e id do cliente é obrigatório")
         }
 
         if (operation != "entrada" && operation != "saida") {

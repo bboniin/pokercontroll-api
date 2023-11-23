@@ -4,13 +4,13 @@ interface TransactionRequest {
     paid: boolean;
     type: string;
     value: number;
-    methods_transaction: object;
-    items_transaction: object;
     client_id: string;
     club_id: string;
     operation: string;
     observation: string;
     date_payment: Date;
+    methods_transaction: object;
+    items_transaction: object;
 }
 
 class CreateJackpotService {

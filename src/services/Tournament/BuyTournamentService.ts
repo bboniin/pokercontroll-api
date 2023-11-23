@@ -11,13 +11,13 @@ interface TournamentRequest {
     dealer: number;
     rebuyDuplo: number;
     super_addOn: number;
-    transaction: object;
+    transaction_id: string;
     tournament: object;
     client_id: string;
 }
 
 class BuyTournamentService {
-    async execute({ tournament, transaction, passport, super_addOn, dealer, jackpot, client_id, token, value, rebuy, rebuyDuplo, addOn, buyin }: TournamentRequest) {
+    async execute({ tournament, transaction_id, passport, super_addOn, dealer, jackpot, client_id, token, value, rebuy, rebuyDuplo, addOn, buyin }: TournamentRequest) {
         
         const clientTournamentGet = await prismaClient.clientTournament.findFirst({
             where: {
@@ -64,7 +64,7 @@ class BuyTournamentService {
                 rebuyDuplo: rebuy,
                 super_addOn: super_addOn,
                 buyin: rebuy,
-                transaction_id: transaction["id"],
+                transaction_id: transaction_id,
                 tournament_id: tournament["id"]
             }
         })
@@ -75,7 +75,7 @@ class BuyTournamentService {
             },
             data: {
                 total_tokens: tournament['total_tokens']+token,
-                totalAward_accumulated: tournament['totalAward_guaranteed'] > tournament['totalAward_accumulated'] ? tournament['totalAward_accumulated']+value : tournament['totalAward_accumulated']+(value*((100-tournament['rake'])/100)),
+                totalAward_accumulated:  tournament['totalAward_accumulated']+value,
                 rebuy: tournament['rebuy']+rebuy,
                 rebuyDuplo: tournament['rebuyDuplo']+rebuyDuplo,
                 buyin: tournament['buyin']+buyin,

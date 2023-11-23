@@ -4,12 +4,13 @@ import { ListJackpotService } from '../../services/Transaction/ListJackpotServic
 class ListJackpotController {
     async handle(req: Request, res: Response) {
 
+        let { page } = req.query
         let club_id = req.club_id
 
         const listJackpotService = new ListJackpotService
 
         const jackpot = await listJackpotService.execute({
-            club_id
+            club_id, page: Number(page) > 0 ? Number(page) : 0
         })
 
         return res.json(jackpot)

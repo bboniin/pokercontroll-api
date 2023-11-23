@@ -4,12 +4,13 @@ import { ListOrdersService } from '../../services/Order/ListOrdersService';
 class ListOrdersController {
     async handle(req: Request, res: Response) {
 
+        let { page } = req.query
         let club_id = req.club_id
 
         const listOrdersService = new ListOrdersService
 
-        const orders = await listOrdersService.execute({
-            club_id
+        const {orders, ordersTotal} = await listOrdersService.execute({
+            club_id, page: Number(page) > 0 ? Number(page) : 0
         })
 
         orders.map((order) => {
@@ -18,7 +19,7 @@ class ListOrdersController {
             }
         })
 
-        return res.json(orders)
+        return res.json({orders, ordersTotal})
     }
 }
 

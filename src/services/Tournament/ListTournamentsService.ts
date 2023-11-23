@@ -2,40 +2,30 @@ import prismaClient from '../../prisma'
 
 interface TournamentRequest {
     club_id: string;
+    page: number;
 }
 
 class ListTournamentsService {
-    async execute({ club_id }: TournamentRequest) {
+    async execute({ club_id, page }: TournamentRequest) {
 
-        const tournament = await prismaClient.tournament.findFirst({
+        const tournamentsTotal = await prismaClient.tournament.count({
             where: {
                 club_id: club_id,
-                OR: [{
-                    status: "inscricao"
-                },{
-                    status: "final"
-                }]
             },
-            orderBy: {
-                create_at: "asc"
-            }
         })
 
         const tournaments = await prismaClient.tournament.findMany({
+            skip: page * 30,
+            take: 30,
             where: {
                 club_id: club_id,
-                NOT: [{
-                    status: "inscricao"
-                },{
-                    status: "final"
-                }]
             },
             orderBy: {
                 create_at: "desc",
             }
         })
 
-        return tournament ? [tournament, ...tournaments] : tournaments
+        return {tournaments, tournamentsTotal}
     }
 }
 

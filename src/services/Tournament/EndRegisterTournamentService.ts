@@ -13,6 +13,7 @@ class EndRegisterTournamentService {
         if (!award) {
             throw new Error("Modelo de recompensa é obrigátorio")
         }
+        
         const tournament = await prismaClient.tournament.findFirst({
             where: {
                 club_id: club_id,

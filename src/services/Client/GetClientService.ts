@@ -31,17 +31,18 @@ class GetClientService {
             }
         })
 
-        const transactions = await prismaClient.transaction.count({
+        const transactionsTotal = await prismaClient.transaction.count({
             where: {
-            client_id: client_id,
-            club_id: club_id,}
+                client_id: client_id,
+                club_id: club_id,
+            }
         })
 
         if (!client) {
             throw new Error("Cliente não encontrado")
         }
 
-        return ({client, transactions})
+        return ({client, transactionsTotal})
     }
 }
 

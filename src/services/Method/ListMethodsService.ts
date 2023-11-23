@@ -2,12 +2,32 @@ import prismaClient from '../../prisma'
 
 interface MethodRequest {
     club_id: string;
+    page: number;
+    all: boolean;
 }
 
 class ListMethodsService {
-    async execute({ club_id }: MethodRequest) {
+    async execute({ club_id, page, all }: MethodRequest) {
+
+        let filter = {}
+
+        if (!all) {
+            filter = {
+                skip: page * 30,
+                take: 30,
+            }
+        }
+
+        const methodsTotal = await prismaClient.method.count({
+            where: {
+                club_id: club_id,
+            }
+        })
 
         const methods = await prismaClient.method.findMany({
+            ...filter,
+            skip: page * 30,
+            take: 30,
             where: {
                 club_id: club_id,
             },
@@ -16,7 +36,7 @@ class ListMethodsService {
             }
         })
 
-        return (methods)
+        return all ? methods  : ({methods, methodsTotal})
     }
 }
 

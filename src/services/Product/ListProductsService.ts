@@ -2,12 +2,30 @@ import prismaClient from '../../prisma'
 
 interface ProductRequest {
     club_id: string;
+    page: number;
+    all: boolean;
 }
 
 class ListProductsService {
-    async execute({ club_id }: ProductRequest) {
+    async execute({ club_id, page, all }: ProductRequest) {
+        
+        let filter = {}
+
+        if (!all) {
+            filter = {
+                skip: page * 30,
+                take: 30,
+            }
+        }
+
+        const productsTotal = await prismaClient.product.count({
+            where: {
+                club_id: club_id,
+            },
+        })
 
         const products = await prismaClient.product.findMany({
+            ...filter,
             where: {
                 club_id: club_id,
             },
@@ -19,7 +37,7 @@ class ListProductsService {
             }
         })
 
-        return (products)
+        return ({products, productsTotal})
     }
 }
 

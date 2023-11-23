@@ -13,7 +13,7 @@ class AddTournamentController {
     async handle(req: Request, res: Response) {
         const { id, chair, tournament_id, timechip, paid, value, passport, jackpot,
             dealer, passport_method, jackpot_method, dealer_method, passport_percentage,
-            jackpot_percentage, dealer_percentage, passport_paid,
+            jackpot_percentage, dealer_percentage, passport_paid, buyin_value,
             jackpot_paid, dealer_paid, super_addOn, addOn, buyin, rebuy, rebuyDuplo,
             date_payment, observation, methods_transaction} = req.body
 
@@ -37,14 +37,14 @@ class AddTournamentController {
             valueTotal += tournament.jackpot_value
         }
 
-        if (!paid) {
+        if (!paid || (passport && !passport_paid) || (jackpot && !jackpot_paid) || (dealer && !dealer_paid)) {
             const verifyCreditTransactionService = new VerifyCreditTransactionService
 
             await verifyCreditTransactionService.execute({
                 client_id: id, club_id, value: valueTotal || -1
             })
         }
-
+        
         const addTournamentService = new AddTournamentService
 
         await addTournamentService.execute({
@@ -124,7 +124,7 @@ class AddTournamentController {
             items_transaction.push({
                 name: "torneio-buyin",
                 amount: buyin,
-                value: tournament.buyin_value,
+                value: buyin_value == 0 ? buyin_value : tournament.buyin_value,
             })
             token+=tournament.buyin_token
         }
@@ -149,13 +149,13 @@ class AddTournamentController {
         const createTransactionService = new CreateTransactionService
         
         const transaction = await createTransactionService.execute({
-                paid, value: tournament.rebuyDuplo_value, type: "clube", methods_transaction: methods_transaction || [], items_transaction, client_id: id, club_id, date_payment, observation, operation: "entrada"
+            paid, value: value, type: "clube", methods_transaction: methods_transaction || [], items_transaction, client_id: id, club_id, date_payment, observation, operation: "entrada"
         })
 
         const buyTournamentService = new BuyTournamentService
 
         await buyTournamentService.execute({
-            transaction, value, token, jackpot, passport, super_addOn, dealer, tournament, addOn, buyin, rebuy, rebuyDuplo, client_id: id
+            transaction_id: transaction.id, value, token, jackpot, passport, super_addOn, dealer, tournament, addOn, buyin, rebuy, rebuyDuplo, client_id: id
         })
 
         const getClientService = new GetClientService
