@@ -11,10 +11,11 @@ interface TransactionRequest {
     date_payment: Date;
     methods_transaction: object;
     items_transaction: object;
+    sector_id: string;
 }
 
 class CreateJackpotService {
-    async execute({ type, value, club_id, paid, client_id, methods_transaction, items_transaction, operation, date_payment, observation }: TransactionRequest) {
+    async execute({ type, value, sector_id, club_id, paid, client_id, methods_transaction, items_transaction, operation, date_payment, observation }: TransactionRequest) {
         
         const client = await prismaClient.client.findFirst({
             where: {
@@ -67,6 +68,7 @@ class CreateJackpotService {
                             value: value,
                             client_id: client_id,
                             club_id: club_id,
+                            sector_id: sector_id,
                             operation: operation,
                             date_payment: date_payment,
                             observation: observation,
@@ -82,7 +84,6 @@ class CreateJackpotService {
                             balance: client.balance - value
                         }
                     })
-                    return transaction
                 }
             } else {
                 transaction = await prismaClient.transaction.create({
@@ -91,6 +92,7 @@ class CreateJackpotService {
                         value: value,
                         client_id: client_id,
                         club_id: club_id,
+                        sector_id: sector_id,
                         operation: operation,
                         date_payment: date_payment,
                         observation: observation,
@@ -106,7 +108,6 @@ class CreateJackpotService {
                         jackpot: club.jackpot + valueMethods
                     }
                 })
-            return transaction
             }
         } else {
             transaction = await prismaClient.transaction.create({
@@ -115,6 +116,7 @@ class CreateJackpotService {
                     value: value,
                     client_id: client_id,
                     club_id: club_id,
+                    sector_id: sector_id,
                     operation: operation,
                     date_payment: date_payment,
                     observation: observation,

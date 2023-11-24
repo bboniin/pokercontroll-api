@@ -5,7 +5,7 @@ import { CreateTransactionService } from '../../services/Transaction/CreateTrans
 class ExitClientTournamentController {
     async handle(req: Request, res: Response) {
         const { client_id } = req.params
-        const { tournament_id, position, methods_transaction, paid } = req.body
+        const { tournament_id, position, sector_id, methods_transaction, paid } = req.body
 
         let club_id = req.club_id
 
@@ -23,7 +23,7 @@ class ExitClientTournamentController {
                     name: "torneio",
                     value: award,
                     amount: 1
-                }], client_id, club_id, date_payment: new Date(), observation: "", operation: "saida"
+                }], client_id, sector_id, club_id, date_payment: new Date(), observation: "", operation: "saida"
             })
         }
 

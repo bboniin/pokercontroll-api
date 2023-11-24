@@ -17,6 +17,7 @@ interface TransactionRequest {
     operation: string;
     observation: string;
     date_payment: Date;
+    sector_id: string;
 }
 const typesTransaction = {
     "clube": true,
@@ -26,7 +27,7 @@ const typesTransaction = {
 }
 
 class CreateTransactionService {
-    async execute({ type, value, club_id, paid, client_id, methods_transaction, items_transaction, operation, date_payment, observation }: TransactionRequest) {
+    async execute({ type, sector_id, value, club_id, paid, client_id, methods_transaction, items_transaction, operation, date_payment, observation }: TransactionRequest) {
         
         const client = await prismaClient.client.findFirst({
             where: {
@@ -79,6 +80,7 @@ class CreateTransactionService {
                             value: value,
                             client_id: client_id,
                             club_id: club_id,
+                            sector_id: sector_id,
                             operation: operation,
                             date_payment: date_payment,
                             observation: observation,
@@ -102,6 +104,7 @@ class CreateTransactionService {
                         value: value,
                         client_id: client_id,
                         club_id: club_id,
+                        sector_id: sector_id,
                         operation: operation,
                         date_payment: date_payment,
                         observation: observation,
@@ -125,6 +128,7 @@ class CreateTransactionService {
                     value: value,
                     client_id: client_id,
                     club_id: club_id,
+                    sector_id: sector_id,
                     operation: operation,
                     date_payment: date_payment,
                     observation: observation,
@@ -143,7 +147,7 @@ class CreateTransactionService {
                 }
         }
         
-        items_transaction.map(async (item) => {
+        await items_transaction.map(async (item) => {
             await prismaClient.itemsTransaction.create({
                 data: {
                     name: item["name"],

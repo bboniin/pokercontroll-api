@@ -4,15 +4,29 @@ interface ReportRequest {
     club_id: string;
     type: string;
     method: string;
-    sector_id: string;
+    date_initial: Date;
+    date_end: Date;
 }
 
-class CashReportService {
-    async execute({ club_id, sector_id, method, type }: ReportRequest) {
+class BarReportService {
+    async execute({ club_id, date_end, date_initial, method, type }: ReportRequest) {
 
         let data = {
             club_id: club_id,
-            sector_id: sector_id,
+            items_transaction: {
+                some: {
+                    name: "bar"
+                }
+            },
+            AND: [{
+                create_at: {
+                    gte: date_initial
+                }
+            },{
+                create_at: {
+                    lte: date_end
+                }
+            }]
         }
 
         if (method) {
@@ -107,4 +121,4 @@ class CashReportService {
     }
 }
 
-export { CashReportService }
+export { BarReportService }

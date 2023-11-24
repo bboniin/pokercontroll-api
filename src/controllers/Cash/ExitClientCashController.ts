@@ -1,11 +1,23 @@
 import { Request, Response } from 'express';
 import { ExitClientCashService } from '../../services/Cash/ExitClientCashService';
+import { CreateTransactionService } from '../../services/Transaction/CreateTransactionService';
 
 class ExitClientCashController {
     async handle(req: Request, res: Response) {
         const { client_id } = req.params
+        const { paid, sector_id, value, methods_transaction, date_payment, observation } = req.body
 
         let club_id = req.club_id
+
+        const createTransactionService = new CreateTransactionService
+
+        await createTransactionService.execute({
+            paid, value, type: "clube", methods_transaction, items_transaction: [{
+                name: "cash",
+                amount: 1,
+                value: value
+            }], client_id, sector_id, club_id, date_payment, observation, operation: "saida"
+        })
 
         const exitClientCashService = new ExitClientCashService
 

@@ -22,6 +22,7 @@ class InitialTournamentService {
 
         const tournamentInit = await prismaClient.tournament.findFirst({
             where: {
+                club_id: club_id,
                 OR: [{
                     status: "inscricao"
                 },{

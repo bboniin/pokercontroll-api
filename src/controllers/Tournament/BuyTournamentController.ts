@@ -47,7 +47,7 @@ class BuyTournamentController {
                     name: dealer_method,
                     value: tournament.dealer_value,
                     percentage: dealer_percentage
-                }, client_id: client_id, club_id, date_payment, observation, items_transaction: {
+                }, client_id: client_id, sector_id: tournament_id, club_id, date_payment, observation, items_transaction: {
                     name: "dealer",
                     amount: 1,
                     value: tournament.dealer_value,
@@ -63,7 +63,7 @@ class BuyTournamentController {
                     name: passport_method,
                     value: tournament.passport_value,
                     percentage: passport_percentage
-                }, client_id: client_id, club_id, date_payment, observation, items_transaction: {
+                }, client_id: client_id, sector_id: tournament_id, club_id, date_payment, observation, items_transaction: {
                     name: "passport",
                     amount: 1,
                     value: tournament.passport_value,
@@ -79,7 +79,7 @@ class BuyTournamentController {
                     name: jackpot_method,
                     value: tournament.jackpot_value,
                     percentage: jackpot_percentage
-                }, client_id: client_id, club_id, date_payment, observation, items_transaction: {
+                }, client_id: client_id, sector_id: tournament_id, club_id, date_payment, observation, items_transaction: {
                     name: "jackpot",
                     amount: 1,
                     value: tournament.jackpot_value,
@@ -138,7 +138,7 @@ class BuyTournamentController {
             const createTransactionService = new CreateTransactionService
         
             transaction = await createTransactionService.execute({
-                paid, value: value, type: "clube", methods_transaction: methods_transaction || [], items_transaction, client_id: client_id, club_id, date_payment, observation, operation: "entrada"
+                paid, value: value, type: "clube", methods_transaction: methods_transaction || [], items_transaction, client_id: client_id, sector_id: tournament_id, club_id, date_payment, observation, operation: "entrada"
             })
         }
 

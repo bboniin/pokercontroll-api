@@ -30,7 +30,7 @@ class CreateOrderController {
                 name: "bar",
                 amount: 1,
                 value: value
-            }], client_id, club_id, date_payment, observation, operation: "entrada"
+            }], client_id, sector_id: "", club_id, date_payment, observation, operation: "entrada"
         });
 
         const createOrderService = new CreateOrderService;
@@ -42,7 +42,7 @@ class CreateOrderController {
         const orderTransactionService = new OrderTransactionService;
 
         await orderTransactionService.execute({
-            id: transaction['id'], club_id: club_id, order_id: order['id']
+            id: transaction['id'], club_id: club_id, sector_id: order['id']
         });
 
         const discoutProductService = new DiscoutProductService;

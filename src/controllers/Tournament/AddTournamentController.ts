@@ -60,7 +60,7 @@ class AddTournamentController {
                     name: dealer_method,
                     value: tournament.dealer_value,
                     percentage: dealer_percentage
-                }, client_id: id, club_id, date_payment, observation, items_transaction: {
+                }, client_id: id, sector_id: tournament_id, club_id, date_payment, observation, items_transaction: {
                     name: "dealer",
                     amount: 1,
                     value: tournament.dealer_value,
@@ -76,7 +76,7 @@ class AddTournamentController {
                     name: passport_method,
                     value: tournament.passport_value,
                     percentage: passport_percentage
-                }, client_id: id, club_id, date_payment, observation, items_transaction: {
+                }, client_id: id, sector_id: tournament_id, club_id, date_payment, observation, items_transaction: {
                     name: "passport",
                     amount: 1,
                     value: tournament.passport_value,
@@ -92,7 +92,7 @@ class AddTournamentController {
                     name: jackpot_method,
                     value: tournament.jackpot_value,
                     percentage: jackpot_percentage
-                }, client_id: id, club_id, date_payment, observation, items_transaction: {
+                }, client_id: id, sector_id: tournament_id, club_id, date_payment, observation, items_transaction: {
                     name: "jackpot",
                     amount: 1,
                     value: tournament.jackpot_value,
@@ -149,7 +149,7 @@ class AddTournamentController {
         const createTransactionService = new CreateTransactionService
         
         const transaction = await createTransactionService.execute({
-            paid, value: value, type: "clube", methods_transaction: methods_transaction || [], items_transaction, client_id: id, club_id, date_payment, observation, operation: "entrada"
+            paid, value: value, type: "clube", methods_transaction: methods_transaction || [], items_transaction, client_id: id, sector_id: tournament_id, club_id, date_payment, observation, operation: "entrada"
         })
 
         const buyTournamentService = new BuyTournamentService

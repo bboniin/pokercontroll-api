@@ -7,6 +7,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Admin {
+  id           String    @id @default(uuid())
+  name         String
+  email        String    @unique
+  password     String
+  create_at    DateTime? @default(now())
+  update_at    DateTime? @default(now())
+
+  @@map("admins")
+}
+
 model User {
   id           String    @id @default(uuid())
   name         String
@@ -30,7 +41,7 @@ model Club {
   balance      Float     @default(0)  
   passport     Float     @default(0)  
   jackpot      Float     @default(0)  
-  dealer      Float     @default(0)  
+  dealer       Float     @default(0)  
   create_at    DateTime? @default(now())
   update_at    DateTime? @default(now())
   users        User[]
@@ -75,11 +86,11 @@ model Transaction {
   paid                Boolean
   value               Float
   operation           String    @default("entrada")
-  client_id           String
-  order_id            String? 
+  client_id           String?
+  sector_id           String? 
   observation         String?
   date_payment        DateTime? @default(now())
-  client              Client    @relation(fields: [client_id], references: [id], onDelete: Cascade)
+  client              Client?    @relation(fields: [client_id], references: [id], onDelete: Cascade)
   club_id             String
   club                Club    @relation(fields: [club_id], references: [id], onDelete: Cascade)
   create_at           DateTime? @default(now())
@@ -123,7 +134,8 @@ model Method {
   name         String
   type         String    @default("entrada")
   identifier   String?  
-  percentage   Float 
+  percentage   Float?     @default(0)
+  value        Float?     @default(0)
   club_id      String
   club         Club      @relation(fields: [club_id], references: [id], onDelete: Cascade)
   create_at    DateTime? @default(now())

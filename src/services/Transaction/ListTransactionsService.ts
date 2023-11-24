@@ -32,7 +32,7 @@ class ListTransactionsService {
                     },
                     include: {
                         methods_transaction: true,
-                        items_transaction: true
+                        items_transaction: true,
                     }
                 }
             }

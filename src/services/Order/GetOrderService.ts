@@ -1,12 +1,12 @@
 import prismaClient from '../../prisma'
 
-interface ProductRequest {
+interface OrderRequest {
     order_id: string;
     club_id: string;
 }
 
 class GetOrderService {
-    async execute({ order_id, club_id }: ProductRequest) {
+    async execute({ order_id, club_id }: OrderRequest) {
 
         const order = await prismaClient.order.findFirst({
             where: {

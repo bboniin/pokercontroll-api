@@ -7,7 +7,7 @@ interface ReportRequest {
     sector_id: string;
 }
 
-class CashReportService {
+class TournamentReportService {
     async execute({ club_id, sector_id, method, type }: ReportRequest) {
 
         let data = {
@@ -107,4 +107,4 @@ class CashReportService {
     }
 }
 
-export { CashReportService }
+export { TournamentReportService }

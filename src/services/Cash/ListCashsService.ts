@@ -1,13 +1,13 @@
 import prismaClient from '../../prisma'
 
-interface TournamentRequest {
+interface CashRequest {
     club_id: string;
     page: number;
     all: boolean;
 }
 
-class ListTournamentsService {
-    async execute({ club_id, page, all }: TournamentRequest) {
+class ListCashsService {
+    async execute({ club_id, page, all }: CashRequest) {
 
         let filter = {}
 
@@ -18,13 +18,13 @@ class ListTournamentsService {
             }
         }
 
-        const tournamentsTotal = await prismaClient.tournament.count({
+        const cashsTotal = await prismaClient.cash.count({
             where: {
                 club_id: club_id,
             },
         })
 
-        const tournaments = await prismaClient.tournament.findMany({
+        const cashs = await prismaClient.cash.findMany({
             ...filter,
             where: {
                 club_id: club_id,
@@ -34,8 +34,8 @@ class ListTournamentsService {
             }
         })
 
-        return {tournaments, tournamentsTotal}
+        return {cashs, cashsTotal}
     }
 }
 
-export { ListTournamentsService }
+export { ListCashsService }

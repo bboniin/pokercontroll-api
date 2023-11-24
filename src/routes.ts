@@ -56,11 +56,8 @@ import { InitialTournamentController } from './controllers/Tournament/InitialTou
 import { EndRegisterTournamentController } from './controllers/Tournament/EndRegisterTournamentController'
 import { ListPassportController } from './controllers/Transaction/ListPassportController'
 import { ListJackpotController } from './controllers/Transaction/ListJackpotController'
-import { ConfirmedJackpotController } from './controllers/Transaction/ConfirmedJackpotController'
-import { ConfirmedDealerController } from './controllers/Transaction/ConfirmedPassportController'
 import { StructureTournamentController } from './controllers/Tournament/StructureTournamentController'
 import { ListDealerController } from './controllers/Transaction/ListDealerController'
-import { ConfirmedPassportController } from './controllers/Transaction/ConfirmedDealerController'
 import { CreateCashController } from './controllers/Cash/CreateCashController'
 import { EndCashController } from './controllers/Cash/EndCashController'
 import { GetCashController } from './controllers/Cash/GetCashController'
@@ -74,6 +71,11 @@ import { ListCategoriesController } from './controllers/Category/ListCategoriesC
 import { DeleteCategoryController } from './controllers/Category/DeleteCategoryController'
 import { GetReportController } from './controllers/Report/GetReportController'
 import { AddCashController } from './controllers/Cash/AddCashController'
+import { CreateTransactionClubeController } from './controllers/Transaction/CreateTransactionClubeController'
+import { ListCashsController } from './controllers/Cash/ListCashsController'
+import { CreateClubController } from './controllers/Club/CreateClubController'
+import { ListClubsController } from './controllers/Club/ListClubsController'
+import { DeleteClubController } from './controllers/Club/DeleteClubController'
 
 const upload = multer(uploadConfig)
 
@@ -90,10 +92,8 @@ router.get('/jackpots', new ListJackpotController().handle)
 router.get('/passports', new ListPassportController().handle)
 router.get('/dealers', new ListDealerController().handle)
 router.put('/confirmed-transaction/:id', new ConfirmedTransactionController().handle)
-router.put('/confirmed-jackpot/:id', new ConfirmedJackpotController().handle)
-router.put('/confirmed-passport/:id', new ConfirmedPassportController().handle)
-router.put('/confirmed-dealer/:id', new ConfirmedDealerController().handle)
 router.post('/transaction', new CreateTransactionController().handle)
+router.post('/transaction-club', new CreateTransactionClubeController().handle)
 router.put('/transaction/:id',  new EditTransactionController().handle)
 
 router.get('/clients', new ListClientsController().handle)
@@ -109,7 +109,8 @@ router.post('/add-cash', new AddCashController().handle)
 router.post('/buy-cash', new BuyCashController().handle)
 router.post('/reward-cash', new RewardCashController().handle)
 router.get('/clear-cash', new ClearCashController().handle)
-router.delete('/exit-cash/:client_id', new ExitClientCashController().handle)
+router.get('/cashs', new ListCashsController().handle)
+router.post('/exit-cash/:client_id', new ExitClientCashController().handle)
 
 router.get('/clients-tournament/:tournament_id', new ClientsTournamentController().handle)
 router.post('/add-tournament', new AddTournamentController().handle)
@@ -157,5 +158,9 @@ router.get('/categories', new ListCategoriesController().handle)
 router.delete('/category/:category_id', new DeleteCategoryController().handle)
 
 router.post('/reports', new GetReportController().handle)
+
+router.post('/club', new CreateClubController().handle)
+router.get('/clubs', new ListClubsController().handle)
+router.delete('/club/:club_id', new DeleteClubController().handle)
 
 export { router }

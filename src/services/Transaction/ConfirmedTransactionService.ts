@@ -52,14 +52,17 @@ class ConfirmedTransactionService {
         })
     
         if (transaction.operation == "entrada") {
-            await prismaClient.client.update({
-                where: {
-                    id: client.id,
-                },
-                data: {
-                    balance: client.balance + transaction.value
-                }
-            })
+            if (client) {
+                await prismaClient.client.update({
+                    where: {
+                        id: client.id,
+                    },
+                    data: {
+                        balance: client.balance + transaction.value
+                    }
+                })
+            }
+            
             await prismaClient.club.update({
                 where: {
                     id: club_id,
@@ -69,14 +72,16 @@ class ConfirmedTransactionService {
                 }
             })
         } else {
-            await prismaClient.client.update({
-                where: {
-                    id: client.id,
-                },
-                data: {
-                    balance: client.balance - transaction.value
-                }
-            })
+            if (client) {
+                await prismaClient.client.update({
+                    where: {
+                        id: client.id,
+                    },
+                    data: {
+                        balance: client.balance - transaction.value
+                    }
+                })
+            }
             await prismaClient.club.update({
                 where: {
                     id: club_id,

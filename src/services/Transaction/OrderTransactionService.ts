@@ -3,13 +3,13 @@ import prismaClient from '../../prisma'
 interface TransactionRequest {
     id: string;
     club_id: string;
-    order_id: string;
+    sector_id: string;
 }
 
 class OrderTransactionService {
-    async execute({ id,  club_id, order_id}: TransactionRequest) {
+    async execute({ id,  club_id, sector_id}: TransactionRequest) {
 
-        if (!club_id || !id || !order_id) {
+        if (!club_id || !id || !sector_id) {
             throw new Error("Id da cobrança e do clube é obrigatório")
         }
 
@@ -28,7 +28,7 @@ class OrderTransactionService {
               id: id  
             },
             data: {
-                order_id: order_id
+                sector_id: sector_id
             }
         })
 

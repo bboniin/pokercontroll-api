@@ -3,7 +3,7 @@ import { CreateTransactionService } from '../../services/Transaction/CreateTrans
 
 class RewardTournamentController {
     async handle(req: Request, res: Response) {
-        const { paid, value, client_id, methods_transaction, date_payment, observation, } = req.body
+        const { paid, sector_id, value, client_id, methods_transaction, date_payment, observation, } = req.body
 
         let club_id = req.club_id
 
@@ -14,7 +14,7 @@ class RewardTournamentController {
                 name: "tournament",
                 value: value,
                 amount: 1
-            }], client_id, club_id, date_payment, observation, operation: "saida"
+            }], client_id, sector_id, club_id, date_payment, observation, operation: "saida"
         })
 
         return res.json(transaction)

@@ -11,10 +11,11 @@ interface TransactionRequest {
     operation: string;
     observation: string;
     date_payment: Date;
+    sector_id: string;
 }
 
 class CreateDealerService {
-    async execute({ type, value, club_id, paid, client_id, methods_transaction, items_transaction, operation, date_payment, observation }: TransactionRequest) {
+    async execute({ type, value, sector_id, club_id, paid, client_id, methods_transaction, items_transaction, operation, date_payment, observation }: TransactionRequest) {
         
         const client = await prismaClient.client.findFirst({
             where: {
@@ -46,6 +47,7 @@ class CreateDealerService {
         }
         
         let valueMethods = value
+
         if (paid) {
             date_payment = new Date()
         
@@ -54,8 +56,7 @@ class CreateDealerService {
                 valueMethods = methods_transaction["value"]*((100-methods_transaction["percentage"])/100)
             }
         } 
-        
-        console.log(valueMethods)
+
 
         let transaction = null
 
@@ -70,6 +71,7 @@ class CreateDealerService {
                             value: value,
                             client_id: client_id,
                             club_id: club_id,
+                            sector_id: sector_id,
                             operation: operation,
                             date_payment: date_payment,
                             observation: observation,
@@ -93,6 +95,7 @@ class CreateDealerService {
                         value: value,
                         client_id: client_id,
                         club_id: club_id,
+                        sector_id: sector_id,
                         operation: operation,
                         date_payment: date_payment,
                         observation: observation,
@@ -116,6 +119,7 @@ class CreateDealerService {
                     value: value,
                     client_id: client_id,
                     club_id: club_id,
+                    sector_id: sector_id,
                     operation: operation,
                     date_payment: date_payment,
                     observation: observation,

@@ -4,18 +4,18 @@ import { MoveCashService } from '../../services/Cash/MoveCashService';
 
 class AddCashController {
     async handle(req: Request, res: Response) {
-        const { chair, id, paid, value, methods_transaction, date_payment, observation } = req.body
+        const { chair, id, paid, sector_id, value, methods_transaction, date_payment, observation } = req.body
 
         let club_id = req.club_id
 
         const createTransactionService = new CreateTransactionService
 
-        const transaction = await createTransactionService.execute({
+        await createTransactionService.execute({
             paid, value, type: "clube", methods_transaction, items_transaction: [{
                 name: "cash",
                 amount: 1,
                 value: value
-            }], client_id: id, club_id, date_payment, observation, operation: "entrada"
+            }], client_id: id, sector_id, club_id, date_payment, observation, operation: "entrada"
         })
 
         const moveCashService = new MoveCashService
