@@ -3,14 +3,14 @@ import { MoveCashService } from '../../services/Cash/MoveCashService';
 
 class MoveCashController {
     async handle(req: Request, res: Response) {
-        const { id, chair } = req.body
+        const { id, chair, chair_initial } = req.body
 
         let club_id = req.club_id
 
         const moveCashService = new MoveCashService
 
         const client = await moveCashService.execute({
-            chair, id, club_id
+            chair, id, club_id, chair_initial
         })
 
         if (client["photo"]) {

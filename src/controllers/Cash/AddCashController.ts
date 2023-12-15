@@ -21,7 +21,7 @@ class AddCashController {
         const moveCashService = new MoveCashService
 
         const client = await moveCashService.execute({
-            chair, id, club_id
+            chair, id, club_id, chair_initial: ""
         })
 
         if (client["photo"]) {

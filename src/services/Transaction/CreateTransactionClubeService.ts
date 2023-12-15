@@ -140,8 +140,6 @@ class CreateTransactionClubeService {
             }
         })
 
-        console.log(teste, transaction.id)
-
         return transaction
     }
 }

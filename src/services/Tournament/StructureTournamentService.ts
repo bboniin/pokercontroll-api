@@ -49,8 +49,6 @@ class StructureTournamentService {
             }
         })
 
-        console.log(addMinutes(new Date(tournament.datetime_initial), minsBuyinFree))
-
         const tournamentEdit = await prismaClient.tournament.update({
             where: {
                 id: tournament_id,

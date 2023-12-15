@@ -14,6 +14,16 @@ class GetCashService {
             }
         })
 
+        if (cash) {
+            const transactions = await prismaClient.transaction.findMany({
+                where: {
+                    sector_id: cash.id
+                }
+            })
+
+            cash["transactions"] = transactions
+        }
+        
         return (cash)
     }
 }
