@@ -53,6 +53,9 @@ model Club {
   transactions Transaction[]
   methods      Method[]
   categories   Category[]
+  commands     Command[]
+  stocks       Stock[]
+  suppliers    Supplier[]
 
   @@map("clubs")
 }
@@ -76,6 +79,7 @@ model Client {
   transactions       Transaction[]
   orders             Order[]
   client_tournaments ClientTournament[]
+  commands           Command[]
 
   @@map("clients")
 }
@@ -170,6 +174,34 @@ model Category {
   @@map("categories")
 }
 
+model Supplier {
+  id           String    @id @default(uuid())
+  name         String
+  club_id      String
+  active       Boolean   @default(true)
+  club         Club      @relation(fields: [club_id], references: [id], onDelete: Cascade)
+  create_at    DateTime? @default(now())
+  update_at    DateTime? @default(now())
+
+  products     Product[]
+  stocks     Stock[]
+
+  @@map("suppliers")
+}
+
+model Stock {
+  id           String     @id @default(uuid())
+  name         String
+  amount       Int
+  club_id      String
+  club         Club       @relation(fields: [club_id], references: [id], onDelete: Cascade)
+  supplier_id  String
+  supplier     Supplier   @relation(fields: [supplier_id], references: [id], onDelete: Cascade)
+  create_at    DateTime?  @default(now())
+  update_at    DateTime?  @default(now())
+
+  @@map("stocks")
+}
 
 model Tournament {
   id                        String    @id @default(uuid())
@@ -202,6 +234,9 @@ model Tournament {
   max_timechip              Int       @default(0)
   max_in                    Int       @default(0)
   max_rebuy                 Int       @default(0)
+  paused                    Boolean   @default(false)
+  time_paused               DateTime? @default(now())
+  seconds_paused            Int       @default(0)
   max_count                 Int       @default(0)
   jackpot_value             Float     @default(0)
   passport_value            Float     @default(0)
@@ -226,19 +261,38 @@ model Tournament {
 }
 
 model Product {
-  id           String    @id @default(uuid())
+  id           String     @id @default(uuid())
   name         String
   amount       Int 
   value        Float
   photo        String?
   club_id      String
-  club         Club      @relation(fields: [club_id], references: [id], onDelete: Cascade)
+  club         Club       @relation(fields: [club_id], references: [id], onDelete: Cascade)
   category_id  String?
-  category     Category?    @relation(fields: [category_id], references: [id], onDelete: SetNull)
-  create_at    DateTime? @default(now())
-  update_at    DateTime? @default(now())
+  category     Category?  @relation(fields: [category_id], references: [id], onDelete: SetNull)
+  supplier_id  String?    
+  supplier     Supplier?  @relation(fields: [supplier_id], references: [id], onDelete: SetNull)
+  create_at    DateTime?  @default(now())
+  update_at    DateTime?  @default(now())
 
   @@map("products")
+}
+
+model Command {
+  id             String    @id @default(uuid())
+  observation    String?
+  open           Boolean   @default(true)
+  client_id      String
+  client         Client    @relation(fields: [client_id], references: [id], onDelete: Cascade)
+  club_id        String
+  club           Club      @relation(fields: [club_id], references: [id], onDelete: Cascade)
+  create_at      DateTime? @default(now())
+  update_at      DateTime? @default(now())
+
+  products_order ProductOrder[]
+  orders         Order[]
+
+  @@map("commands")
 }
 
 model Order {
@@ -247,6 +301,8 @@ model Order {
   value          Float
   client_id      String
   client         Client    @relation(fields: [client_id], references: [id], onDelete: Cascade)
+  command_id     String?    
+  command        Command?   @relation(fields: [command_id], references: [id], onDelete: Cascade)
   club_id        String
   club           Club      @relation(fields: [club_id], references: [id], onDelete: Cascade)
   create_at      DateTime? @default(now())
@@ -255,6 +311,7 @@ model Order {
 
   @@map("orders")
 }
+
 
 model TransactionTournament {
   id              String      @id @default(uuid())
@@ -302,6 +359,8 @@ model ProductOrder {
   name         String
   value        Float
   amount       Int
+  command_id   String?    
+  command      Command?   @relation(fields: [command_id], references: [id], onDelete: Cascade)
   order_id     String
   order        Order    @relation(fields: [order_id], references: [id], onDelete: Cascade)
   create_at    DateTime? @default(now())

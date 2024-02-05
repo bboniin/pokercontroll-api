@@ -15,12 +15,29 @@ class CreateOrderService {
             throw new Error("Preencha os campos obrigatórios")
         }
 
+        let command = await prismaClient.command.findFirst({
+            where: {
+                client_id: client_id,
+                open: true
+            }
+        })
+
+        if (!command) {
+            command = await prismaClient.command.create({
+                data: {
+                    club_id: club_id,
+                    client_id: client_id,
+                }
+            })
+        }
+
         const order = await prismaClient.order.create({
             data: {
                 value: value,
                 observation: observation,
                 club_id: club_id,
                 client_id: client_id,
+                command_id: command.id
             }, 
             include: {
                 client: true
@@ -35,6 +52,7 @@ class CreateOrderService {
                     order_id: order.id,
                     name: data["name"],
                     value: data["value"],
+                    command_id: command.id
                 }
             })
             order["items"].push(itemOrder)

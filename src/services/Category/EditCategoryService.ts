@@ -21,7 +21,7 @@ class EditCategoryService {
         })
 
         if (!category) {
-            throw new Error("Método de pagamento não encontrado")
+            throw new Error("Categoria não encontrada")
         }
 
 

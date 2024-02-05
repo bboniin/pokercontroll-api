@@ -5,16 +5,16 @@ interface ProductRequest {
     page: number;
 }
 
-class ListOrdersService {
+class ListCommandsService {
     async execute({ club_id, page }: ProductRequest) {
         
-        const ordersTotal = await prismaClient.order.count({
+        const commandsTotal = await prismaClient.command.count({
             where: {
                 club_id: club_id,
             }
         })
 
-        const orders = await prismaClient.order.findMany({
+        const commands = await prismaClient.command.findMany({
             skip: page * 30,
             take: 30,
             where: {
@@ -25,11 +25,17 @@ class ListOrdersService {
             },
             include: {
                 client: true,
+                orders: true,
+                products_order: true
             }
         })
 
-        return ({orders, ordersTotal})
+        commands.sort(function(a,b) {
+            return a.open ? -1 : 1;
+        });
+
+        return ({commands, commandsTotal})
     }
 }
 
-export { ListOrdersService }
+export { ListCommandsService }

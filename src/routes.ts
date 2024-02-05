@@ -76,6 +76,15 @@ import { ListCashsController } from './controllers/Cash/ListCashsController'
 import { CreateClubController } from './controllers/Club/CreateClubController'
 import { ListClubsController } from './controllers/Club/ListClubsController'
 import { DeleteClubController } from './controllers/Club/DeleteClubController'
+import { CreateSupplierController } from './controllers/Supplier/CreateSupplierController'
+import { EditSupplierController } from './controllers/Supplier/EditSupplierController'
+import { ListSuppliersController } from './controllers/Supplier/ListSuppliersController'
+import { DeleteSupplierController } from './controllers/Supplier/DeleteSupplierController'
+import { CreateStockController } from './controllers/Stock/CreateStockController'
+import { PausedTournamentController } from './controllers/Tournament/PausedTournamentController'
+import { ListCommandsController } from './controllers/Order/ListCommandsController'
+import { ClosedCommandController } from './controllers/Order/ClosedCommandController'
+import { GetCommandController } from './controllers/Order/GetCommandController'
 
 const upload = multer(uploadConfig)
 
@@ -123,6 +132,7 @@ router.post('/tournament', new CreateTournamentController().handle)
 router.post('/buy-tournament', new BuyTournamentController().handle)
 router.post('/reward-tournament', new RewardTournamentController().handle)
 router.put('/exit-tournament/:client_id', new ExitClientTournamentController().handle)
+router.put('/paused-tournament/:tournament_id', new PausedTournamentController().handle)
 
 router.put('/end-register/:tournament_id', new EndRegisterTournamentController().handle)
 router.put('/initial-tournament/:tournament_id', new InitialTournamentController().handle)
@@ -142,6 +152,9 @@ router.delete('/user/:user_id', new DeleteUserClubController().handle)
 router.post('/order', new CreateOrderController().handle)
 router.get('/order/:order_id', new GetOrderController().handle)
 router.get('/orders', new ListOrdersController().handle)
+router.get('/commands', new ListCommandsController().handle)
+router.get('/command/:command_id', new GetCommandController().handle)
+router.put('/command/:command_id', new ClosedCommandController().handle)
 
 router.post('/cash', new CreateCashController().handle)
 router.put('/cash/:cash_id', new EndCashController().handle)
@@ -156,6 +169,13 @@ router.post('/category', new CreateCategoryController().handle)
 router.put('/category/:category_id',  new EditCategoryController().handle)
 router.get('/categories', new ListCategoriesController().handle)
 router.delete('/category/:category_id', new DeleteCategoryController().handle)
+
+router.post('/supplier', new CreateSupplierController().handle)
+router.put('/supplier/:supplier_id',  new EditSupplierController().handle)
+router.get('/suppliers', new ListSuppliersController().handle)
+router.delete('/supplier/:supplier_id', new DeleteSupplierController().handle)
+
+router.post('/stock', new CreateStockController().handle)
 
 router.post('/reports', new GetReportController().handle)
 

@@ -6,10 +6,11 @@ interface CashRequest {
 }
 
 class EndCashService {
-    async execute({ cash_id }: CashRequest) {
+    async execute({ cash_id, club_id }: CashRequest) {
 
         const clientsCash = await prismaClient.client.findFirst({
             where: {
+                club_id: club_id,
                 chair: {
                     contains: "C"
                 }
