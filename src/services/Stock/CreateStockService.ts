@@ -2,13 +2,14 @@ import prismaClient from '../../prisma'
 
 interface StockRequest {
     amount: number;
+    cost_value: number;
     product_id: string;
     club_id: string;
     supplier_id: string;
 }
 
 class CreateStockService {
-    async execute({ amount, product_id, club_id, supplier_id }: StockRequest) {
+    async execute({ amount, product_id, cost_value, club_id, supplier_id }: StockRequest) {
 
         if (!amount || !product_id || !club_id || !supplier_id) {
             throw new Error("Preencha os campos obrigatórios")
@@ -39,6 +40,7 @@ class CreateStockService {
                 name: product.name,
                 amount: amount,
                 club_id: club_id, 
+                cost_value: cost_value,
                 supplier_id: supplier_id
             }
         })

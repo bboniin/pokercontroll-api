@@ -193,6 +193,7 @@ model Stock {
   id           String     @id @default(uuid())
   name         String
   amount       Int
+  cost_value   Float      @default(0)
   club_id      String
   club         Club       @relation(fields: [club_id], references: [id], onDelete: Cascade)
   supplier_id  String
@@ -265,6 +266,7 @@ model Product {
   name         String
   amount       Int 
   value        Float
+  cost_value   Float      @default(0)
   photo        String?
   club_id      String
   club         Club       @relation(fields: [club_id], references: [id], onDelete: Cascade)

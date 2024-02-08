@@ -121,17 +121,33 @@ class CreateTransactionClubeService {
         }
         
         if (paid) {
-            await prismaClient.methodsTransaction.create({
-                data: {
-                    name: methods_transaction["name"],
-                    percentage: methods_transaction["percentage"],
-                    value: methods_transaction["value"],
-                    transaction_id: transaction.id
+            if (Array.isArray(methods_transaction)) {
+                if (paid) {
+                    methods_transaction.map(async (item) => {
+                        await prismaClient.methodsTransaction.create({
+                            data: {
+                                name: item["name"],
+                                percentage: item["percentage"],
+                                value: item["value"],
+                                transaction_id: transaction.id
+                            }
+                        })
+                    })
                 }
-            })
+            } else {
+                await prismaClient.methodsTransaction.create({
+                    data: {
+                        name: methods_transaction["name"],
+                        percentage: methods_transaction["percentage"],
+                        value: methods_transaction["value"],
+                        transaction_id: transaction.id
+                    }
+                })
+            }
+            
         }
         
-        let teste = await prismaClient.itemsTransaction.create({
+        await prismaClient.itemsTransaction.create({
             data: {
                 name: items_transaction["name"],
                 value: items_transaction["value"],

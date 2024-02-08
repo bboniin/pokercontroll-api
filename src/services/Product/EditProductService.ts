@@ -8,11 +8,12 @@ interface ProductRequest {
     supplier_id: string;
     club_id: string;
     category_id: string;
+    cost_value: number;
     product_id: string;
 }
 
 class EditProductService {
-    async execute({ name, club_id, value, category_id, photo, supplier_id, product_id }: ProductRequest) {
+    async execute({ name, club_id, cost_value, value, category_id, photo, supplier_id, product_id }: ProductRequest) {
 
         if (!product_id || !value || !name || !category_id || !supplier_id || !club_id) {
             throw new Error("Preencha os campos obrigatórios")
@@ -34,6 +35,7 @@ class EditProductService {
             value: value,
             category_id: category_id,
             supplier_id: supplier_id,
+            cost_value: cost_value
         }
 
         if (photo) {

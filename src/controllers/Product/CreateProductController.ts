@@ -3,7 +3,7 @@ import { CreateProductService } from '../../services/Product/CreateProductServic
 
 class CreateProductController {
     async handle(req: Request, res: Response) {
-        const { name, value, amount, category_id, supplier_id } = req.body
+        const { name, value, category_id, cost_value, supplier_id } = req.body
         let photo = ""
 
         if (req.file) {
@@ -15,7 +15,7 @@ class CreateProductController {
         const createProductService = new CreateProductService
 
         const product = await createProductService.execute({
-            name, category_id, supplier_id, value: value ? parseFloat(value) : 0, amount: amount ? parseInt(amount) : 0, photo, club_id
+            name, category_id, supplier_id, cost_value: cost_value ? parseFloat(cost_value) : 0,value: value ? parseFloat(value) : 0, photo, club_id
         })
 
         if (product["photo"]) {
