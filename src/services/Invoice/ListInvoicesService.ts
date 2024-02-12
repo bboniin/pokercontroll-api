@@ -1,13 +1,13 @@
 import prismaClient from '../../prisma'
 
-interface StockRequest {
+interface InvoiceRequest {
     club_id: string;
 }
 
-class ListStocksService {
-    async execute({ club_id }: StockRequest) {
+class ListInvoicesService {
+    async execute({ club_id }: InvoiceRequest) {
 
-        const stocks = await prismaClient.stock.findMany({
+        const invoices = await prismaClient.invoice.findMany({
             where: {
                 club_id: club_id,
             },
@@ -16,8 +16,8 @@ class ListStocksService {
             }
         })
 
-        return (stocks)
+        return (invoices)
     }
 }
 
-export { ListStocksService }
+export { ListInvoicesService }

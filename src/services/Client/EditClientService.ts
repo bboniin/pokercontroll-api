@@ -16,7 +16,7 @@ interface ClientRequest {
 class EditClientService {
     async execute({ name, club_id, cpf, address, phone_number, photo, observation, credit, client_id }: ClientRequest) {
 
-        if (!cpf || !address || !name || !phone_number || !club_id) {
+        if (!name || !club_id) {
             throw new Error("Preencha os campos obrigatórios")
         }
 

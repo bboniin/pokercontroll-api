@@ -15,7 +15,7 @@ class GetOrderController {
         })
 
         if (order["client"]["photo"]) {
-            order["client"]["photo_url"] = "https://pokercontroll.s3.sa-east-1.amazonaws.com/" + order["client"]["photo"];
+            order["client"]["photo_url"] = "https://pokercontrol-data.s3.sa-east-1.amazonaws.com/" + order["client"]["photo"];
         }
 
         return res.json(order)

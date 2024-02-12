@@ -6,9 +6,7 @@ import { isAuthenticated } from './middlewares/isAuthenticated'
 import uploadConfig from './config/multer'
 
 import { AuthUserController } from './controllers/User/AuthUserController'
-import { EditUserController } from './controllers/User/EditUserController'
 import { GetUserController } from './controllers/User/GetUserController'
-import { CreateUserController } from './controllers/User/CreateUserController'
 
 import { ListTransactionsController } from './controllers/Transaction/ListTransactionsController'
 import { ConfirmedTransactionController } from './controllers/Transaction/ConfirmedTransactionController'
@@ -80,17 +78,19 @@ import { CreateSupplierController } from './controllers/Supplier/CreateSupplierC
 import { EditSupplierController } from './controllers/Supplier/EditSupplierController'
 import { ListSuppliersController } from './controllers/Supplier/ListSuppliersController'
 import { DeleteSupplierController } from './controllers/Supplier/DeleteSupplierController'
-import { CreateStockController } from './controllers/Stock/CreateStockController'
+import { CreateInvoiceController } from './controllers/Invoice/CreateInvoiceController'
 import { PausedTournamentController } from './controllers/Tournament/PausedTournamentController'
 import { ListCommandsController } from './controllers/Order/ListCommandsController'
 import { ClosedCommandController } from './controllers/Order/ClosedCommandController'
 import { GetCommandController } from './controllers/Order/GetCommandController'
+import { ListInvoicesController } from './controllers/Invoice/ListInvoicesController'
 
 const upload = multer(uploadConfig)
 
 const router = Router()
 
 // Routes Publics
+router.post('/club', new CreateClubController().handle)
 
 router.post('/session', new AuthUserController().handle)
 
@@ -144,6 +144,7 @@ router.get('/product/:product_id', new GetProductController().handle)
 router.get('/products', new ListProductsController().handle)
 router.delete('/product/:product_id', new DeleteProductController().handle)
 
+router.get('/user', new GetUserController().handle)
 router.post('/user', new CreateUserClubController().handle)
 router.put('/user/:user_id',  new EditUserClubController().handle)
 router.get('/users', new ListUsersClubController().handle)
@@ -175,11 +176,11 @@ router.put('/supplier/:supplier_id',  new EditSupplierController().handle)
 router.get('/suppliers', new ListSuppliersController().handle)
 router.delete('/supplier/:supplier_id', new DeleteSupplierController().handle)
 
-router.post('/stock', new CreateStockController().handle)
+router.post('/invoice', new CreateInvoiceController().handle)
+router.get('/invoices', new ListInvoicesController().handle)
 
 router.post('/reports', new GetReportController().handle)
 
-router.post('/club', new CreateClubController().handle)
 router.get('/clubs', new ListClubsController().handle)
 router.delete('/club/:club_id', new DeleteClubController().handle)
 

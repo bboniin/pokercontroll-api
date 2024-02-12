@@ -19,7 +19,7 @@ class CreateProductController {
         })
 
         if (product["photo"]) {
-            product["photo_url"] = "https://pokercontroll.s3.sa-east-1.amazonaws.com/" + product["photo"];
+            product["photo_url"] = "https://pokercontrol-data.s3.sa-east-1.amazonaws.com/" + product["photo"];
         }
 
         return res.json(product)

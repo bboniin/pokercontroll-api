@@ -27,7 +27,7 @@ class S3Storage {
 
 
         await this.client.putObject({
-            Bucket: 'pokercontroll',
+            Bucket: 'pokercontrol-data',
             Key: filename,
             ACL: 'public-read',
             Body: fileContent,
@@ -42,7 +42,7 @@ class S3Storage {
     async deleteFile(file: string): Promise<void> {
         await this.client
             .deleteObject({
-                Bucket: "pokercontroll",
+                Bucket: "pokercontrol-data",
                 Key: file,
             })
             .promise();

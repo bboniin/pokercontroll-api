@@ -15,7 +15,7 @@ class ListCommandsController {
 
         commands.map((command) => {
             if (command["client"]["photo"]) {
-                command["client"]["photo_url"] = "https://pokercontroll.s3.sa-east-1.amazonaws.com/" + command["client"]["photo"];
+                command["client"]["photo_url"] = "https://pokercontrol-data.s3.sa-east-1.amazonaws.com/" + command["client"]["photo"];
             }
         })
 

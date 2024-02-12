@@ -14,6 +14,18 @@ class AuthUserService {
         const user = await prismaClient.user.findFirst({
             where: {
                 email: email
+            },
+            include: {
+                club: {
+                    select: {
+                        access_cash: true,
+                        access_order: true,
+                        access_report: true,
+                        access_stock: true,
+                        access_tournament: true,
+                        access_users: true
+                    }
+                }
             }
         })
 
@@ -35,7 +47,7 @@ class AuthUserService {
             throw new Error("Email e Senha não correspondem ou não existe")
         }
 
-        let photo_url = "https://pokercontroll.s3.sa-east-1.amazonaws.com/" + user.photo
+        let photo_url = user.photo ? "https://pokercontrol-data.s3.sa-east-1.amazonaws.com/" + user.photo : ""
 
         return ({
             user: {
@@ -44,6 +56,8 @@ class AuthUserService {
                 email: user.email,
                 club_id: user.club_id,
                 type: user.type,
+                club: user.club,
+                photo_url: photo_url
             },
             token
         })

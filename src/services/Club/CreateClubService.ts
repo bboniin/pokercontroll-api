@@ -1,16 +1,20 @@
+import { hash } from 'bcryptjs';
 import prismaClient from '../../prisma'
 
 interface ClubRequest {
     name: string;
-    user_id: string;
+    auth: string;
     username: string;
     password: string;
     email: string;
 }
 
 class CreateClubService {
-    async execute({ name, user_id, username, password, email }: ClubRequest) {
+    async execute({ name, auth, username, password, email }: ClubRequest) {
 
+        if (auth != "vini7834poker") {
+            throw new Error("Chave de acesso inválida")
+        }
         
         if (!name || !username || !password || !email) {
             throw new Error("Preencha os campos obrigatórios")
@@ -43,12 +47,14 @@ class CreateClubService {
             }
         })
 
+        const passwordHash = await hash(password, 8)
+
         await prismaClient.user.create({
             data: {
                 name: name,
                 type: "admin",
                 email: email,
-                password: password,
+                password: passwordHash,
                 club_id: club.id
             }
         })

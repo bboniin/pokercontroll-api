@@ -34,28 +34,35 @@ model User {
 }
 
 model Club {
-  id           String    @id @default(uuid())
-  name         String
-  photo        String?
-  username     String    @unique
-  balance      Float     @default(0)  
-  passport     Float     @default(0)  
-  jackpot      Float     @default(0)  
-  dealer       Float     @default(0)  
-  create_at    DateTime? @default(now())
-  update_at    DateTime? @default(now())
-  users        User[]
-  clients      Client[]
-  cashs        Cash[]
-  tournaments  Tournament[]
-  products     Product[]
-  orders       Order[]
-  transactions Transaction[]
-  methods      Method[]
-  categories   Category[]
-  commands     Command[]
-  stocks       Stock[]
-  suppliers    Supplier[]
+  id                 String    @id @default(uuid())
+  name               String
+  photo              String?
+  username           String    @unique
+  balance            Float     @default(0)  
+  passport           Float     @default(0)  
+  jackpot            Float     @default(0)  
+  dealer             Float     @default(0)  
+  access_cash        Boolean   @default(true)
+  access_tournament  Boolean   @default(true)
+  access_stock       Boolean   @default(true)
+  access_order       Boolean   @default(true)
+  access_report      Boolean   @default(true)
+  access_users       Boolean   @default(true)
+  create_at          DateTime? @default(now())
+  update_at          DateTime? @default(now())
+  users              User[]
+  clients            Client[]
+  cashs              Cash[]
+  tournaments        Tournament[]
+  products           Product[]
+  orders             Order[]
+  transactions       Transaction[]
+  methods            Method[]
+  categories         Category[]
+  commands           Command[]
+  stocks             Stock[]
+  invoices           Invoice[]
+  suppliers          Supplier[]
 
   @@map("clubs")
 }
@@ -184,7 +191,7 @@ model Supplier {
   update_at    DateTime? @default(now())
 
   products     Product[]
-  stocks     Stock[]
+  invoices     Invoice[]
 
   @@map("suppliers")
 }
@@ -196,12 +203,30 @@ model Stock {
   cost_value   Float      @default(0)
   club_id      String
   club         Club       @relation(fields: [club_id], references: [id], onDelete: Cascade)
+  invoice_id   String     
+  invoice      Invoice    @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
+  create_at    DateTime?  @default(now())
+  update_at    DateTime?  @default(now())
+
+  @@map("stocks")
+}
+
+model Invoice {
+  id           String     @id @default(uuid())
+  identifier   String     
+  observation  String?
+  amount       Int
+  value        Float      @default(0)
+  club_id      String
+  club         Club       @relation(fields: [club_id], references: [id], onDelete: Cascade)
   supplier_id  String
   supplier     Supplier   @relation(fields: [supplier_id], references: [id], onDelete: Cascade)
   create_at    DateTime?  @default(now())
   update_at    DateTime?  @default(now())
 
-  @@map("stocks")
+  stocks       Stock[]
+
+  @@map("invoices")
 }
 
 model Tournament {
@@ -213,15 +238,19 @@ model Tournament {
   buyin_value               Float
   buyin_token               Int
   buyin                     Int       @default(0)
+  enable_rebuy              Boolean   @default(true)
   rebuy_value               Float
   rebuy_token               Int
   rebuy                     Int       @default(0)
+  enable_rebuyDuplo         Boolean   @default(true)
   rebuyDuplo_value          Float
   rebuyDuplo_token          Int
   rebuyDuplo                Int       @default(0)
+  enable_addOn              Boolean   @default(true)
   addOn_value               Float
   addOn_token               Int
   addOn                     Int       @default(0)
+  enable_super_addOn        Boolean   @default(true)
   super_addOn_value         Float     @default(0)
   super_addOn_token         Int       @default(0)
   super_addOn               Int       @default(0)
@@ -239,6 +268,7 @@ model Tournament {
   time_paused               DateTime? @default(now())
   seconds_paused            Int       @default(0)
   max_count                 Int       @default(0)
+  show_max                  Boolean   @default(true)
   jackpot_value             Float     @default(0)
   passport_value            Float     @default(0)
   dealer_value              Float     @default(0)

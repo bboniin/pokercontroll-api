@@ -15,7 +15,7 @@ class EditUserClubController {
         })
 
         if (user["photo"]) {
-            user["photo_url"] = "https://pokercontroll.s3.sa-east-1.amazonaws.com/" + user["photo"];
+            user["photo_url"] = "https://pokercontrol-data.s3.sa-east-1.amazonaws.com/" + user["photo"];
         }
 
         return res.json(user)

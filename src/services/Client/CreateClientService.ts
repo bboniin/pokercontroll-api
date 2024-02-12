@@ -15,8 +15,8 @@ interface ClientRequest {
 class CreateClientService {
     async execute({ name, club_id, cpf, address, phone_number, photo, observation, credit }: ClientRequest) {
 
-        if (!name  || !phone_number || !club_id) {
-            throw new Error("Nome e telefone é obrigatório")
+        if (!name || !club_id) {
+            throw new Error("Nome é obrigatório")
         }
 
         let data = {

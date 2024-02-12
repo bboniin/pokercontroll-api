@@ -14,7 +14,7 @@ class MoveTournamentController {
         })
 
         if (client["photo"]) {
-            client["photo_url"] = "https://pokercontroll.s3.sa-east-1.amazonaws.com/" + client["photo"];
+            client["photo_url"] = "https://pokercontrol-data.s3.sa-east-1.amazonaws.com/" + client["photo"];
         }
 
         return res.json(client)

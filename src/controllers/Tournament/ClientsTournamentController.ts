@@ -15,7 +15,7 @@ class ClientsTournamentController {
 
         clients.map((item) => {
             if (item["photo"]) {
-                item["photo_url"] = "https://pokercontroll.s3.sa-east-1.amazonaws.com/" + item["photo"];
+                item["photo_url"] = "https://pokercontrol-data.s3.sa-east-1.amazonaws.com/" + item["photo"];
             }
         })
 

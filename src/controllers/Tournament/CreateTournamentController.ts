@@ -6,7 +6,8 @@ class CreateTournamentController {
         const { name, buyin_value, buyin_token, rebuy_value, rebuy_token, rebuyDuplo_value, rebuyDuplo_token,
             addOn_value, addOn_token, timechip, chairs, totalAward_guaranteed, timer_round, timer_interval,
             rounds_to_interval, max_rebuy, rake, super_addOn_value, super_addOn_token, passport, jackpot, dealer,
-            nivel_max_buyin_free, nivel_max_in, nivel_max_timechip, percentage_players_award, is_rebuy
+            nivel_max_buyin_free, nivel_max_in, nivel_max_timechip, percentage_players_award, is_rebuy,
+            enable_rebuy, enable_rebuyDuplo, enable_addOn, enable_super_addOn, show_max
         } = req.body
 
         let club_id = req.club_id
@@ -35,7 +36,7 @@ class CreateTournamentController {
             name, buyin_value, buyin_token, rebuy_value, rebuy_token, rebuyDuplo_value, rebuyDuplo_token, addOn_value,
             addOn_token, timechip, chairs, totalAward_guaranteed, intervals, club_id, max_rebuy, rake, super_addOn_value,
             super_addOn_token, passport, jackpot, dealer, nivel_max_buyin_free, nivel_max_in, nivel_max_timechip,
-            percentage_players_award, is_rebuy
+            percentage_players_award, is_rebuy, enable_rebuy, enable_rebuyDuplo, enable_addOn, enable_super_addOn, show_max
         })
 
         return res.json(tournament)
