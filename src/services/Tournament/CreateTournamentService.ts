@@ -45,7 +45,7 @@ class CreateTournamentService {
             (enable_addOn ? !addOn_value || !addOn_token : false) || !timechip || !chairs || !totalAward_guaranteed ||
             !intervals || (!enable_rebuy && !rebuyDuplo_value ? false : !max_rebuy) || !rake ||
             ( enable_super_addOn ? !super_addOn_value || !super_addOn_token : false) || !passport ||
-            !jackpot || !dealer || !nivel_max_in || !nivel_max_timechip || !percentage_players_award || !club_id
+            !jackpot || !dealer || !nivel_max_in || !percentage_players_award || !club_id
         ) {
             throw new Error("Preencha os campos obrigatórios")
         }
@@ -77,8 +77,8 @@ class CreateTournamentService {
                 dealer_value: dealer,
                 max_buyin_free: nivel_max_buyin_free,
                 max_in: nivel_max_in,
-                show_max: show_max,
                 max_timechip: nivel_max_timechip,
+                show_max: show_max,
                 percentage_players_award: percentage_players_award,
                 totalAward_guaranteed: totalAward_guaranteed,
                 club_id: club_id,
