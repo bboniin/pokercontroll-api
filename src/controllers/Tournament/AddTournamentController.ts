@@ -48,10 +48,10 @@ class AddTournamentController {
         const addTournamentService = new AddTournamentService
 
         await addTournamentService.execute({
-            chair, id, tournament_id, club_id, timechip
+            chair, id, tournament_id, club_id
         })
 
-        let token = 0
+        let token = timechip ? tournament.timechip : 0
 
         if (dealer) {
             const createDealerService = new CreateDealerService

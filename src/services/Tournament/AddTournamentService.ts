@@ -4,12 +4,11 @@ interface TournamentRequest {
     id: string;
     chair: string;
     club_id: string;
-    timechip: boolean;
     tournament_id: string;
 }
 
 class AddTournamentService {
-    async execute({ id, chair, club_id, tournament_id, timechip}: TournamentRequest) {
+    async execute({ id, chair, club_id, tournament_id}: TournamentRequest) {
 
         if (!id || !chair || !tournament_id) {
             throw new Error("Id do cliente, do torneio e posição da mesa é obrigatório")
@@ -53,23 +52,6 @@ class AddTournamentService {
                 award: 0
             }
         })
-
-        if (timechip) {
-            const tournament = await prismaClient.tournament.findUnique({
-                where: {
-                    id: tournament_id,
-                }
-            })
-            
-            await prismaClient.tournament.update({
-                where: {
-                    id: tournament["id"],
-                },
-                data: {
-                    total_tokens: tournament['total_tokens'] + tournament['timechip'],
-                }
-            })
-        }
 
         return ({...client, clientTournament: clientTournament})
     }
