@@ -7,32 +7,36 @@ import { VerifyBuyTournamentService } from '../../services/Tournament/VerifyBuyT
 import { CreatePassportService } from '../../services/Transaction/CreatePassportService';
 import { CreateJackpotService } from '../../services/Transaction/CreateJackpotService';
 import { CreateDealerService } from '../../services/Transaction/CreateDealerService';
+import { getMethodsPay } from '../../utils/functions';
 
 class BuyTournamentController {
     async handle(req: Request, res: Response) {
-        const { paid, value, passport, jackpot, dealer, passport_method, buyin_value, jackpot_method,
-            dealer_method, passport_percentage, jackpot_percentage, dealer_percentage, super_addOn,
+        const { paid, value, passport, jackpot, dealer, buyin_value, super_addOn,
             addOn, buyin, rebuy, rebuyDuplo, methods_transaction, client_id, date_payment, observation,
-            tournament_id, passport_paid, jackpot_paid, dealer_paid } = req.body
+            tournament_id } = req.body
 
         let club_id = req.club_id
 
         let token = 0
 
-        if (!paid || (passport && !passport_paid) || (jackpot && !jackpot_paid) || (dealer && !dealer_paid)) {
+        let valueTotal = value
+        let valueCredit = methods_transaction.filter((item) => item["id"] == "Crédito" ).length != 0 ? methods_transaction.filter((item) => item["id"] == "Crédito")[0].value : 0
+
+        if (valueCredit) {
             const verifyCreditTransactionService = new VerifyCreditTransactionService
 
             await verifyCreditTransactionService.execute({
-                client_id, club_id, value
+                client_id, club_id, value: valueCredit
             })
         }
+
+        let methods_transactionC = methods_transaction.filter((item) => item["id"] != "Crédito") 
 
         const getTournamentService = new GetTournamentService
 
         const tournament = await getTournamentService.execute({
             id: tournament_id, club_id
         })
-
         const verifyBuyTournamentService = new VerifyBuyTournamentService
 
         await verifyBuyTournamentService.execute({
@@ -40,51 +44,47 @@ class BuyTournamentController {
         })
 
         if (dealer) {
+            let { payCredit, methodsPay, methodsC } = await getMethodsPay(tournament.dealer_value, methods_transactionC)
             const createDealerService = new CreateDealerService
-
             await createDealerService.execute({
-                paid: dealer_paid, value: tournament.dealer_value, type: "dealer", methods_transaction: {
-                    name: dealer_method,
-                    value: tournament.dealer_value,
-                    percentage: dealer_percentage
-                }, client_id: client_id, sector_id: tournament_id, club_id, date_payment, observation, items_transaction: {
+                paid: payCredit ? false : true, value: tournament.dealer_value, type: "dealer", methods_transaction: methodsPay, client_id, sector_id: tournament_id, club_id, date_payment, observation, items_transaction: {
                     name: "dealer",
                     amount: 1,
                     value: tournament.dealer_value,
                 }, operation: "entrada"
             })
+            methods_transactionC = methodsC
+            valueTotal -= tournament.dealer_value
         }
 
         if (passport) {
+            let { payCredit, methodsPay, methodsC } = await getMethodsPay(tournament.passport_value, methods_transactionC)
             const createPassportService = new CreatePassportService
-
             await createPassportService.execute({
-                paid: passport_paid, value: tournament.passport_value, type: "passport", methods_transaction: {
-                    name: passport_method,
-                    value: tournament.passport_value,
-                    percentage: passport_percentage
-                }, client_id: client_id, sector_id: tournament_id, club_id, date_payment, observation, items_transaction: {
+                paid: payCredit ? false : true, value: tournament.passport_value, type: "passport", methods_transaction:
+                methodsPay, client_id, sector_id: tournament_id, club_id, date_payment, observation, items_transaction: {
                     name: "passport",
                     amount: 1,
                     value: tournament.passport_value,
                 }, operation: "entrada"
             })
+            methods_transactionC = methodsC
+            valueTotal -= tournament.passport_value
         }
 
         if (jackpot) {
+            let { payCredit, methodsPay, methodsC } = await getMethodsPay(tournament.jackpot_value, methods_transactionC)
             const createJackpotService = new CreateJackpotService
-
             await createJackpotService.execute({
-                paid: jackpot_paid, value: tournament.jackpot_value, type: "jackpot", methods_transaction: {
-                    name: jackpot_method,
-                    value: tournament.jackpot_value,
-                    percentage: jackpot_percentage
-                }, client_id: client_id, sector_id: tournament_id, club_id, date_payment, observation, items_transaction: {
+                paid: payCredit ? false : true, value: tournament.jackpot_value, type: "jackpot", methods_transaction: 
+                methodsPay, client_id, sector_id: tournament_id, club_id, date_payment, observation, items_transaction: {
                     name: "jackpot",
                     amount: 1,
                     value: tournament.jackpot_value,
                 }, operation: "entrada"
             })
+            methods_transactionC = methodsC
+            valueTotal -= tournament.jackpot_value
         }
 
         let items_transaction = [] 
@@ -136,9 +136,10 @@ class BuyTournamentController {
         let transaction = null
         if (items_transaction.length) {
             const createTransactionService = new CreateTransactionService
-        
-            transaction = await createTransactionService.execute({
-                paid, value: value, type: "clube", methods_transaction: methods_transaction || [], items_transaction, client_id: client_id, sector_id: tournament_id, club_id, date_payment, observation, operation: "entrada"
+
+            let { payCredit, methodsPay } = await getMethodsPay(valueTotal, methods_transactionC)
+            const transaction = await createTransactionService.execute({
+                paid: payCredit ? false : true, value: valueTotal, type: "clube", methods_transaction: methodsPay, items_transaction, client_id: client_id, sector_id: tournament_id, club_id, date_payment, observation, operation: "entrada"
             })
         }
 

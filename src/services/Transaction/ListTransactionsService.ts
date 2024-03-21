@@ -3,17 +3,23 @@ import prismaClient from '../../prisma'
 interface TransactionRequest {
     club_id: string;
     page: number;
+    filter: object;
     type: string;
 }
 
 class ListTransactionsService {
-    async execute({ club_id, page, type }: TransactionRequest) {
+    async execute({ club_id, page, type, filter }: TransactionRequest) {
 
-        let typeWhere = type ? {  type: type } : {}
+        let typeWhere = type ? { type: type } : {}
+        
+        if (!filter) {
+            filter = {}
+        }
 
         const transactionsTotal = await prismaClient.transaction.count({
             where: {
                 ...typeWhere,
+                ...filter,
                 club_id: club_id,
             }
         })
@@ -26,7 +32,7 @@ class ListTransactionsService {
                 transactions: {
                     skip: page * 30,
                     take: 30,
-                    where: typeWhere,
+                    where: {...typeWhere, ...filter},
                     orderBy: {
                         create_at: "desc"
                     },

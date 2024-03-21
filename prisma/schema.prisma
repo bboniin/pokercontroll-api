@@ -76,7 +76,8 @@ model Client {
   cpf                String?   @default("")
   address            String?   @default("")
   credit             Float
-  balance            Float
+  debt               Float
+  receive            Float
   club_id            String
   visible            Boolean   @default(true)
   observation        String?   @default("")
@@ -96,6 +97,7 @@ model Transaction {
   type                String    @default("clube")
   paid                Boolean
   value               Float
+  value_paid          Float
   operation           String    @default("entrada")
   client_id           String?
   sector_id           String? 
@@ -143,10 +145,9 @@ model Cash {
 model Method {
   id           String    @id @default(uuid())
   name         String
-  type         String    @default("entrada")
+  balance      Float
   identifier   String?  
   percentage   Float?     @default(0)
-  value        Float?     @default(0)
   club_id      String
   club         Club      @relation(fields: [club_id], references: [id], onDelete: Cascade)
   create_at    DateTime? @default(now())
@@ -343,7 +344,6 @@ model Order {
 
   @@map("orders")
 }
-
 
 model TransactionTournament {
   id              String      @id @default(uuid())

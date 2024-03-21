@@ -27,7 +27,8 @@ class CreateClientService {
             chair: "",
             observation: observation,
             credit: credit,
-            balance: 0,
+            debt: 0,
+            receive: 0,
             phone_number: phone_number,
         }
 

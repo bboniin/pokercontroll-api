@@ -26,8 +26,6 @@ class ListMethodsService {
 
         const methods = await prismaClient.method.findMany({
             ...filter,
-            skip: page * 30,
-            take: 30,
             where: {
                 club_id: club_id,
             },
@@ -36,7 +34,7 @@ class ListMethodsService {
             }
         })
 
-        return all ? methods  : ({methods, methodsTotal})
+        return all ? [{id: "Crédito", label: "Crédito", value: "Crédito", percentage: 0}, ...methods]  : ({methods, methodsTotal})
     }
 }
 

@@ -5,14 +5,13 @@ interface MethodRequest {
     club_id: string;
     percentage: number;
     method_id: string;
-    type: string;
     identifier: string;
 }
 
 class EditMethodService {
-    async execute({ name, club_id, percentage, type, identifier, method_id }: MethodRequest) {
+    async execute({ name, club_id, percentage, identifier, method_id }: MethodRequest) {
 
-        if (!method_id || !name || !club_id || !type) {
+        if (!method_id || !name || !club_id) {
             throw new Error("Preencha os campos obrigatórios")
         }
 
@@ -34,7 +33,6 @@ class EditMethodService {
             },
             data: {
                 percentage: percentage,
-                type: type,
                 identifier: identifier,
                 name: name
             },

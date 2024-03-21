@@ -4,14 +4,13 @@ interface MethodRequest {
     name: string;
     club_id: string;
     percentage: number;
-    type: string;
     identifier: string;
 }
 
 class CreateMethodService {
-    async execute({ name, club_id, percentage, type, identifier }: MethodRequest) {
+    async execute({ name, club_id, percentage, identifier }: MethodRequest) {
 
-        if (!name || !club_id || !type) {
+        if (!name || !club_id) {
             throw new Error("Preencha os campos obrigatórios")
         }
 
@@ -20,8 +19,8 @@ class CreateMethodService {
                 percentage: percentage,
                 name: name,
                 identifier: identifier,
-                type: type,
-                club_id: club_id
+                club_id: club_id,
+                balance: 0
             }
         })
 

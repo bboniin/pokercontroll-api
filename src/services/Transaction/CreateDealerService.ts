@@ -4,7 +4,7 @@ interface TransactionRequest {
     paid: boolean;
     type: string;
     value: number;
-    methods_transaction: object;
+    methods_transaction: Array<[]>;
     items_transaction: object;
     client_id: string;
     club_id: string;
@@ -46,60 +46,43 @@ class CreateDealerService {
             throw new Error("Tipo de transação é inválido")
         }
         
-        let valueMethods = value
+        let methodsPay = methods_transaction.filter((item)=> item["id"] != "Crédito" && item["id"] != "Pag Dívida")
 
+        let valuePaid = 0
+        let valueMethods = methodsPay.length ? methodsPay.map((method) => method["value"]*((100-method["percentage"])/100)).reduce((total, value) => total + value) : 0
         if (paid) {
             date_payment = new Date()
         
-            
-            if (value == methods_transaction["value"]) {
-                valueMethods = methods_transaction["value"]*((100-methods_transaction["percentage"])/100)
-            }
-        } 
-
+            valuePaid = value
+        } else {
+            valuePaid = methodsPay.length ? methodsPay.map((method) => method["value"]).reduce((total, value) => total + value) : 0
+        }
 
         let transaction = null
 
         if (operation == "entrada") {
-            if (!paid) {
-                if (((client.balance - value) * -1)> client.credit ) {
-                    throw new Error("Crédito insuficiente para essa transação")
-                } else {
-                    transaction = await prismaClient.transaction.create({
-                        data: {
-                            type: type,
-                            value: value,
-                            client_id: client_id,
-                            club_id: club_id,
-                            sector_id: sector_id,
-                            operation: operation,
-                            date_payment: date_payment,
-                            observation: observation,
-                            paid: paid
-                        }
-                    })
-
-                    await prismaClient.client.update({
-                        where: {
-                            id: client_id,
-                        },
-                        data: {
-                            balance: client.balance - value
-                        }
-                    })
+            transaction = await prismaClient.transaction.create({
+                data: {
+                    type: type,
+                    value: value,
+                    client_id: client_id,
+                    club_id: club_id,
+                    sector_id: sector_id,
+                    operation: operation,
+                    date_payment: date_payment,
+                    observation: observation,
+                    paid: paid,
+                    value_paid: valuePaid
                 }
-            } else {
-                transaction = await prismaClient.transaction.create({
+            })
+
+            if (value) {
+                await prismaClient.client.update({
+                    where: {
+                        id: client_id,
+                    },
                     data: {
-                        type: type,
-                        value: value,
-                        client_id: client_id,
-                        club_id: club_id,
-                        sector_id: sector_id,
-                        operation: operation,
-                        date_payment: date_payment,
-                        observation: observation,
-                        paid: paid
+                        debt: client.debt + value - valuePaid
                     }
                 })
 
@@ -123,19 +106,30 @@ class CreateDealerService {
                     operation: operation,
                     date_payment: date_payment,
                     observation: observation,
-                    paid: paid
+                    paid: paid,
+                    value_paid: valuePaid
                 }
             })
-            if (paid) {
-                    await prismaClient.club.update({
-                        where: {
-                            id: club_id,
-                        },
-                        data: {
-                            dealer: club.dealer - valueMethods
-                        }
-                    })
-                }
+
+            if (value) {
+                await prismaClient.client.update({
+                    where: {
+                        id: client_id,
+                    },
+                    data: {
+                        receive: client.receive + value - valuePaid
+                    }
+                })
+
+                await prismaClient.club.update({
+                    where: {
+                        id: club_id,
+                    },
+                    data: {
+                        dealer: club.dealer - valueMethods
+                    }
+                })
+            }
         }
         
         await prismaClient.itemsTransaction.create({
@@ -146,17 +140,35 @@ class CreateDealerService {
                 transaction_id: transaction.id
             }
         })
-
-        if (paid) {
-            await prismaClient.methodsTransaction.create({
-                data: {
-                    name: methods_transaction["name"],
-                    percentage: methods_transaction["percentage"],
-                    value: methods_transaction["value"],
-                    transaction_id: transaction.id
+        
+        methods_transaction.map(async (item) => {
+            if (item["id"] != "Crédito") {
+                if (item["id"] != "Pag Dívida") {
+                    const method = await prismaClient.method.findFirst({
+                        where: {
+                            id: item["id"]
+                        },
+                    })
+                    let balance = operation == "entrada" ? method["balance"]+item["value"]*((100-item["percentage"])/100) : method["balance"]-item["value"]*((100-item["percentage"])/100)
+                    await prismaClient.method.update({
+                        where: {
+                            id: item["id"],
+                        },
+                        data: {
+                            balance: balance
+                        }
+                    })
                 }
-            })
-        }
+                await prismaClient.methodsTransaction.create({
+                    data: {
+                        name: item["name"],
+                        percentage: item["percentage"],
+                        value: item["value"],
+                        transaction_id: transaction.id
+                    }
+                })
+            }
+        })
         
         return transaction
     }

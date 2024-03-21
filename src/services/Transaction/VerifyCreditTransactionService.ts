@@ -17,7 +17,7 @@ class VerifyCreditTransactionService {
             }
         })
         if (value != 0) {
-            if (((client.balance - value) * -1) > client.credit) {
+            if ((client.debt + value) > client.credit) {
                 throw new Error("Crédito insuficiente para essa transação")
             } else {
                 return true
