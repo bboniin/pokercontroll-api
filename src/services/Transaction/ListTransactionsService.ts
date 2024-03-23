@@ -4,13 +4,11 @@ interface TransactionRequest {
     club_id: string;
     page: number;
     filter: object;
-    type: string;
 }
 
 class ListTransactionsService {
-    async execute({ club_id, page, type, filter }: TransactionRequest) {
+    async execute({ club_id, page, filter }: TransactionRequest) {
 
-        let typeWhere = type ? { type: type } : {}
         
         if (!filter) {
             filter = {}
@@ -18,12 +16,27 @@ class ListTransactionsService {
 
         const transactionsTotal = await prismaClient.transaction.count({
             where: {
-                ...typeWhere,
                 ...filter,
                 club_id: club_id,
             }
         })
-        
+
+        const transactionsTotalReceive = await prismaClient.transaction.findMany({
+            where: {
+                operation: "entrada",
+                paid: false,
+                club_id: club_id,
+            }
+        })
+
+        const transactionsTotalDebt = await prismaClient.transaction.findMany({
+            where: {
+                operation: "saida",
+                paid: false,
+                club_id: club_id,
+            }
+        })
+
         const club = await prismaClient.club.findUnique({
             where: {
                 id: club_id,
@@ -32,19 +45,22 @@ class ListTransactionsService {
                 transactions: {
                     skip: page * 30,
                     take: 30,
-                    where: {...typeWhere, ...filter},
+                    where: {...filter},
                     orderBy: {
                         create_at: "desc"
                     },
                     include: {
                         methods_transaction: true,
                         items_transaction: true,
+                        client: true,
                     }
                 }
             }
         })
 
         club["transactionsTotal"] = transactionsTotal
+        club["transactionsTotalReceive"] = transactionsTotalReceive.length ? transactionsTotalReceive.map((prod) => prod.value-prod.value_paid).reduce((total, preco) => total + preco) : 0
+        club["transactionsTotalDebt"] =  transactionsTotalDebt.length ? transactionsTotalDebt.map((prod) => prod.value-prod.value_paid).reduce((total, preco) => total + preco) : 0
 
         return (club)
     }

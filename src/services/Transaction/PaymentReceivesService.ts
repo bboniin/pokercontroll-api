@@ -6,7 +6,7 @@ interface TransactionRequest {
     value: number;
 }
 
-class PaymentDebtsService {
+class PaymentReceivesService {
     async execute({ club_id, client_id, value}: TransactionRequest) {
 
         let valueTotal = value
@@ -25,7 +25,7 @@ class PaymentDebtsService {
             throw new Error("Cliente não encontrada")
         }
 
-        if (client.debt < value) {
+        if (client.receive < value) {
             throw new Error("Valor de pagamento da divida é maior que a divida do cliente")
         }
 
@@ -33,7 +33,7 @@ class PaymentDebtsService {
             where: {
                 client_id: client_id,
                 paid: false,
-                operation: "entrada"
+                operation: "saida"
             },
             orderBy: {
                 create_at: "asc"
@@ -43,6 +43,7 @@ class PaymentDebtsService {
         if (transactions.length == 0) {
             throw new Error("Nenhuma transação não encontrada")
         }
+
 
         let valueTransaction = []
 
@@ -102,13 +103,13 @@ class PaymentDebtsService {
                 }
             }
         })
-
+        
         await prismaClient.client.update({
             where: {
                 id: client_id
             }, 
             data: {
-                debt: client.debt - valueTotal
+                receive: client.receive - valueTotal
             }
         })
 
@@ -116,4 +117,4 @@ class PaymentDebtsService {
      }
 }
 
-export { PaymentDebtsService }
+export { PaymentReceivesService }

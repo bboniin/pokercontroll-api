@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { CreateTransactionService } from '../../services/Transaction/CreateTransactionService';
 import { MoveCashService } from '../../services/Cash/MoveCashService';
 import { VerifyCreditTransactionService } from '../../services/Transaction/VerifyCreditTransactionService';
+import { PaymentReceivesService } from '../../services/Transaction/PaymentReceivesService';
 
 class AddCashController {
     async handle(req: Request, res: Response) {
@@ -19,10 +20,20 @@ class AddCashController {
             })
         }
 
+        let valueReceive = methods_transaction.filter((item) => item["id"] == "Saldo" ).length != 0 ? methods_transaction.filter((item) => item["id"] == "Saldo")[0].value : 0
+        
+        const paymentDebtsService = new PaymentReceivesService
+
+        if (valueReceive) {
+            await paymentDebtsService.execute({
+                value: valueReceive, client_id: id, club_id
+            })
+        }
+        
         const createTransactionService = new CreateTransactionService
 
         await createTransactionService.execute({
-            paid: valueCredit ? false : true, value, type: "clube", methods_transaction, items_transaction: [{
+            paid: valueReceive == value ? true : valueCredit ? false : true, value, type: "clube", methods_transaction, items_transaction: [{
                 name: "cash",
                 amount: 1,
                 value: value

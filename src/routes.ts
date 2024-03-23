@@ -96,7 +96,7 @@ router.post('/session', new AuthUserController().handle)
 
 router.use(isAuthenticated)
 
-router.get('/transactions', new ListTransactionsController().handle)
+router.post('/finance', new ListTransactionsController().handle)
 router.get('/jackpots', new ListJackpotController().handle)
 router.get('/passports', new ListPassportController().handle)
 router.get('/dealers', new ListDealerController().handle)

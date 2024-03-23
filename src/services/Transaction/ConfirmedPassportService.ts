@@ -37,7 +37,7 @@ class ConfirmedPassportService {
             }
         })
 
-        let methodsPay = methods_transaction.filter((item)=> item["id"] != "Crédito" && item["id"] != "Pag Dívida")
+        let methodsPay = methods_transaction.filter((item)=> item["id"] != "Crédito" && item["id"] != "Pag Dívida" && item["id"] != "Saldo")
 
         let valuePaid = 0
         let valueMethods =  methodsPay.length ? methodsPay.map((method) => method["value"]*((100-method["percentage"])/100)).reduce((total, value) => total + value) : 0
@@ -60,6 +60,8 @@ class ConfirmedPassportService {
         })
     
         if (transaction.operation == "entrada") {
+            let valueReceive = methods_transaction.filter((item) => item["id"] == "Saldo").length != 0 ? methods_transaction.filter((item) => item["id"] == "Saldo")[0]["value"] : 0
+            
             await prismaClient.client.update({
                 where: {
                     id: client.id,
@@ -73,10 +75,12 @@ class ConfirmedPassportService {
                     id: club_id,
                 },
                 data: {
-                    passport: club.passport + valueMethods
+                    passport: club.passport + (valueMethods - valueReceive)
                 }
             })
         } else {
+            let valueDebit = methods_transaction.filter((item) => item["id"] == "Pag Dívida" ).length != 0 ? methods_transaction.filter((item) => item["id"] == "Pag Dívida")[0]["value"] : 0
+            
             await prismaClient.client.update({
                 where: {
                     id: client.id,
@@ -90,15 +94,15 @@ class ConfirmedPassportService {
                     id: club_id,
                 },
                 data: {
-                    passport: club.passport - valueMethods
+                    passport: club.passport - (valueMethods - valueDebit)
                 }
             })
         }
 
        
         methods_transaction.map(async (item) => {
-            if (item["id"] != "Crédito") {
-                if (item["id"] != "Pag Dívida") {
+            if (item["id"] != "Crédito" && item["value"]) {
+                if (item["id"] != "Pag Dívida" && item["id"] != "Saldo") {
                     const method = await prismaClient.method.findFirst({
                         where: {
                             id: item["id"]

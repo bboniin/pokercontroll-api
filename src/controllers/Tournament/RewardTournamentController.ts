@@ -22,7 +22,7 @@ class RewardTournamentController {
         }
         
         const transaction = await createTransactionService.execute({
-            paid: valueCredit ? false : true, value, type: "clube", methods_transaction: methods_transaction, items_transaction: [{
+            paid: valueDebit == value ? true : valueCredit ? false : true, value, type: "clube", methods_transaction: methods_transaction, items_transaction: [{
                 name: "tournament",
                 value: value,
                 amount: 1

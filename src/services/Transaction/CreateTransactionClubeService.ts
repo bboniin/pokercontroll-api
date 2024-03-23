@@ -41,42 +41,53 @@ class CreateTransactionClubeService {
             throw new Error("Tipo de transação é inválido")
         }
         
+        let methodsPay = methods_transaction.filter((item)=> item["id"] != "Crédito" && item["id"] != "Pag Dívida" && item["id"] != "Saldo")
+
+        let valuePaid = 0
+        let valueMethods = methodsPay.length ? methodsPay.map((method) => method["value"]*((100-method["percentage"])/100)).reduce((total, value) => total + value) : 0
         if (paid) {
             date_payment = new Date()
-        } 
+        
+            valuePaid = value
+        } else {
+            valuePaid = methodsPay.length ? methodsPay.map((method) => method["value"]).reduce((total, value) => total + value) : 0
+        }
+
+        let transaction = null
 
         let updateBalance = null
 
+        let valueDebit = methods_transaction.filter((item) => item["id"] == "Pag Dívida" ).length != 0 ? methods_transaction.filter((item) => item["id"] == "Pag Dívida")[0]["value"] : 0
+        let valueReceive = methods_transaction.filter((item) => item["id"] == "Saldo").length != 0 ? methods_transaction.filter((item) => item["id"] == "Saldo")[0]["value"] : 0
+                
         if (type == "clube") {
             if (operation == "entrada") {
-               updateBalance = {balance: club.balance + value} 
+               updateBalance = {balance: club.balance + (valueMethods + valueReceive)} 
             } else {
-               updateBalance = {balance: club.balance - value} 
+               updateBalance = {balance: club.balance - (valueMethods - valueDebit)} 
             }
         }
         if (type == "passport") {
             if (operation == "entrada") {
-               updateBalance = {passport: club.passport + value} 
+               updateBalance = {passport: club.passport + (valueMethods + valueReceive)} 
             } else {
-               updateBalance = {passport: club.passport - value} 
+               updateBalance = {passport: club.passport - (valueMethods - valueDebit)} 
             }
         }
         if (type == "dealer") {
             if (operation == "entrada") {
-               updateBalance = {dealer: club.dealer + value} 
+               updateBalance = {dealer: club.dealer + (valueMethods + valueReceive)} 
             } else {
-               updateBalance = {dealer: club.dealer - value} 
+               updateBalance = {dealer: club.dealer - (valueMethods - valueDebit)} 
             }
         }
         if (type == "jackpot") {
             if (operation == "entrada") {
-               updateBalance = {jackpot: club.jackpot + value} 
+               updateBalance = {jackpot: club.jackpot + (valueMethods + valueReceive)} 
             } else {
-               updateBalance = {jackpot: club.jackpot - value} 
+               updateBalance = {jackpot: club.jackpot - (valueMethods - valueDebit)} 
             }
         }
-
-        let transaction = null
 
         if (operation == "entrada") {
             transaction = await prismaClient.transaction.create({
@@ -88,20 +99,17 @@ class CreateTransactionClubeService {
                     date_payment: date_payment,
                     observation: observation,
                     paid: paid,
-                    value_paid: 0
+                    value_paid: valuePaid
                 }
             })
             if (value) {
-                if (paid) {
-                    await prismaClient.club.update({
-                        where: {
-                            id: club_id,
-                        },
-                        data: updateBalance
-                    })
-                }
+                await prismaClient.club.update({
+                    where: {
+                        id: club_id,
+                    },
+                    data: updateBalance
+                })
             }
-             
         } else {
              transaction = await prismaClient.transaction.create({
                 data: {
@@ -112,24 +120,22 @@ class CreateTransactionClubeService {
                     date_payment: date_payment,
                     observation: observation,
                     paid: paid,
-                    value_paid: 0
+                    value_paid: valuePaid
                 }
             })
             if (value) {
-                if (paid) {
-                    await prismaClient.club.update({
-                        where: {
-                            id: club_id,
-                        },
-                        data: updateBalance
-                    })
-                }
+                await prismaClient.club.update({
+                    where: {
+                        id: club_id,
+                    },
+                    data: updateBalance
+                })
             }
         }
         
         methods_transaction.map(async (item) => {
-            if (item["id"] != "Crédito") {
-                if (item["id"] != "Pag Dívida") {
+            if (item["id"] != "Crédito" && item["value"]) {
+                if (item["id"] != "Pag Dívida" && item["id"] != "Saldo") {
                     const method = await prismaClient.method.findFirst({
                         where: {
                             id: item["id"]

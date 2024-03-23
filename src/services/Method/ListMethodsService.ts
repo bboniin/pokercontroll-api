@@ -34,7 +34,7 @@ class ListMethodsService {
             }
         })
 
-        return all ? [{id: "Crédito", label: "Crédito", value: "Crédito", percentage: 0}, ...methods]  : ({methods, methodsTotal})
+        return all ? methods : ({methods, methodsTotal})
     }
 }
 

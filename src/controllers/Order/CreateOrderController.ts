@@ -4,6 +4,8 @@ import { CreateOrderService } from '../../services/Order/CreateOrderService';
 import { VerifyProductService } from '../../services/Product/VerifyProductService';
 import { OrderTransactionService } from '../../services/Transaction/OrderTransactionService';
 import { DiscoutProductService } from '../../services/Product/DiscoutProductService';
+import { VerifyCreditTransactionService } from '../../services/Transaction/VerifyCreditTransactionService';
+import { PaymentReceivesService } from '../../services/Transaction/PaymentReceivesService';
 
 class CreateOrderController {
     async handle(req: Request, res: Response) {
@@ -22,11 +24,31 @@ class CreateOrderController {
         items.map((item) => {
             value += item.total * item.value
         });
+
+        let valueCredit = methods_transaction.filter((item) => item["id"] == "Crédito" ).length != 0 ? methods_transaction.filter((item) => item["id"] == "Crédito" )[0].value : 0
+
+        if (valueCredit) {
+            const verifyCreditTransactionService = new VerifyCreditTransactionService
+
+            await verifyCreditTransactionService.execute({
+                client_id, club_id, value: valueCredit
+            })
+        }
+
+        let valueReceive = methods_transaction.filter((item) => item["id"] == "Saldo" ).length != 0 ? methods_transaction.filter((item) => item["id"] == "Saldo")[0].value : 0
+        
+        const paymentDebtsService = new PaymentReceivesService
+
+        if (valueReceive) {
+            await paymentDebtsService.execute({
+                value: valueReceive, client_id, club_id
+            })
+        }
         
         const createTransactionService = new CreateTransactionService;
 
         const transaction = await createTransactionService.execute({
-            paid, value, type: "clube", methods_transaction: methods_transaction || [], items_transaction: [{
+            paid: valueReceive == value ? true : valueCredit ? false : true, value, type: "clube", methods_transaction: methods_transaction, items_transaction: [{
                 name: "bar",
                 amount: 1,
                 value: value

@@ -8,6 +8,7 @@ import { CreatePassportService } from '../../services/Transaction/CreatePassport
 import { CreateJackpotService } from '../../services/Transaction/CreateJackpotService';
 import { CreateDealerService } from '../../services/Transaction/CreateDealerService';
 import { getMethodsPay } from '../../utils/functions';
+import { PaymentReceivesService } from '../../services/Transaction/PaymentReceivesService';
 
 class BuyTournamentController {
     async handle(req: Request, res: Response) {
@@ -27,6 +28,16 @@ class BuyTournamentController {
 
             await verifyCreditTransactionService.execute({
                 client_id, club_id, value: valueCredit
+            })
+        }
+
+        let valueReceive = methods_transaction.filter((item) => item["id"] == "Saldo" ).length != 0 ? methods_transaction.filter((item) => item["id"] == "Saldo")[0].value : 0
+        
+        const paymentDebtsService = new PaymentReceivesService
+
+        if (valueReceive) {
+            await paymentDebtsService.execute({
+                value: valueReceive, client_id, club_id
             })
         }
 
