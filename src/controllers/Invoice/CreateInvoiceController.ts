@@ -4,7 +4,7 @@ import { CreateTransactionClubeService } from '../../services/Transaction/Create
 
 class CreateInvoiceController {
     async handle(req: Request, res: Response) {
-        const { supplier_id, products, methods_transaction, identifier, observation, paid } = req.body
+        const { supplier_id, products, methods_transaction, identifier, observation, datePayment } = req.body
 
         let club_id = req.club_id
 
@@ -16,12 +16,16 @@ class CreateInvoiceController {
 
         const createTransactionClubeService = new CreateTransactionClubeService
 
-        await createTransactionClubeService.execute({
-            paid, value: invoice.value, type: "clube", methods_transaction, items_transaction: {
+        let valueCredit = methods_transaction.filter((item) => item["id"] == "Crédito").length != 0 ? methods_transaction.filter((item) => item["id"] == "Crédito")[0].value : 0
+        
+        const transaction = await createTransactionClubeService.execute({
+            paid: valueCredit ? false : true, value: invoice.value, type: "clube", methods_transaction,
+            items_transaction: {
                 name: `Estoque`,
                 amount: invoice.amount,
                 value: invoice.value
-            }, club_id, date_payment: new Date(), observation: "", operation: "saida"
+            }, club_id, date_payment: datePayment,
+            observation: "", operation: "saida"
         })
 
         return res.json(invoice)

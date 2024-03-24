@@ -131,7 +131,7 @@ class CreatePassportService {
                         id: club_id,
                     },
                     data: {
-                        passport: club.passport - (valueMethods - valueDebit)
+                        passport: club.passport - (valuePaid - valueDebit)
                     }
                 })
             }

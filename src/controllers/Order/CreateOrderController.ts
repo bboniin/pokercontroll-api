@@ -9,7 +9,7 @@ import { PaymentReceivesService } from '../../services/Transaction/PaymentReceiv
 
 class CreateOrderController {
     async handle(req: Request, res: Response) {
-        const { paid, items, methods_transaction, client_id, date_payment, observation } = req.body
+        const { items, methods_transaction, client_id, date_payment, observation } = req.body
 
         let club_id = req.club_id;
 

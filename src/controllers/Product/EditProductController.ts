@@ -4,7 +4,7 @@ import { EditProductService } from '../../services/Product/EditProductService';
 class EditProductController {
     async handle(req: Request, res: Response) {
         const { product_id } = req.params
-        const { name, value, amount, category_id, cost_value, supplier_id } = req.body
+        const { name, value, category_id, cost_value } = req.body
 
         let photo = ""
 
@@ -17,7 +17,7 @@ class EditProductController {
         const editProductService = new EditProductService
 
         const product = await editProductService.execute({
-            name, value: value ? parseFloat(value) : 0, cost_value: cost_value ? parseFloat(cost_value) : 0, category_id, supplier_id, photo, club_id, product_id
+            name, value: value ? parseFloat(value) : 0, cost_value: cost_value ? parseFloat(cost_value) : 0, category_id, photo, club_id, product_id
         })
 
         if (product["photo"]) {

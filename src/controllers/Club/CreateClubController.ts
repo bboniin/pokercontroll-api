@@ -10,6 +10,7 @@ class CreateClubController {
         const club = await createClubService.execute({
             name, username, email, password, auth
         })
+
         return res.json(club)
     }
 }

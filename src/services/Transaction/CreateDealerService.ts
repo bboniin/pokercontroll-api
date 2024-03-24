@@ -130,7 +130,7 @@ class CreateDealerService {
                         id: club_id,
                     },
                     data: {
-                        dealer: club.dealer - (valueMethods - valueDebit)
+                        dealer: club.dealer - (valuePaid - valueDebit)
                     }
                 })
             }

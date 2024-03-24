@@ -21,21 +21,24 @@ class ConfirmedTransactionController {
             throw new Error("Não é possivel pagar somente com crédito")
         }
 
-        if (valueDebit) {
-            const paymentDebtsService = new PaymentDebtsService
-            
-            await paymentDebtsService.execute({
-                value: valueDebit, client_id, club_id
-            })
-        }
+        if (client_id) {
+             if (valueDebit) {
+                const paymentDebtsService = new PaymentDebtsService
+                
+                await paymentDebtsService.execute({
+                    value: valueDebit, client_id, club_id
+                })
+            }
 
-        if (valueReceive) {
-            const paymentReceivesService = new PaymentReceivesService
+            if (valueReceive) {
+                const paymentReceivesService = new PaymentReceivesService
 
-            await paymentReceivesService.execute({
-                value: valueReceive, client_id, club_id
-            })
+                await paymentReceivesService.execute({
+                    value: valueReceive, client_id, club_id
+                })
+            }
         }
+       
 
         if (type == "clube") {
             const confirmedTransactionService = new ConfirmedTransactionService

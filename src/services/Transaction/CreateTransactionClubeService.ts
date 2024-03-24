@@ -64,28 +64,28 @@ class CreateTransactionClubeService {
             if (operation == "entrada") {
                updateBalance = {balance: club.balance + (valueMethods + valueReceive)} 
             } else {
-               updateBalance = {balance: club.balance - (valueMethods - valueDebit)} 
+               updateBalance = {balance: club.balance - (valuePaid - valueDebit)} 
             }
         }
         if (type == "passport") {
             if (operation == "entrada") {
                updateBalance = {passport: club.passport + (valueMethods + valueReceive)} 
             } else {
-               updateBalance = {passport: club.passport - (valueMethods - valueDebit)} 
+               updateBalance = {passport: club.passport - (valuePaid - valueDebit)} 
             }
         }
         if (type == "dealer") {
             if (operation == "entrada") {
                updateBalance = {dealer: club.dealer + (valueMethods + valueReceive)} 
             } else {
-               updateBalance = {dealer: club.dealer - (valueMethods - valueDebit)} 
+               updateBalance = {dealer: club.dealer - (valuePaid - valueDebit)} 
             }
         }
         if (type == "jackpot") {
             if (operation == "entrada") {
                updateBalance = {jackpot: club.jackpot + (valueMethods + valueReceive)} 
             } else {
-               updateBalance = {jackpot: club.jackpot - (valueMethods - valueDebit)} 
+               updateBalance = {jackpot: club.jackpot - (valuePaid - valueDebit)} 
             }
         }
 

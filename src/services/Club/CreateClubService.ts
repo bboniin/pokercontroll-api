@@ -47,6 +47,22 @@ class CreateClubService {
             }
         })
 
+        await prismaClient.method.createMany({
+            data: [{
+                name: "Pix",
+                percentage: 0,
+                identifier: "pix",
+                club_id: club.id,
+                balance: 0
+            },{
+                name: "Dinheiro",
+                percentage: 0,
+                identifier: "dinheiro",
+                club_id: club.id,
+                balance: 0
+            }]
+        })
+
         const passwordHash = await hash(password, 8)
 
         await prismaClient.user.create({

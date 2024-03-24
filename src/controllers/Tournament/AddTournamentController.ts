@@ -13,7 +13,7 @@ import { PaymentReceivesService } from '../../services/Transaction/PaymentReceiv
 
 class AddTournamentController {
     async handle(req: Request, res: Response) {
-        const { id, chair, tournament_id, timechip, paid, value, passport, jackpot,
+        const { id, chair, tournament_id, timechip, value, passport, jackpot,
             dealer, super_addOn, addOn, buyin, rebuy, rebuyDuplo, buyin_value, 
             date_payment, observation, methods_transaction} = req.body
 

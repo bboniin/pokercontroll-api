@@ -1,7 +1,6 @@
 import express, { Request, Response, NextFunction } from "express";
 import 'express-async-errors'
 import cors from 'cors'
-import cron from "node-cron";
 
 import { router } from "./routes";
 
@@ -33,4 +32,4 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 })
 
 
-app.listen(3333, () => console.log("rodando v2"))
+app.listen(3333, () => console.log("rodando v3"))

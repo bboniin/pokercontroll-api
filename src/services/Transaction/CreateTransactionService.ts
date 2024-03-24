@@ -142,7 +142,7 @@ class CreateTransactionService {
                         id: club_id,
                     },
                     data: {
-                        balance: club.balance - (valueMethods - valueDebit)
+                        balance: club.balance - (valuePaid - valueDebit)
                     }
                 })
             }

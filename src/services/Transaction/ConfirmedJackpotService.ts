@@ -25,11 +25,15 @@ class ConfirmedJackpotService {
             throw new Error("Transaação não encontrada")
         }
 
-        const client = await prismaClient.client.findFirst({
-            where: {
-                id: transaction.client_id,
-            }
-        })
+        let client = {}
+
+        if (transaction.client_id) {
+            client = await prismaClient.client.findFirst({
+                where: {
+                    id: transaction.client_id,
+                }
+            })
+        }
 
         const club = await prismaClient.club.findFirst({
             where: {
@@ -62,14 +66,17 @@ class ConfirmedJackpotService {
         if (transaction.operation == "entrada") {
             let valueReceive = methods_transaction.filter((item) => item["id"] == "Saldo").length != 0 ? methods_transaction.filter((item) => item["id"] == "Saldo")[0]["value"] : 0
             
-            await prismaClient.client.update({
-                where: {
-                    id: client.id,
-                },
-                data: {
-                    debt: client.debt - (valuePaid - transaction.value_paid)
-                }
-            })
+            if (transaction.client_id) {
+                await prismaClient.client.update({
+                    where: {
+                        id: client["id"],
+                    },
+                    data: {
+                        debt: client["debt"] - (valuePaid - transaction.value_paid)
+                    }
+                })
+            }
+
             await prismaClient.club.update({
                 where: {
                     id: club_id,
@@ -81,20 +88,23 @@ class ConfirmedJackpotService {
         } else {
             let valueDebit = methods_transaction.filter((item) => item["id"] == "Pag Dívida" ).length != 0 ? methods_transaction.filter((item) => item["id"] == "Pag Dívida")[0]["value"] : 0
             
-            await prismaClient.client.update({
-                where: {
-                    id: client.id,
-                },
-                data: {
-                    receive: client.receive - (valuePaid - transaction.value_paid)
-                }
-            })
+            if (transaction.client_id) {
+                await prismaClient.client.update({
+                    where: {
+                        id: client["id"],
+                    },
+                    data: {
+                        receive: client["receive"] - (valuePaid - transaction.value_paid)
+                    }
+                })
+            }
+
             await prismaClient.club.update({
                 where: {
                     id: club_id,
                 },
                 data: {
-                    jackpot: club.jackpot - (valueMethods - valueDebit)
+                    jackpot: club.jackpot - (valuePaid - valueDebit)
                 }
             })
         }

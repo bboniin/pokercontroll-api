@@ -129,7 +129,7 @@ class CreateJackpotService {
                         id: club_id,
                     },
                     data: {
-                        jackpot: club.jackpot - (valueMethods - valueDebit)
+                        jackpot: club.jackpot - (valuePaid - valueDebit)
                     }
                 })
             }
