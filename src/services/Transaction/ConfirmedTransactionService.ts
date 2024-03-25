@@ -47,11 +47,11 @@ class ConfirmedTransactionService {
         let valuePaid = 0
         let valueMethods = methodsPay.length ? methodsPay.map((method) => method["value"]*((100-method["percentage"])/100)).reduce((total, value) => total + value) : 0
         if (valueCredit) {
-            valuePaid = transaction.value-valueCredit
+            valuePaid = transaction.value-transaction.value_paid-valueCredit
         } else {
             date_payment = new Date()
 
-            valuePaid = transaction.value_paid + methodsPay.length ? methodsPay.map((method) => method["value"]).reduce((total, value) => total + value) : 0
+            valuePaid = methodsPay.length ? methodsPay.map((method) => method["value"]).reduce((total, value) => total + value) : 0
         }
     
         await prismaClient.transaction.update({
@@ -60,7 +60,7 @@ class ConfirmedTransactionService {
             },
             data: {
                 paid: valueCredit ? false : true,
-                value_paid: valuePaid
+                value_paid: transaction.value_paid + valuePaid
             }
         })
     
@@ -73,7 +73,7 @@ class ConfirmedTransactionService {
                         id: client["id"],
                     },
                     data: {
-                        debt: client["debt"] - (valuePaid - transaction.value_paid)
+                        debt: client["debt"] - valuePaid
                     }
                 })
             }
@@ -95,7 +95,7 @@ class ConfirmedTransactionService {
                         id: client["id"],
                     },
                     data: {
-                        receive: client["receive"] - (valuePaid - transaction.value_paid)
+                        receive: client["receive"] - valuePaid
                     }
                 })
             }
