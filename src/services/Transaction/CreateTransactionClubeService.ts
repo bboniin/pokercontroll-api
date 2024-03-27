@@ -9,6 +9,8 @@ interface TransactionRequest {
     items_transaction: object;
     club_id: string;
     operation: string;
+    valueReceive: number;
+    valueDebit: number;
     observation: string;
     date_payment: Date;
 }
@@ -21,7 +23,7 @@ const typesTransaction = {
 }
 
 class CreateTransactionClubeService {
-    async execute({ type, value, club_id, paid, methods_transaction, items_transaction, operation, date_payment, observation }: TransactionRequest) {
+    async execute({ type, value, club_id, paid, valueReceive, valueDebit, methods_transaction, items_transaction, operation, date_payment, observation }: TransactionRequest) {
         
         const club = await prismaClient.club.findUnique({
             where: {
@@ -43,49 +45,43 @@ class CreateTransactionClubeService {
         
         let methodsPay = methods_transaction.filter((item)=> item["id"] != "Crédito" && item["id"] != "Pag Dívida" && item["id"] != "Saldo")
 
-        let valuePaid = 0
+        let valuePaid = methodsPay.length ? methodsPay.map((method) => method["value"]).reduce((total, value) => total + value) : 0
         let valueMethods = methodsPay.length ? methodsPay.map((method) => method["value"]*((100-method["percentage"])/100)).reduce((total, value) => total + value) : 0
+        
         if (paid) {
             date_payment = new Date()
-        
-            valuePaid = value
-        } else {
-            valuePaid = methodsPay.length ? methodsPay.map((method) => method["value"]).reduce((total, value) => total + value) : 0
         }
 
         let transaction = null
 
         let updateBalance = null
 
-        let valueDebit = methods_transaction.filter((item) => item["id"] == "Pag Dívida" ).length != 0 ? methods_transaction.filter((item) => item["id"] == "Pag Dívida")[0]["value"] : 0
-        let valueReceive = methods_transaction.filter((item) => item["id"] == "Saldo").length != 0 ? methods_transaction.filter((item) => item["id"] == "Saldo")[0]["value"] : 0
-                
         if (type == "clube") {
             if (operation == "entrada") {
-               updateBalance = {balance: club.balance + (valueMethods + valueReceive)} 
+               updateBalance = {balance: club.balance + valueMethods} 
             } else {
-               updateBalance = {balance: club.balance - (valuePaid - valueDebit)} 
+               updateBalance = {balance: club.balance - valuePaid} 
             }
         }
         if (type == "passport") {
             if (operation == "entrada") {
-               updateBalance = {passport: club.passport + (valueMethods + valueReceive)} 
+               updateBalance = {passport: club.passport + valueMethods} 
             } else {
-               updateBalance = {passport: club.passport - (valuePaid - valueDebit)} 
+               updateBalance = {passport: club.passport - valuePaid} 
             }
         }
         if (type == "dealer") {
             if (operation == "entrada") {
-               updateBalance = {dealer: club.dealer + (valueMethods + valueReceive)} 
+               updateBalance = {dealer: club.dealer + valueMethods} 
             } else {
-               updateBalance = {dealer: club.dealer - (valuePaid - valueDebit)} 
+               updateBalance = {dealer: club.dealer - valuePaid} 
             }
         }
         if (type == "jackpot") {
             if (operation == "entrada") {
-               updateBalance = {jackpot: club.jackpot + (valueMethods + valueReceive)} 
+               updateBalance = {jackpot: club.jackpot + valueMethods} 
             } else {
-               updateBalance = {jackpot: club.jackpot - (valuePaid - valueDebit)} 
+               updateBalance = {jackpot: club.jackpot - valuePaid} 
             }
         }
 
@@ -99,7 +95,7 @@ class CreateTransactionClubeService {
                     date_payment: date_payment,
                     observation: observation,
                     paid: paid,
-                    value_paid: valuePaid
+                    value_paid: valuePaid + valueReceive + valueDebit
                 }
             })
             if (value) {
@@ -120,7 +116,7 @@ class CreateTransactionClubeService {
                     date_payment: date_payment,
                     observation: observation,
                     paid: paid,
-                    value_paid: valuePaid
+                    value_paid: valuePaid + valueReceive + valueDebit
                 }
             })
             if (value) {

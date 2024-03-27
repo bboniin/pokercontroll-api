@@ -9,7 +9,7 @@ import { PaymentReceivesService } from '../../services/Transaction/PaymentReceiv
 class ConfirmedTransactionController {
     async handle(req: Request, res: Response) {
         const { id } = req.params
-        const { methods_transaction, client_id, date_payment, type } = req.body
+        const { methods_transaction, client_id, date_payment, type, observation } = req.body
 
         let club_id = req.club_id
 
@@ -44,7 +44,7 @@ class ConfirmedTransactionController {
             const confirmedTransactionService = new ConfirmedTransactionService
 
             const transaction = await confirmedTransactionService.execute({
-                id, club_id, valueCredit, date_payment, methods_transaction
+                id, club_id, valueCredit, date_payment, methods_transaction, valueReceive, valueDebit, observation
             })
 
             return res.json(transaction)
@@ -55,7 +55,7 @@ class ConfirmedTransactionController {
             const confirmedDealerService = new ConfirmedDealerService
     
             const dealer = await confirmedDealerService.execute({
-                id, club_id, valueCredit, date_payment, methods_transaction
+                id, club_id, valueCredit, date_payment, methods_transaction, valueReceive, valueDebit, observation
             })
     
             return res.json(dealer)
@@ -65,7 +65,7 @@ class ConfirmedTransactionController {
             const confirmedJackpotService = new ConfirmedJackpotService
     
             const jackpot = await confirmedJackpotService.execute({
-                id, club_id, valueCredit, date_payment, methods_transaction
+                id, club_id, valueCredit, date_payment, methods_transaction, valueReceive, valueDebit, observation
             })
     
             return res.json(jackpot)
@@ -75,7 +75,7 @@ class ConfirmedTransactionController {
             const confirmedPassportService = new ConfirmedPassportService
     
             const passport = await confirmedPassportService.execute({
-                id, club_id, valueCredit, date_payment, methods_transaction
+                id, club_id, valueCredit, date_payment, methods_transaction, valueReceive, valueDebit, observation
             })
     
             return res.json(passport)

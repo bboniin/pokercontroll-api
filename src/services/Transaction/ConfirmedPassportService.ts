@@ -3,13 +3,16 @@ import prismaClient from '../../prisma'
 interface TransactionRequest {
     id: string;
     valueCredit: number;
+    valueReceive: number;
+    valueDebit: number;
     date_payment: Date;
     club_id: string;
+    observation: string;
     methods_transaction: Array<[]>;
 }
 
 class ConfirmedPassportService {
-    async execute({ id,  club_id, valueCredit, date_payment, methods_transaction}: TransactionRequest) {
+    async execute({ id,  club_id, valueCredit, valueDebit, valueReceive, date_payment, observation, methods_transaction}: TransactionRequest) {
 
         if (!club_id || !id || methods_transaction.length == 0) {
             throw new Error("id da cobrança, método de pagamento e do clube é obrigatório")
@@ -42,15 +45,13 @@ class ConfirmedPassportService {
         })
 
         let methodsPay = methods_transaction.filter((item)=> item["id"] != "Crédito" && item["id"] != "Pag Dívida" && item["id"] != "Saldo")
+        
+        let valuePaid = methodsPay.length ? methodsPay.map((method) => method["value"]).reduce((total, value) => total + value) : 0
 
-        let valuePaid = 0
-        let valueMethods =  methodsPay.length ? methodsPay.map((method) => method["value"]*((100-method["percentage"])/100)).reduce((total, value) => total + value) : 0
-        if (valueCredit) {
-            valuePaid = transaction.value-transaction.value_paid-valueCredit
-        } else {
+        let valueMethods = methodsPay.length ? methodsPay.map((method) => method["value"]*((100-method["percentage"])/100)).reduce((total, value) => total + value) : 0
+        
+        if (!valueCredit) {
             date_payment = new Date()
-
-            valuePaid = methodsPay.length ? methodsPay.map((method) => method["value"]).reduce((total, value) => total + value) : 0
         }
     
         await prismaClient.transaction.update({
@@ -58,8 +59,10 @@ class ConfirmedPassportService {
                 id: id  
             },
             data: {
+                date_payment: date_payment,
+                observation: observation,
                 paid: valueCredit ? false : true,
-                value_paid: transaction.value_paid + valuePaid
+                value_paid: transaction.value_paid + valuePaid + valueReceive + valueDebit
             }
         })
     
@@ -72,7 +75,7 @@ class ConfirmedPassportService {
                         id: client["id"],
                     },
                     data: {
-                        debt: client["debt"] - valuePaid
+                        debt: client["debt"] - (valuePaid + valueReceive)
                     }
                 })
             }
@@ -82,7 +85,7 @@ class ConfirmedPassportService {
                     id: club_id,
                 },
                 data: {
-                    passport: club.passport + (valueMethods - valueReceive)
+                    passport: club.passport + valueMethods
                 }
             })
         } else {
@@ -94,7 +97,7 @@ class ConfirmedPassportService {
                         id: client["id"],
                     },
                     data: {
-                        receive: client["receive"] - valuePaid
+                        receive: client["receive"] - (valuePaid + valueDebit)
                     }
                 })
             }
@@ -104,7 +107,7 @@ class ConfirmedPassportService {
                     id: club_id,
                 },
                 data: {
-                    passport: club.passport - (valuePaid - valueDebit)
+                    passport: club.passport - valuePaid
                 }
             })
         }

@@ -2,14 +2,17 @@ import prismaClient from '../../prisma'
 
 interface TransactionRequest {
     id: string;
-    club_id: string;
-    date_payment: Date;
     valueCredit: number;
+    valueReceive: number;
+    valueDebit: number;
+    date_payment: Date;
+    club_id: string;
+    observation: string;
     methods_transaction: Array<[]>;
 }
 
 class ConfirmedDealerService {
-    async execute({ id,  club_id, valueCredit, date_payment, methods_transaction}: TransactionRequest) {
+    async execute({ id,  club_id, valueCredit, valueDebit, valueReceive, date_payment, observation, methods_transaction}: TransactionRequest) {
 
         if (!club_id || !id || methods_transaction.length == 0) {
             throw new Error("id da cobrança, método de pagamento e do clube é obrigatório")
@@ -42,15 +45,13 @@ class ConfirmedDealerService {
         })
 
         let methodsPay = methods_transaction.filter((item)=> item["id"] != "Crédito" && item["id"] != "Pag Dívida" && item["id"] != "Saldo")
+        
+        let valuePaid = methodsPay.length ? methodsPay.map((method) => method["value"]).reduce((total, value) => total + value) : 0
 
-        let valuePaid = 0
         let valueMethods = methodsPay.length ? methodsPay.map((method) => method["value"]*((100-method["percentage"])/100)).reduce((total, value) => total + value) : 0
-        if (valueCredit) {
-            valuePaid = transaction.value-transaction.value_paid-valueCredit
-        } else {
+        
+        if (!valueCredit) {
             date_payment = new Date()
-
-            valuePaid = methodsPay.length ? methodsPay.map((method) => method["value"]).reduce((total, value) => total + value) : 0
         }
     
         await prismaClient.transaction.update({
@@ -58,8 +59,10 @@ class ConfirmedDealerService {
                 id: id  
             },
             data: {
+                date_payment: date_payment,
+                observation: observation,
                 paid: valueCredit ? false : true,
-                value_paid: transaction.value_paid + valuePaid
+                value_paid: transaction.value_paid + valuePaid + valueReceive + valueDebit
             }
         })
     
@@ -72,7 +75,7 @@ class ConfirmedDealerService {
                         id: client["id"],
                     },
                     data: {
-                        debt: client["debt"] - valuePaid
+                        debt: client["debt"] - (valuePaid + valueReceive)
                     }
                 })
             }
@@ -82,7 +85,7 @@ class ConfirmedDealerService {
                     id: club_id,
                 },
                 data: {
-                    dealer: club.dealer + (valueMethods - valueReceive)
+                    dealer: club.dealer + valueMethods
                 }
             })
         } else {
@@ -94,7 +97,7 @@ class ConfirmedDealerService {
                         id: client["id"],
                     },
                     data: {
-                        receive: client["receive"] - valuePaid
+                        receive: client["receive"] - (valuePaid + valueDebit)
                     }
                 })
             }
@@ -104,7 +107,7 @@ class ConfirmedDealerService {
                     id: club_id,
                 },
                 data: {
-                    dealer: club.dealer - (valuePaid - valueDebit)
+                    dealer: club.dealer - valuePaid
                 }
             })
         }

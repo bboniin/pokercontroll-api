@@ -18,14 +18,14 @@ class CreateInvoiceController {
 
         let valueCredit = methods_transaction.filter((item) => item["id"] == "Crédito").length != 0 ? methods_transaction.filter((item) => item["id"] == "Crédito")[0].value : 0
         
-        const transaction = await createTransactionClubeService.execute({
+        await createTransactionClubeService.execute({
             paid: valueCredit ? false : true, value: invoice.value, type: "clube", methods_transaction,
             items_transaction: {
                 name: `Estoque`,
                 amount: invoice.amount,
                 value: invoice.value
             }, club_id, date_payment: datePayment,
-            observation: "", operation: "saida"
+            observation: observation, operation: "saida", valueReceive: 0, valueDebit: 0
         })
 
         return res.json(invoice)

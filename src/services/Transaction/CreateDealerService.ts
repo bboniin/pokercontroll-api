@@ -4,6 +4,8 @@ interface TransactionRequest {
     paid: boolean;
     type: string;
     value: number;
+    valueReceive: number;
+    valueDebit: number;
     methods_transaction: Array<[]>;
     items_transaction: object;
     client_id: string;
@@ -15,7 +17,7 @@ interface TransactionRequest {
 }
 
 class CreateDealerService {
-    async execute({ type, value, sector_id, club_id, paid, client_id, methods_transaction, items_transaction, operation, date_payment, observation }: TransactionRequest) {
+    async execute({ type, value, sector_id, valueReceive, valueDebit, club_id, paid, client_id, methods_transaction, items_transaction, operation, date_payment, observation }: TransactionRequest) {
         
         const client = await prismaClient.client.findFirst({
             where: {
@@ -48,21 +50,16 @@ class CreateDealerService {
         
         let methodsPay = methods_transaction.filter((item)=> item["id"] != "Crédito" && item["id"] != "Pag Dívida" && item["id"] != "Saldo")
 
-        let valuePaid = 0
+        let valuePaid = methodsPay.length ? methodsPay.map((method) => method["value"]).reduce((total, value) => total + value) : 0
         let valueMethods = methodsPay.length ? methodsPay.map((method) => method["value"]*((100-method["percentage"])/100)).reduce((total, value) => total + value) : 0
+        
         if (paid) {
             date_payment = new Date()
-        
-            valuePaid = value
-        } else {
-            valuePaid = methodsPay.length ? methodsPay.map((method) => method["value"]).reduce((total, value) => total + value) : 0
         }
 
         let transaction = null
 
         if (operation == "entrada") {
-            let valueReceive = methods_transaction.filter((item) => item["id"] == "Saldo").length != 0 ? methods_transaction.filter((item) => item["id"] == "Saldo")[0]["value"] : 0
-            
             transaction = await prismaClient.transaction.create({
                 data: {
                     type: type,
@@ -74,7 +71,7 @@ class CreateDealerService {
                     date_payment: date_payment,
                     observation: observation,
                     paid: paid,
-                    value_paid: valuePaid
+                    value_paid: valuePaid + valueReceive + valueDebit
                 }
             })
 
@@ -84,7 +81,7 @@ class CreateDealerService {
                         id: client_id,
                     },
                     data: {
-                        debt: client.debt + value - valuePaid
+                        debt: client.debt + value - (valuePaid + valueReceive)
                     }
                 })
 
@@ -93,13 +90,11 @@ class CreateDealerService {
                         id: club_id,
                     },
                     data: {
-                        dealer: club.dealer + (valueMethods - valueReceive)
+                        dealer: club.dealer + valueMethods
                     }
                 })
             }
         } else {
-            let valueDebit = methods_transaction.filter((item) => item["id"] == "Pag Dívida" ).length != 0 ? methods_transaction.filter((item) => item["id"] == "Pag Dívida")[0]["value"] : 0
-            
             transaction = await prismaClient.transaction.create({
                 data: {
                     type: type,
@@ -111,7 +106,7 @@ class CreateDealerService {
                     date_payment: date_payment,
                     observation: observation,
                     paid: paid,
-                    value_paid: valuePaid
+                    value_paid: valuePaid + valueReceive + valueDebit
                 }
             })
 
@@ -121,7 +116,7 @@ class CreateDealerService {
                         id: client_id,
                     },
                     data: {
-                        receive: client.receive + value - valuePaid
+                        receive: client.receive + value - (valuePaid + valueDebit)
                     }
                 })
 
@@ -130,7 +125,7 @@ class CreateDealerService {
                         id: club_id,
                     },
                     data: {
-                        dealer: club.dealer - (valuePaid - valueDebit)
+                        dealer: club.dealer - valuePaid
                     }
                 })
             }

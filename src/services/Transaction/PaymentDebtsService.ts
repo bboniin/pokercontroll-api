@@ -64,7 +64,7 @@ class PaymentDebtsService {
         await transactions.map(async (item, index) => {
             if (valueTransaction[index]) {
                 let valuePaid = item.value - item.value_paid
-                if (valuePaid <= valueTransaction[index]) {
+                if (valuePaid == valueTransaction[index]) {
                     await prismaClient.transaction.update({
                         where: {
                             id: item.id

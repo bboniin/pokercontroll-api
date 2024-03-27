@@ -26,7 +26,7 @@ class PaymentReceivesService {
         }
 
         if (client.receive < value) {
-            throw new Error("Valor de pagamento da divida é maior que a divida do cliente")
+            throw new Error("Valor de pagamento com saldo é maior do que o cliente tem a receber")
         }
 
         const transactions = await prismaClient.transaction.findMany({

@@ -52,7 +52,7 @@ class CreateOrderController {
                 name: "bar",
                 amount: 1,
                 value: value
-            }], client_id, sector_id: "", club_id, date_payment, observation, operation: "entrada"
+            }], client_id, sector_id: "", club_id, date_payment, observation, operation: "entrada", valueReceive, valueDebit: 0
         });
 
         const createOrderService = new CreateOrderService;

@@ -58,11 +58,12 @@ class BuyTournamentController {
             let { payCredit, methodsPay, methodsC } = await getMethodsPay(tournament.dealer_value, methods_transactionC)
             const createDealerService = new CreateDealerService
             await createDealerService.execute({
-                paid: payCredit ? false : true, value: tournament.dealer_value, type: "dealer", methods_transaction: methodsPay, client_id, sector_id: tournament_id, club_id, date_payment, observation, items_transaction: {
+                paid: payCredit ? false : true, value: tournament.dealer_value, type: "dealer", methods_transaction:
+                methodsPay, client_id, sector_id: tournament_id, club_id, date_payment, observation, items_transaction: {
                     name: "dealer",
                     amount: 1,
                     value: tournament.dealer_value,
-                }, operation: "entrada"
+                }, operation: "entrada", valueReceive, valueDebit: 0
             })
             methods_transactionC = methodsC
             valueTotal -= tournament.dealer_value
@@ -77,7 +78,7 @@ class BuyTournamentController {
                     name: "passport",
                     amount: 1,
                     value: tournament.passport_value,
-                }, operation: "entrada"
+                }, operation: "entrada", valueReceive, valueDebit: 0
             })
             methods_transactionC = methodsC
             valueTotal -= tournament.passport_value
@@ -92,7 +93,7 @@ class BuyTournamentController {
                     name: "jackpot",
                     amount: 1,
                     value: tournament.jackpot_value,
-                }, operation: "entrada"
+                }, operation: "entrada", valueReceive, valueDebit: 0
             })
             methods_transactionC = methodsC
             valueTotal -= tournament.jackpot_value
@@ -149,8 +150,10 @@ class BuyTournamentController {
             const createTransactionService = new CreateTransactionService
 
             let { payCredit, methodsPay } = await getMethodsPay(valueTotal, methods_transactionC)
-            const transaction = await createTransactionService.execute({
-                paid: payCredit ? false : true, value: valueTotal, type: "clube", methods_transaction: methodsPay, items_transaction, client_id: client_id, sector_id: tournament_id, club_id, date_payment, observation, operation: "entrada"
+            await createTransactionService.execute({
+                paid: payCredit ? false : true, value: valueTotal, type: "clube", methods_transaction:
+                    methodsPay, items_transaction, client_id: client_id, sector_id: tournament_id, club_id,
+                    date_payment, observation, operation: "entrada", valueReceive, valueDebit: 0
             })
         }
 

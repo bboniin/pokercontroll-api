@@ -6,6 +6,8 @@ interface TransactionRequest {
     value: number;
     client_id: string;
     club_id: string;
+    valueReceive: number;
+    valueDebit: number;
     operation: string;
     observation: string;
     date_payment: Date;
@@ -15,7 +17,7 @@ interface TransactionRequest {
 }
 
 class CreatePassportService {
-    async execute({ type, value, sector_id, club_id, paid, client_id, methods_transaction, items_transaction, operation, date_payment, observation }: TransactionRequest) {
+    async execute({ type, value, sector_id, club_id, valueReceive, valueDebit, paid, client_id, methods_transaction, items_transaction, operation, date_payment, observation }: TransactionRequest) {
         
         const client = await prismaClient.client.findFirst({
             where: {
@@ -48,21 +50,16 @@ class CreatePassportService {
 
         let methodsPay = methods_transaction.filter((item)=> item["id"] != "Crédito" && item["id"] != "Pag Dívida" && item["id"] != "Saldo")
 
-        let valuePaid = 0
+        let valuePaid = methodsPay.length ? methodsPay.map((method) => method["value"]).reduce((total, value) => total + value) : 0
         let valueMethods = methodsPay.length ? methodsPay.map((method) => method["value"]*((100-method["percentage"])/100)).reduce((total, value) => total + value) : 0
+        
         if (paid) {
             date_payment = new Date()
-        
-            valuePaid = value
-        } else {
-            valuePaid = methodsPay.length ? methodsPay.map((method) => method["value"]).reduce((total, value) => total + value) : 0
         }
 
         let transaction = null
 
         if (operation == "entrada") {
-            let valueReceive = methods_transaction.filter((item) => item["id"] == "Saldo").length != 0 ? methods_transaction.filter((item) => item["id"] == "Saldo")[0]["value"] : 0
-            
             transaction = await prismaClient.transaction.create({
                 data: {
                     type: type,
@@ -74,7 +71,7 @@ class CreatePassportService {
                     date_payment: date_payment,
                     observation: observation,
                     paid: paid,
-                    value_paid: valuePaid
+                    value_paid: valuePaid + valueReceive + valueDebit
                 }
             })
 
@@ -84,7 +81,7 @@ class CreatePassportService {
                         id: client_id,
                     },
                     data: {
-                        debt: client.debt + value - valuePaid
+                        debt: client.debt + value - (valuePaid + valueReceive)
                     }
                 })
 
@@ -93,14 +90,12 @@ class CreatePassportService {
                         id: club_id,
                     },
                     data: {
-                        passport: club.passport + (valueMethods - valueReceive)
+                        passport: club.passport + valueMethods
                     }
                 })
             }
             
         } else {
-            let valueDebit = methods_transaction.filter((item) => item["id"] == "Pag Dívida" ).length != 0 ? methods_transaction.filter((item) => item["id"] == "Pag Dívida")[0]["value"] : 0
-            
             transaction = await prismaClient.transaction.create({
                 data: {
                     type: type,
@@ -112,7 +107,7 @@ class CreatePassportService {
                     date_payment: date_payment,
                     observation: observation,
                     paid: paid,
-                    value_paid: valuePaid
+                    value_paid: valuePaid + valueReceive + valueDebit
                 }
             })
 
@@ -122,7 +117,7 @@ class CreatePassportService {
                         id: client_id,
                     },
                     data: {
-                        receive: client.receive + value - valuePaid
+                        receive: client.receive + value - (valuePaid + valueDebit)
                     }
                 })
 
@@ -131,7 +126,7 @@ class CreatePassportService {
                         id: club_id,
                     },
                     data: {
-                        passport: club.passport - (valuePaid - valueDebit)
+                        passport: club.passport - valuePaid
                     }
                 })
             }

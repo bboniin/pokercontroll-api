@@ -16,7 +16,7 @@ class CreateTransactionClubeController {
                 name: name || "Manual",
                 amount: 1,
                 value: value
-            }, club_id, date_payment, observation, operation
+            }, club_id, date_payment, observation, operation, valueReceive: 0, valueDebit: 0
         })
 
         return res.json(transaction)

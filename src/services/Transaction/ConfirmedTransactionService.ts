@@ -3,13 +3,16 @@ import prismaClient from '../../prisma'
 interface TransactionRequest {
     id: string;
     valueCredit: number;
+    valueReceive: number;
+    valueDebit: number;
     date_payment: Date;
     club_id: string;
+    observation: string;
     methods_transaction: Array<[]>;
 }
 
 class ConfirmedTransactionService {
-    async execute({ id,  club_id, valueCredit, date_payment, methods_transaction}: TransactionRequest) {
+    async execute({ id,  club_id, valueCredit, valueDebit, valueReceive, observation, date_payment, methods_transaction}: TransactionRequest) {
 
         if (!club_id || !id || methods_transaction.length == 0) {
             throw new Error("id da cobrança, método de pagamento e do clube é obrigatório")
@@ -43,15 +46,13 @@ class ConfirmedTransactionService {
         })
 
         let methodsPay = methods_transaction.filter((item)=> item["id"] != "Crédito" && item["id"] != "Pag Dívida" && item["id"] != "Saldo")
+       
+        let valuePaid = methodsPay.length ? methodsPay.map((method) => method["value"]).reduce((total, value) => total + value) : 0
 
-        let valuePaid = 0
         let valueMethods = methodsPay.length ? methodsPay.map((method) => method["value"]*((100-method["percentage"])/100)).reduce((total, value) => total + value) : 0
-        if (valueCredit) {
-            valuePaid = transaction.value-transaction.value_paid-valueCredit
-        } else {
+        
+        if (!valueCredit) {
             date_payment = new Date()
-
-            valuePaid = methodsPay.length ? methodsPay.map((method) => method["value"]).reduce((total, value) => total + value) : 0
         }
     
         await prismaClient.transaction.update({
@@ -59,21 +60,22 @@ class ConfirmedTransactionService {
                 id: id  
             },
             data: {
+                date_payment: date_payment,
+                observation: observation,
                 paid: valueCredit ? false : true,
-                value_paid: transaction.value_paid + valuePaid
+                value_paid: transaction.value_paid + valuePaid + valueReceive + valueDebit
             }
         })
     
         if (transaction.operation == "entrada") {
-            let valueReceive = methods_transaction.filter((item) => item["id"] == "Saldo").length != 0 ? methods_transaction.filter((item) => item["id"] == "Saldo")[0]["value"] : 0
-            
+
             if (transaction.client_id) {
                 await prismaClient.client.update({
                     where: {
                         id: client["id"],
                     },
                     data: {
-                        debt: client["debt"] - valuePaid
+                        debt: client["debt"] - (valuePaid + valueReceive)
                     }
                 })
             }
@@ -83,19 +85,17 @@ class ConfirmedTransactionService {
                     id: club_id,
                 },
                 data: {
-                    balance: club.balance + (valueMethods - valueReceive)
+                    balance: club.balance + valueMethods
                 }
             })
         } else {
-            let valueDebit = methods_transaction.filter((item) => item["id"] == "Pag Dívida" ).length != 0 ? methods_transaction.filter((item) => item["id"] == "Pag Dívida")[0]["value"] : 0
-            
             if (transaction.client_id) {
                 await prismaClient.client.update({
                     where: {
                         id: client["id"],
                     },
                     data: {
-                        receive: client["receive"] - valuePaid
+                        receive: client["receive"] - (valuePaid + valueDebit)
                     }
                 })
             }
@@ -105,7 +105,7 @@ class ConfirmedTransactionService {
                     id: club_id,
                 },
                 data: {
-                    balance: club.balance - (valuePaid - valueDebit)
+                    balance: club.balance - valuePaid
                 }
             })
         }

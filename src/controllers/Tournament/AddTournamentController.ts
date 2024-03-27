@@ -60,11 +60,12 @@ class AddTournamentController {
             let {  methodsPay, payCredit, methodsC } = await getMethodsPay(tournament.dealer_value, methods_transactionC)
             const createDealerService = new CreateDealerService
             await createDealerService.execute({
-                paid: payCredit ? false : true, value: tournament.dealer_value, type: "dealer", methods_transaction: methodsPay, client_id: id, sector_id: tournament_id, club_id, date_payment, observation, items_transaction: {
+                paid: payCredit ? false : true, value: tournament.dealer_value, type: "dealer", methods_transaction:
+                methodsPay, client_id: id, sector_id: tournament_id, club_id, date_payment, observation, items_transaction: {
                     name: "dealer",
                     amount: 1,
                     value: tournament.dealer_value,
-                }, operation: "entrada"
+                }, operation: "entrada", valueReceive, valueDebit: 0
             })
             methods_transactionC = methodsC
             valueTotal -= tournament.dealer_value
@@ -79,7 +80,7 @@ class AddTournamentController {
                     name: "passport",
                     amount: 1,
                     value: tournament.passport_value,
-                }, operation: "entrada"
+                }, operation: "entrada", valueReceive, valueDebit: 0
             })
             methods_transactionC = methodsC
             valueTotal -= tournament.passport_value
@@ -94,7 +95,7 @@ class AddTournamentController {
                     name: "jackpot",
                     amount: 1,
                     value: tournament.jackpot_value,
-                }, operation: "entrada"
+                }, operation: "entrada", valueReceive, valueDebit: 0
             })
             methods_transactionC = methodsC
             valueTotal -= tournament.jackpot_value
@@ -152,7 +153,7 @@ class AddTournamentController {
         const transaction = await createTransactionService.execute({
             paid: payCredit ? false : true, value: valueTotal, type: "clube", methods_transaction: 
             methodsPay, items_transaction, client_id: id, sector_id: tournament_id, club_id,
-            date_payment, observation, operation: "entrada"
+            date_payment, observation, operation: "entrada", valueReceive, valueDebit: 0
         })
 
         const buyTournamentService = new BuyTournamentService

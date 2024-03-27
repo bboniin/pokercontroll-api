@@ -6,7 +6,7 @@ import { PaymentDebtsService } from '../../services/Transaction/PaymentDebtsServ
 class ExitClientTournamentController {
     async handle(req: Request, res: Response) {
         const { client_id } = req.params
-        const { tournament_id, position, sector_id, methods_transaction, paid } = req.body
+        const { tournament_id, position, sector_id, methods_transaction, datePayment, observation } = req.body
 
         let club_id = req.club_id
 
@@ -35,7 +35,7 @@ class ExitClientTournamentController {
                     name: "torneio",
                     value: award,
                     amount: 1
-                }], client_id, sector_id, club_id, date_payment: new Date(), observation: "", operation: "saida"
+                }], client_id, sector_id, club_id, date_payment: datePayment, valueReceive: 0, valueDebit, observation: observation, operation: "saida"
             })
         }
 

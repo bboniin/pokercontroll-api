@@ -14,7 +14,7 @@ interface TournamentRequest {
 class StructureTournamentService {
     async execute({ club_id, intervals, nivel_max_buyin_free, nivel_max_in, nivel_max_timechip,  blinds, tournament_id }: TournamentRequest) {
 
-        if (!tournament_id || !blinds || !intervals || !nivel_max_in || !nivel_max_timechip || !club_id) {
+        if (!tournament_id || !blinds || !intervals || !nivel_max_in || !club_id) {
             throw new Error("Preencha os campos obrigatórios")
         }
 
