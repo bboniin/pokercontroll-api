@@ -25,7 +25,7 @@ class PaymentReceivesService {
             throw new Error("Cliente não encontrada")
         }
 
-        if (client.receive < value) {
+        if (parseFloat(client.receive.toFixed(2)) < value) {
             throw new Error("Valor de pagamento com saldo é maior do que o cliente tem a receber")
         }
 
@@ -109,7 +109,7 @@ class PaymentReceivesService {
                 id: client_id
             }, 
             data: {
-                receive: client.receive - valueTotal
+                receive: parseFloat(client.receive.toFixed(2)) - valueTotal
             }
         })
 

@@ -21,12 +21,6 @@ interface TransactionRequest {
     date_payment: Date;
     sector_id: string;
 }
-const typesTransaction = {
-    "clube": true,
-    "jackpot": true,
-    "passport": true,
-    "dealer": true,
-}
 
 class CreateTransactionService {
     async execute({ type, sector_id, value, valueReceive, valueDebit, club_id, paid, client_id, methods_transaction, items_transaction, operation, date_payment, observation }: TransactionRequest) {
@@ -56,11 +50,11 @@ class CreateTransactionService {
             throw new Error("Apenas entradas e saidas são aceitos")
         }
 
-        if (!typesTransaction[type]) {
+        if (type != "clube") {
             throw new Error("Tipo de transação é inválido")
         }
         
-        let methodsPay = methods_transaction.filter((item)=> item["id"] != "Crédito")
+        let methodsPay = methods_transaction.filter((item)=> item["id"] != "Crédito" && item["id"] != "Pag Dívida" && item["id"] != "Saldo")
         
         let valuePaid = methodsPay.length ? methodsPay.map((method) => method["value"]).reduce((total, value) => total + value) : 0
         let valueMethods = methodsPay.length ? methodsPay.map((method) => method["value"]*((100-method["percentage"])/100)).reduce((total, value) => total + value) : 0

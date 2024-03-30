@@ -25,7 +25,7 @@ class PaymentDebtsService {
             throw new Error("Cliente não encontrada")
         }
 
-        if (client.debt < value) {
+        if (parseFloat(client.debt.toFixed(2)) < value) {
             throw new Error("Valor de pagamento da divida é maior que a divida do cliente")
         }
 
@@ -108,7 +108,7 @@ class PaymentDebtsService {
                 id: client_id
             }, 
             data: {
-                debt: client.debt - valueTotal
+                debt: parseFloat(client.debt.toFixed(2)) - valueTotal
             }
         })
 

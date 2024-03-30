@@ -42,7 +42,6 @@ class CreateTransactionController {
             })
         }
 
-
         const transaction = await createTransactionService.execute({
             paid: valueCredit ? false : true, value, type, sector_id, methods_transaction: methods_transaction,
             items_transaction, client_id, club_id, date_payment, observation, operation, valueReceive, valueDebit
