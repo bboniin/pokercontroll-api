@@ -87,7 +87,7 @@ class CreateTransactionService {
                         id: client_id,
                     },
                     data: {
-                        debt: client.debt + value - (valuePaid + valueReceive)
+                        debt: client.debt + value - valuePaid
                     }
                 })
 
@@ -122,7 +122,7 @@ class CreateTransactionService {
                         id: client_id,
                     },
                     data: {
-                        receive: client.receive + value - (valuePaid + valueDebit)
+                        receive: client.receive + value - valuePaid
                     }
                 })
 

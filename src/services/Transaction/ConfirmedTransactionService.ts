@@ -75,7 +75,7 @@ class ConfirmedTransactionService {
                         id: client["id"],
                     },
                     data: {
-                        debt: client["debt"] - (valuePaid + valueReceive)
+                        debt: client["debt"] - valuePaid
                     }
                 })
             }
@@ -95,7 +95,7 @@ class ConfirmedTransactionService {
                         id: client["id"],
                     },
                     data: {
-                        receive: client["receive"] - (valuePaid + valueDebit)
+                        receive: client["receive"] - valuePaid
                     }
                 })
             }

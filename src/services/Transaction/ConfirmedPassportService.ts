@@ -67,15 +67,13 @@ class ConfirmedPassportService {
         })
     
         if (transaction.operation == "entrada") {
-            let valueReceive = methods_transaction.filter((item) => item["id"] == "Saldo").length != 0 ? methods_transaction.filter((item) => item["id"] == "Saldo")[0]["value"] : 0
-            
             if (transaction.client_id) {
                 await prismaClient.client.update({
                     where: {
                         id: client["id"],
                     },
                     data: {
-                        debt: client["debt"] - (valuePaid + valueReceive)
+                        debt: client["debt"] - valuePaid
                     }
                 })
             }
@@ -89,15 +87,13 @@ class ConfirmedPassportService {
                 }
             })
         } else {
-            let valueDebit = methods_transaction.filter((item) => item["id"] == "Pag Dívida" ).length != 0 ? methods_transaction.filter((item) => item["id"] == "Pag Dívida")[0]["value"] : 0
-            
             if (transaction.client_id) {
                 await prismaClient.client.update({
                     where: {
                         id: client["id"],
                     },
                     data: {
-                        receive: client["receive"] - (valuePaid + valueDebit)
+                        receive: client["receive"] - valuePaid
                     }
                 })
             }
