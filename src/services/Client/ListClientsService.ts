@@ -32,7 +32,7 @@ class ListClientsService {
                 visible: true
             },
             orderBy: {
-                create_at: "asc"
+                name: "asc"
             }
         })
 

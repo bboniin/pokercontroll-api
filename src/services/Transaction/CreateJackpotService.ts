@@ -81,7 +81,8 @@ class CreateJackpotService {
                         id: client_id,
                     },
                     data: {
-                        debt: client.debt + value - valuePaid
+                        debt: client.debt + value - valuePaid  - valueDebit,
+                        receive: client.receive - valueDebit
                     }
                 })
 
@@ -115,7 +116,8 @@ class CreateJackpotService {
                         id: client_id,
                     },
                     data: {
-                        receive: client.receive + value - valuePaid
+                        receive: client.receive + value - valuePaid - valueReceive,
+                        debt: client.debt - valueReceive
                     }
                 })
 
@@ -124,7 +126,7 @@ class CreateJackpotService {
                         id: club_id,
                     },
                     data: {
-                        jackpot: club.jackpot - valuePaid
+                        jackpot: club.jackpot - valuePaid - valueDebit
                     }
                 })
             }

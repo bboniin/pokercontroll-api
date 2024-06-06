@@ -32,6 +32,7 @@ class PaymentDebtsService {
         const transactions = await prismaClient.transaction.findMany({
             where: {
                 client_id: client_id,
+                club_id: club_id,
                 paid: false,
                 operation: "entrada"
             },
@@ -41,7 +42,7 @@ class PaymentDebtsService {
         })
 
         if (transactions.length == 0) {
-            throw new Error("Nenhuma transação não encontrada")
+            throw new Error("Nenhuma transação encontrada")
         }
 
         let valueTransaction = []
@@ -100,15 +101,6 @@ class PaymentDebtsService {
                         }
                     })
                 }
-            }
-        })
-
-        await prismaClient.client.update({
-            where: {
-                id: client_id
-            }, 
-            data: {
-                debt: parseFloat(client.debt.toFixed(2)) - valueTotal
             }
         })
 

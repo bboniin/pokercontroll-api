@@ -11,9 +11,6 @@ class ClientsTournamentService {
         const clients = await prismaClient.client.findMany({
             where: {
                 club_id: club_id,
-                chair: {
-                    contains: "T"
-                }
             },
             orderBy: {
                 create_at: "asc"
@@ -30,7 +27,17 @@ class ClientsTournamentService {
             }
         })
 
-        return (clients)
+        let clientsC = []
+
+        clients.map((item=>{
+            if(item.client_tournaments.length){
+                clientsC.push({
+                    ...item, chair: item.client_tournaments[0].chair_tournament
+                }) 
+            }
+        }))
+
+        return (clientsC)
     }
 }
 

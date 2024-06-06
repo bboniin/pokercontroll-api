@@ -11,7 +11,7 @@ interface TransactionRequest {
     type: string;
     value: number;
     methods_transaction: Array<[]>;
-    items_transaction: Array<Item> ;
+    items_transaction: Array<Item>;
     client_id: string;
     club_id: string;
     operation: string;
@@ -87,7 +87,8 @@ class CreateTransactionService {
                         id: client_id,
                     },
                     data: {
-                        debt: client.debt + value - valuePaid
+                        debt: client.debt + (value - valuePaid - valueDebit),
+                        receive: client.receive - valueDebit
                     }
                 })
 
@@ -122,7 +123,8 @@ class CreateTransactionService {
                         id: client_id,
                     },
                     data: {
-                        receive: client.receive + value - valuePaid
+                        receive: client.receive + (value - valuePaid - valueReceive),
+                        debt: client.debt - valueReceive
                     }
                 })
 
@@ -131,7 +133,7 @@ class CreateTransactionService {
                         id: club_id,
                     },
                     data: {
-                        balance: club.balance - valuePaid - valueDebit
+                        balance: club.balance - valuePaid
                     }
                 })
             }

@@ -84,6 +84,8 @@ import { ListCommandsController } from './controllers/Order/ListCommandsControll
 import { ClosedCommandController } from './controllers/Order/ClosedCommandController'
 import { GetCommandController } from './controllers/Order/GetCommandController'
 import { ListInvoicesController } from './controllers/Invoice/ListInvoicesController'
+import { PaymentPendingTransactionController } from './controllers/Transaction/PaymentPendingTransactionController'
+import { ListTransactionsPendingController } from './controllers/Transaction/ListTransactionsPendingController'
 
 const upload = multer(uploadConfig)
 
@@ -120,6 +122,9 @@ router.post('/reward-cash', new RewardCashController().handle)
 router.get('/clear-cash', new ClearCashController().handle)
 router.get('/cashs', new ListCashsController().handle)
 router.post('/exit-cash/:client_id', new ExitClientCashController().handle)
+
+router.get('/transactions-pending/:client_id', new ListTransactionsPendingController().handle)
+router.put('/transactions-pending/:client_id', new PaymentPendingTransactionController().handle)
 
 router.get('/clients-tournament/:tournament_id', new ClientsTournamentController().handle)
 router.post('/add-tournament', new AddTournamentController().handle)

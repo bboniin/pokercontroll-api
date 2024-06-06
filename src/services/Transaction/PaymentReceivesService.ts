@@ -9,8 +9,6 @@ interface TransactionRequest {
 class PaymentReceivesService {
     async execute({ club_id, client_id, value}: TransactionRequest) {
 
-        let valueTotal = value
-
         if (!club_id || !client_id || !value) {
             throw new Error("id cliente, clube e valor a ser pago são obrigatórios")
         }
@@ -32,6 +30,7 @@ class PaymentReceivesService {
         const transactions = await prismaClient.transaction.findMany({
             where: {
                 client_id: client_id,
+                club_id: club_id,
                 paid: false,
                 operation: "saida"
             },
@@ -104,15 +103,6 @@ class PaymentReceivesService {
             }
         })
         
-        await prismaClient.client.update({
-            where: {
-                id: client_id
-            }, 
-            data: {
-                receive: parseFloat(client.receive.toFixed(2)) - valueTotal
-            }
-        })
-
         return ("Pagamentos realizados com sucesso")
      }
 }

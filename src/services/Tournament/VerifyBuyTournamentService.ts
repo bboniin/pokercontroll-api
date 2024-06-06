@@ -7,6 +7,7 @@ interface TransactionRequest {
     buyin: number;
     rebuy: number;
     rebuyDuplo: number;
+    rebuyTriplo: number;
     dealer: number;
     super_addOn: number;
     tournament: object;
@@ -15,7 +16,7 @@ interface TransactionRequest {
 
 
 class VerifyBuyTournamentService {
-    async execute({ client_id, passport, dealer, super_addOn, jackpot, addOn, buyin, rebuy, rebuyDuplo, tournament }: TransactionRequest) {
+    async execute({ client_id, passport, rebuyTriplo, dealer, super_addOn, jackpot, addOn, buyin, rebuy, rebuyDuplo, tournament }: TransactionRequest) {
         
         const client = await prismaClient.clientTournament.findFirst({
             where: {
@@ -61,8 +62,8 @@ class VerifyBuyTournamentService {
         }}
 
         if (tournament["is_rebuy"]) {
-            if (rebuy || rebuyDuplo) {
-                if ((rebuy + (rebuyDuplo*2) + client.rebuy + (client.rebuyDuplo*2)) > tournament["max_rebuy"]) {
+            if (rebuy || rebuyDuplo || rebuyTriplo) {
+                if ((rebuy + (rebuyDuplo*2) + (rebuyTriplo*3) + client.rebuy + (client.rebuyDuplo*2) + (client.rebuyTriplo*3)) > tournament["max_rebuy"]) {
                     throw new Error("Número máximo de rebuys atingido")
                 } 
             }
@@ -74,6 +75,10 @@ class VerifyBuyTournamentService {
             if (rebuyDuplo){
                 if(client.rebuyDuplo) {
                 throw new Error("Reentrada Dupla já foi adquirido por esse jogador")
+            }}
+            if (rebuyTriplo){
+                if(client.rebuyTriplo) {
+                throw new Error("Reentrada Tripla já foi adquirido por esse jogador")
             }}
         }
 

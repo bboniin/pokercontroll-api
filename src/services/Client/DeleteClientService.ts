@@ -14,7 +14,7 @@ class DeleteClientService {
             },
             data: {
                 visible: false,
-                chair: ""
+                chair_cash: "",
             }
         })
         return (client)

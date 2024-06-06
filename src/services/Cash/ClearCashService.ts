@@ -10,12 +10,12 @@ class ClearCashService {
         const clients = await prismaClient.client.updateMany({
             where: {
                 club_id: club_id,
-                chair: {
+                chair_cash: {
                     contains: "C"
                 }
             },
             data: {
-                chair: ""
+                chair_cash: ""
             }
         })
 

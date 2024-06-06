@@ -13,7 +13,7 @@ class ExitClientTournamentController {
         const exitClientTournamentService = new ExitClientTournamentService
 
         const { tournament, award } = await exitClientTournamentService.execute({
-            client_id, club_id, tournament_id, position
+            client_id, tournament_id, position
         })
 
         if (award) {

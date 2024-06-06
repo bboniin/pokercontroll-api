@@ -2,21 +2,21 @@ import prismaClient from '../../prisma'
 
 interface TournamentRequest {
     id: string;
+    tournament_id: string;
     chair: string;
-    club_id: string;
 }
 
 class MoveTournamentService {
-    async execute({ id, chair, club_id }: TournamentRequest) {
+    async execute({ id, chair, tournament_id }: TournamentRequest) {
 
-        if (!id || !chair) {
-            throw new Error("Id do cliente e posição da mesa é obrigatório")
+        if (!id || !tournament_id || !chair) {
+            throw new Error("Id do cliente, torneio e posição na mesa é obrigatório")
         }
 
-        const chairClient = await prismaClient.client.findFirst({
+        const chairClient = await prismaClient.clientTournament.findFirst({
             where: {
-                club_id: club_id,
-                chair: "T"+chair
+                tournament_id: tournament_id,
+                chair_tournament: "T"+chair
             }
         })
 
@@ -24,12 +24,19 @@ class MoveTournamentService {
             throw new Error("Posição já está sendo ocupada")
         }
 
-        const client = await prismaClient.client.update({
+        const getClient = await prismaClient.clientTournament.findFirst({
             where: {
-                id: id,
+                tournament_id: tournament_id,
+                client_id: id,
+            }
+        })
+
+        const client = await prismaClient.clientTournament.update({
+            where: {
+                id: getClient.id,
             },
             data: {
-                chair: "T"+chair,
+                chair_tournament: "T"+chair,
             }
         })
 

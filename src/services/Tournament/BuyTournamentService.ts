@@ -10,6 +10,7 @@ interface TournamentRequest {
     jackpot: number;
     dealer: number;
     rebuyDuplo: number;
+    rebuyTriplo: number;
     super_addOn: number;
     transaction_id: string;
     tournament: object;
@@ -17,7 +18,7 @@ interface TournamentRequest {
 }
 
 class BuyTournamentService {
-    async execute({ tournament, transaction_id, passport, super_addOn, dealer, jackpot, client_id, token, value, rebuy, rebuyDuplo, addOn, buyin }: TournamentRequest) {
+    async execute({ tournament, transaction_id, passport, rebuyTriplo, super_addOn, dealer, jackpot, client_id, token, value, rebuy, rebuyDuplo, addOn, buyin }: TournamentRequest) {
         
         const clientTournamentGet = await prismaClient.clientTournament.findFirst({
             where: {
@@ -36,6 +37,7 @@ class BuyTournamentService {
                 dealer: clientTournamentGet['dealer'] || dealer ? true : false,
                 rebuy: clientTournamentGet['rebuy']+rebuy,
                 rebuyDuplo: clientTournamentGet['rebuyDuplo']+rebuyDuplo,
+                rebuyTriplo: clientTournamentGet['rebuyTriplo']+rebuyTriplo,
                 buyin: clientTournamentGet['buyin']+buyin,
                 addOn: clientTournamentGet['addOn']+addOn,
                 super_addOn: clientTournamentGet['super_addOn']+super_addOn,
@@ -47,11 +49,11 @@ class BuyTournamentService {
         if (client.passport && client.jackpot && client.dealer && client.buyin && client.addOn && client.super_addOn) {
             
             if (tournament["is_rebuy"]) {
-                    if (client.rebuy + (client.rebuyDuplo*2) >= tournament["max_rebuy"]) {
+                    if (client.rebuy + (client.rebuyDuplo*2)+ (client.rebuyTriplo*3) >= tournament["max_rebuy"]) {
                         max = 1
                 }
             } else {
-                    if(client.rebuy && client.rebuyDuplo) {
+                    if(client.rebuy && client.rebuyDuplo && client.rebuyTriplo) {
                         max = 1
                 }
             }
@@ -60,10 +62,11 @@ class BuyTournamentService {
         await prismaClient.transactionTournament.create({
             data: {
                 rebuy: rebuy,
-                addOn: rebuy,
-                rebuyDuplo: rebuy,
+                addOn: addOn,
+                rebuyDuplo: rebuyDuplo,
+                rebuyTriplo: rebuyTriplo,
                 super_addOn: super_addOn,
-                buyin: rebuy,
+                buyin: buyin,
                 transaction_id: transaction_id,
                 tournament_id: tournament["id"]
             }
@@ -78,6 +81,7 @@ class BuyTournamentService {
                 totalAward_accumulated:  tournament['totalAward_accumulated']+value,
                 rebuy: tournament['rebuy']+rebuy,
                 rebuyDuplo: tournament['rebuyDuplo']+rebuyDuplo,
+                rebuyTriplo: tournament['rebuyTriplo']+rebuyTriplo,
                 buyin: tournament['buyin']+buyin,
                 addOn: tournament['addOn']+addOn,
                 super_addOn: tournament['super_addOn'] + super_addOn,

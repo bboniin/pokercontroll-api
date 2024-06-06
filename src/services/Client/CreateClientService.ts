@@ -24,7 +24,7 @@ class CreateClientService {
             cpf: cpf,
             address: address,
             club_id: club_id,
-            chair: "",
+            chair_cash: "",
             observation: observation,
             credit: credit,
             debt: 0,

@@ -12,7 +12,8 @@ import { PaymentReceivesService } from '../../services/Transaction/PaymentReceiv
 
 class BuyTournamentController {
     async handle(req: Request, res: Response) {
-        const { paid, value, passport, jackpot, dealer, buyin_value, super_addOn,
+        const { value, passport, jackpot, dealer, buyin_value, super_addOn, rebuyTriplo,
+            super_addOn_staff, addOn_staff, rebuy_staff, rebuyDuplo_staff, rebuyTriplo_staff, buyin_staff,
             addOn, buyin, rebuy, rebuyDuplo, methods_transaction, client_id, date_payment, observation,
             tournament_id } = req.body
 
@@ -51,7 +52,7 @@ class BuyTournamentController {
         const verifyBuyTournamentService = new VerifyBuyTournamentService
 
         await verifyBuyTournamentService.execute({
-            client_id, passport, jackpot, dealer, addOn, super_addOn, buyin, rebuy, rebuyDuplo, tournament
+            client_id, passport, jackpot, dealer, addOn, super_addOn, buyin, rebuy, rebuyDuplo, rebuyTriplo, tournament
         })
 
         if (dealer) {
@@ -59,11 +60,11 @@ class BuyTournamentController {
             const createDealerService = new CreateDealerService
             await createDealerService.execute({
                 paid: payCredit ? false : true, value: tournament.dealer_value, type: "dealer", methods_transaction:
-                methodsPay, client_id, sector_id: tournament_id, club_id, date_payment, observation, items_transaction: {
+                methodsPay, client_id, sector_id: tournament_id, club_id, date_payment, observation, items_transaction: [{
                     name: "dealer",
                     amount: 1,
                     value: tournament.dealer_value,
-                }, operation: "entrada", valueReceive, valueDebit: 0
+                }], operation: "entrada", valueReceive, valueDebit: 0
             })
             methods_transactionC = methodsC
             valueTotal -= tournament.dealer_value
@@ -101,6 +102,9 @@ class BuyTournamentController {
 
         let items_transaction = [] 
 
+        let value_staff = 0
+        let items_staff = []
+
         if (addOn) {
             items_transaction.push({
                 name: "torneio-add-on",
@@ -108,8 +112,16 @@ class BuyTournamentController {
                 value: tournament.addOn_value,
             })
             token+=tournament.addOn_token
+            if (tournament.enable_addOn_staff && addOn_staff) {
+                items_staff.push({
+                    name: "torneio-add-on-staff",
+                    amount: addOn,
+                    value: tournament.addOn_value_staff,
+                })
+                token += tournament.addOn_token_staff
+                value_staff += tournament.addOn_value_staff
+            }
         }
-
         if (super_addOn) {
             items_transaction.push({
                 name: "torneio-super-add-on",
@@ -117,6 +129,15 @@ class BuyTournamentController {
                 value: tournament.super_addOn_value,
             })
             token+=tournament.super_addOn_token
+            if (tournament.enable_super_addOn_staff && super_addOn_staff) {
+                items_staff.push({
+                    name: "torneio-super-add-on-staff",
+                    amount: super_addOn,
+                    value: tournament.super_addOn_value_staff,
+                })
+                token+=tournament.super_addOn_token_staff
+                value_staff += tournament.super_addOn_value_staff
+            }
         }
 
         if (buyin) {
@@ -126,6 +147,15 @@ class BuyTournamentController {
                 value: buyin_value == 0 ? buyin_value : tournament.buyin_value,
             })
             token+=tournament.buyin_token
+            if (tournament.enable_buyin_staff && buyin_staff) {
+                items_staff.push({
+                    name: "torneio-buyin-staff",
+                    amount: buyin,
+                    value: tournament.buyin_value_staff,
+                })
+                token+=tournament.buyin_token_staff
+                value_staff += tournament.buyin_value_staff
+            }
         }
 
         if (rebuy) {
@@ -135,6 +165,15 @@ class BuyTournamentController {
                 value: tournament.rebuy_value,
             })
             token+=tournament.rebuy_token*rebuy
+            if (tournament.enable_rebuy_staff && rebuy_staff) {
+                items_staff.push({
+                    name:  tournament.is_rebuy ? "torneio-rebuy-staff" : "torneio-reentrada-staff",
+                    amount: rebuy,
+                    value: tournament.rebuy_value_staff,
+                })
+                token += tournament.rebuy_token_staff*rebuy
+                value_staff += tournament.rebuy_value_staff*rebuy
+            }
         }
 
         if (rebuyDuplo) {
@@ -143,15 +182,64 @@ class BuyTournamentController {
                 amount: rebuyDuplo,
                 value: tournament.rebuyDuplo_value,
             })
+            token+=tournament.rebuyDuplo_token*rebuyDuplo
+            if (tournament.enable_rebuyDuplo_staff && rebuyDuplo_staff) {
+                items_staff.push({
+                    name:  tournament.is_rebuy ? "torneio-rebuy-duplo-staff" : "torneio-reentrada-dupla-staff",
+                    amount: rebuyDuplo,
+                    value: tournament.rebuyDuplo_value_staff,
+                })
+                token += tournament.rebuyDuplo_token_staff*rebuyDuplo
+                value_staff += tournament.rebuyDuplo_value_staff*rebuyDuplo
+            }
+        }
+
+        if (rebuyTriplo) {
+            items_transaction.push({
+                name: tournament.is_rebuy ? "torneio-rebuy-triplo" : "torneio-reentrada-tripla",
+                amount: rebuyTriplo,
+                value: tournament.rebuyTriplo_value,
+            })
+            token+=tournament.rebuyTriplo_token*rebuyTriplo
+            if (tournament.enable_rebuyTriplo_staff && rebuyTriplo_staff) {
+                items_staff.push({
+                    name: tournament.is_rebuy ? "torneio-rebuy-triplo-staff" : "torneio-reentrada-tripla-staff",
+                    amount: rebuyTriplo,
+                    value: tournament.rebuyTriplo_value_staff,
+                })
+                token+=tournament.rebuyTriplo_token_staff*rebuyTriplo
+                value_staff += tournament.rebuyTriplo_value_staff*rebuyTriplo
+            }
+        }
+
+        if (value_staff) {
+            const createDealerService = new CreateDealerService
+        
+            let { methodsPay, payCredit, methodsC } = await getMethodsPay(value_staff, methods_transactionC)
+            await createDealerService.execute({
+                paid: payCredit ? false : true, value: value_staff, type: "dealer", methods_transaction: 
+                methodsPay, items_transaction: items_staff, client_id: client_id, sector_id: tournament_id, club_id,
+                date_payment, observation, operation: "entrada", valueReceive, valueDebit: 0
+            })
+            
+            if (valueReceive) {
+                if (valueReceive >= value_staff) {
+                    valueReceive -= value_staff
+                } else {
+                    valueReceive = 0
+                }
+            }
+
+            methods_transactionC = methodsC
         }
 
         let transaction = null
         if (items_transaction.length) {
             const createTransactionService = new CreateTransactionService
 
-            let { payCredit, methodsPay } = await getMethodsPay(valueTotal, methods_transactionC)
+            let { payCredit, methodsPay } = await getMethodsPay(valueTotal-value_staff, methods_transactionC)
             await createTransactionService.execute({
-                paid: payCredit ? false : true, value: valueTotal, type: "clube", methods_transaction:
+                paid: payCredit ? false : true, value: valueTotal-value_staff, type: "clube", methods_transaction:
                     methodsPay, items_transaction, client_id: client_id, sector_id: tournament_id, club_id,
                     date_payment, observation, operation: "entrada", valueReceive, valueDebit: 0
             })
@@ -160,7 +248,7 @@ class BuyTournamentController {
         const buyTournamentService = new BuyTournamentService
 
         await buyTournamentService.execute({
-            transaction_id: transaction ? transaction.id : "", value, token, jackpot, passport, super_addOn, dealer, tournament, addOn, buyin, rebuy, rebuyDuplo, client_id: client_id
+            transaction_id: transaction ? transaction.id : "", value, token, jackpot, passport, super_addOn, dealer, tournament, addOn, buyin, rebuy, rebuyDuplo, rebuyTriplo, client_id: client_id
         })
 
         return res.json(tournament)

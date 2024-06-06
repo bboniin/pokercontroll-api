@@ -6,8 +6,12 @@ class CreateTournamentController {
         const { name, buyin_value, buyin_token, rebuy_value, rebuy_token, rebuyDuplo_value, rebuyDuplo_token,
             addOn_value, addOn_token, timechip, chairs, totalAward_guaranteed, timer_round, timer_interval,
             rounds_to_interval, max_rebuy, rake, super_addOn_value, super_addOn_token, passport, jackpot, dealer,
-            nivel_max_buyin_free, nivel_max_in, nivel_max_timechip, percentage_players_award, is_rebuy,
-            enable_rebuy, enable_rebuyDuplo, enable_addOn, enable_super_addOn, show_max
+            nivel_max_buyin_discount, nivel_max_in, nivel_max_timechip, percentage_players_award, is_rebuy,
+            enable_rebuy, enable_rebuyDuplo, enable_addOn, enable_super_addOn, show_max, enable_rebuy_staff, rebuy_token_staff,
+            rebuy_value_staff, enable_rebuyDuplo_staff, rebuyDuplo_token_staff, rebuyDuplo_value_staff, enable_rebuyTriplo_staff,
+            enable_rebuyTriplo, rebuyTriplo_token, rebuyTriplo_value, rebuyTriplo_token_staff, rebuyTriplo_value_staff, enable_addOn_staff, addOn_token_staff, addOn_value_staff,
+            enable_super_addOn_staff, super_addOn_token_staff, super_addOn_value_staff, enable_buyin_staff, buyin_token_staff,
+            buyin_value_staff, buyin_discount
         } = req.body
 
         let club_id = req.club_id
@@ -35,8 +39,12 @@ class CreateTournamentController {
         const tournament = await createTournamentService.execute({
             name, buyin_value, buyin_token, rebuy_value, rebuy_token, rebuyDuplo_value, rebuyDuplo_token, addOn_value,
             addOn_token, timechip, chairs, totalAward_guaranteed, intervals, club_id, max_rebuy, rake, super_addOn_value,
-            super_addOn_token, passport, jackpot, dealer, nivel_max_buyin_free, nivel_max_in, nivel_max_timechip,
-            percentage_players_award, is_rebuy, enable_rebuy, enable_rebuyDuplo, enable_addOn, enable_super_addOn, show_max
+            super_addOn_token, passport, jackpot, dealer, nivel_max_buyin_discount, nivel_max_in, nivel_max_timechip,
+            percentage_players_award, is_rebuy, enable_rebuy, enable_rebuyDuplo, enable_addOn, enable_super_addOn, show_max,
+            enable_rebuy_staff, rebuy_token_staff, rebuy_value_staff, enable_rebuyDuplo_staff, rebuyDuplo_token_staff, rebuyDuplo_value_staff,
+            enable_rebuyTriplo_staff, enable_rebuyTriplo, rebuyTriplo_token, rebuyTriplo_value, rebuyTriplo_token_staff, rebuyTriplo_value_staff, enable_addOn_staff, addOn_token_staff,
+            addOn_value_staff, enable_super_addOn_staff, super_addOn_token_staff, super_addOn_value_staff, enable_buyin_staff,
+            buyin_token_staff, buyin_value_staff, buyin_discount
         })
 
         return res.json(tournament)

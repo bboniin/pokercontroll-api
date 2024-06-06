@@ -41,7 +41,7 @@ class CancelTransactionService {
         })
 
         if (transactions.length == 0) {
-            throw new Error("Nenhuma transação não encontrada")
+            throw new Error("Nenhuma transação encontrada")
         }
 
         let valueTransaction = []

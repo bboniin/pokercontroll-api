@@ -20,29 +20,13 @@ class InitialTournamentService {
             throw new Error("Torneio não encontrado")
         }
 
-        const tournamentInit = await prismaClient.tournament.findFirst({
-            where: {
-                club_id: club_id,
-                OR: [{
-                    status: "inscricao"
-                },{
-                    status: "final"
-                }]
-            }
-        })
-
-
-        if (tournamentInit) {
-            throw new Error("Há torneio em andamento, finalize-o para iniciar outro")
-        }
-
         let minsTimechip = 0
         let minsIn = 0
-        let minsBuyinFree = 0
+        let minsBuyinDiscount = 0
 
         tournament.intervals.split("-").map((item, index) => {
-            if (index < tournament.max_buyin_free) {
-                minsBuyinFree += parseInt(item.substring(1)) 
+            if (index < tournament.max_buyin_discount) {
+                minsBuyinDiscount += parseInt(item.substring(1)) 
             }
             if (index < tournament.max_in) {
                 minsIn += parseInt(item.substring(1)) 
@@ -60,7 +44,7 @@ class InitialTournamentService {
                 status: "inscricao",
                 datetime_initial: new Date(),
                 datetime_max_in: addMinutes(new Date(), minsIn),
-                datetime_max_buyin_free: addMinutes(new Date(), minsBuyinFree),
+                datetime_max_buyin_discount: addMinutes(new Date(), minsBuyinDiscount),
                 datetime_max_timechip: addMinutes(new Date(), minsTimechip),
             },
             include: {

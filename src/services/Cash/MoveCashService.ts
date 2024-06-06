@@ -17,7 +17,7 @@ class MoveCashService {
         const chairClient = await prismaClient.client.findFirst({
             where: {
                 club_id: club_id,
-                chair: "C"+chair
+                chair_cash: "C"+chair
             }
         })
 
@@ -31,7 +31,7 @@ class MoveCashService {
                     id: chairClient.id,
                 },
                 data: {
-                    chair: "C"+chair_initial,
+                    chair_cash: "C"+chair_initial,
                 }
             })
         }
@@ -41,7 +41,7 @@ class MoveCashService {
                 id: id,
             },
             data: {
-                chair: "C"+chair,
+                chair_cash: "C"+chair,
             }
         })
 

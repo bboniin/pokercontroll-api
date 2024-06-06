@@ -2,13 +2,12 @@ import prismaClient from '../../prisma'
 
 interface TournamentRequest {
     client_id: string;
-    club_id: string;
     position: number;
     tournament_id: string;
 }
 
 class ExitClientTournamentService {
-    async execute({ client_id, club_id, tournament_id, position }: TournamentRequest) {
+    async execute({ client_id, tournament_id, position }: TournamentRequest) {
 
         if (!client_id || !tournament_id ) {
             throw new Error("Id do cliente e do torneio são obrigatórios")
@@ -27,11 +26,11 @@ class ExitClientTournamentService {
         }
 
 
-        const chairClient = await prismaClient.client.findFirst({
+        const chairClient = await prismaClient.clientTournament.findFirst({
             where: {
-                id: client_id,
-                club_id: club_id,
-                chair: {
+                client_id: client_id,
+                tournament_id: tournament_id,
+                chair_tournament: {
                     contains: "T"
                 }
             }
@@ -52,33 +51,18 @@ class ExitClientTournamentService {
             throw new Error("Outro jogador já foi eliminado nessa posição")
         }
 
-        const client = await prismaClient.client.update({
-            where: {
-                id: client_id,
-            },
-            data: {
-                chair: "",
-            }
-        })
-
-
         const award = position ? parseFloat(tournamentGet.award.split("-")[position-1]) : 0
-
-        const clientTournament = await prismaClient.clientTournament.findFirst({
-            where: {
-                client_id: client.id,
-                tournament_id: tournament_id,
-        }})
 
         await prismaClient.clientTournament.update({
             where: {
-                id: clientTournament.id,
+                id: chairClient.id,
             },
             data: {
                 date_out: new Date(),
                 exit: true,
                 position: position || 9999,
-                award: award || 0
+                award: award || 0,
+                chair_tournament: ""
             }
         })
 

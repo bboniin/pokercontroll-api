@@ -81,7 +81,8 @@ class CreatePassportService {
                         id: client_id,
                     },
                     data: {
-                        debt: client.debt + value - valuePaid
+                        debt: client.debt + (value - valuePaid - valueReceive),
+                        receive: client.receive - valueDebit
                     }
                 })
 
@@ -117,7 +118,8 @@ class CreatePassportService {
                         id: client_id,
                     },
                     data: {
-                        receive: client.receive + value - valuePaid 
+                        receive: client.receive + value - valuePaid  - valueReceive,
+                        debt: client.debt - valueReceive
                     }
                 })
 
@@ -126,7 +128,7 @@ class CreatePassportService {
                         id: club_id,
                     },
                     data: {
-                        passport: club.passport - valuePaid
+                        passport: club.passport - valuePaid 
                     }
                 })
             }

@@ -25,7 +25,7 @@ class ConfirmedJackpotService {
         })
         
         if (!transaction) {
-            throw new Error("Transaação não encontrada")
+            throw new Error("Transação não encontrada")
         }
 
         let client = {}
@@ -73,19 +73,37 @@ class ConfirmedJackpotService {
                         id: client["id"],
                     },
                     data: {
-                        debt: client["debt"] - valuePaid
+                        debt: client["debt"] - valuePaid - valueDebit
                     }
                 })
             }
-
-            await prismaClient.club.update({
-                where: {
-                    id: club_id,
-                },
-                data: {
-                    jackpot: club.jackpot + valueMethods
-                }
-            })
+            if (valueDebit) {
+                await prismaClient.club.update({
+                    where: {
+                        id: club_id,
+                    },
+                    data: {
+                        balance: club.balance - valueDebit
+                    }
+                })
+                await prismaClient.club.update({
+                    where: {
+                        id: club_id,
+                    },
+                    data: {
+                        jackpot: club.jackpot + valueMethods + valueDebit
+                    }
+                })
+            } else {
+                await prismaClient.club.update({
+                    where: {
+                        id: club_id,
+                    },
+                    data: {
+                        jackpot: club.jackpot + valueMethods
+                    }
+                })
+            }
         } else {
             if (transaction.client_id) {
                 await prismaClient.client.update({
@@ -93,7 +111,7 @@ class ConfirmedJackpotService {
                         id: client["id"],
                     },
                     data: {
-                        receive: client["receive"] - valuePaid
+                        receive: client["receive"] - valuePaid  - valueReceive
                     }
                 })
             }

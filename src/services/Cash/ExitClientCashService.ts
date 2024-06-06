@@ -16,7 +16,7 @@ class ExitClientCashService {
             where: {
                 id: client_id,
                 club_id: club_id,
-                chair: {
+                chair_cash: {
                     contains: "C"
                 }
             }
@@ -31,7 +31,7 @@ class ExitClientCashService {
                 id: client_id,
             },
             data: {
-                chair: "",
+                chair_cash: "",
             }
         })
 

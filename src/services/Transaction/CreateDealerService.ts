@@ -1,5 +1,11 @@
 import prismaClient from '../../prisma'
 
+interface Item {
+    name?: string;
+    value?: number;
+    amount?: number;
+}
+
 interface TransactionRequest {
     paid: boolean;
     type: string;
@@ -7,7 +13,7 @@ interface TransactionRequest {
     valueReceive: number;
     valueDebit: number;
     methods_transaction: Array<[]>;
-    items_transaction: object;
+    items_transaction: Array<Item>;
     client_id: string;
     club_id: string;
     operation: string;
@@ -81,7 +87,8 @@ class CreateDealerService {
                         id: client_id,
                     },
                     data: {
-                        debt: client.debt + value - valuePaid
+                        debt: client.debt + value - valuePaid  - valueDebit,
+                        receive: client.receive - valueDebit
                     }
                 })
 
@@ -116,7 +123,8 @@ class CreateDealerService {
                         id: client_id,
                     },
                     data: {
-                        receive: client.receive + value - valuePaid
+                        receive: client.receive + value - valuePaid - valueReceive,
+                        debt: client.debt - valueReceive
                     }
                 })
 
@@ -130,14 +138,16 @@ class CreateDealerService {
                 })
             }
         }
-        
-        await prismaClient.itemsTransaction.create({
-            data: {
-                name: items_transaction["name"],
-                value: items_transaction["value"],
-                amount: items_transaction["amount"],
-                transaction_id: transaction.id
-            }
+
+        await items_transaction.map(async (item) => {
+            await prismaClient.itemsTransaction.create({
+                data: {
+                    name: item["name"],
+                    value: item["value"],
+                    amount: item["amount"],
+                    transaction_id: transaction.id
+                }
+            })
         })
         
         methods_transaction.map(async (item) => {

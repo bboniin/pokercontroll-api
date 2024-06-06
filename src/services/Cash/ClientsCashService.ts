@@ -10,7 +10,7 @@ class ClientsCashService {
         const clients = await prismaClient.client.findMany({
             where: {
                 club_id: club_id,
-                chair: {
+                chair_cash: {
                     contains: "C"
                 }
             },

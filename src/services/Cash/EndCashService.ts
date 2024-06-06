@@ -11,7 +11,7 @@ class EndCashService {
         const clientsCash = await prismaClient.client.findFirst({
             where: {
                 club_id: club_id,
-                chair: {
+                chair_cash: {
                     contains: "C"
                 }
             },

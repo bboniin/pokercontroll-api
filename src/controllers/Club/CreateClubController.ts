@@ -3,7 +3,7 @@ import { CreateClubService } from '../../services/Club/CreateClubService';
 
 class CreateClubController {
     async handle(req: Request, res: Response) {
-        const { name, username, email, password, auth} = req.body
+        const { name, username, email, password, auth } = req.body
 
         const createClubService = new CreateClubService
 

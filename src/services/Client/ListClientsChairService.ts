@@ -9,17 +9,18 @@ class ListClientsChairService {
     async execute({ club_id, tournament_id }: ClientRequest) {
 
         let filter = {
-                club_id: club_id,
-                chair: "",
-                visible: true
-            }
-
+            club_id: club_id,
+            visible: true
+        }
+            
         if (tournament_id) {
             filter["client_tournaments"] = {
                 none: {
                     tournament_id: tournament_id
                 }
             }
+        } else {
+            filter["chair_cash"] = ""
         }
 
         const clients = await prismaClient.client.findMany({
