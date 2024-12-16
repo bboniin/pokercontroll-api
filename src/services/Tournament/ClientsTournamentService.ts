@@ -21,7 +21,8 @@ class ClientsTournamentService {
                         tournament_id: tournament_id,
                     },
                     include: {
-                        client: true
+                        client: true,
+                        purchases: true
                     }
                 },
             }

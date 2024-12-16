@@ -36,7 +36,7 @@ class VerifyBuyTournamentService {
         purchases.map((item)=>{
             if(item["type"] == "purchase"){
                 if (tournament.is_rebuy) {
-                    const totalRebuy = tournament.clients_purchases.filter((data)=> data.type == "purchase").reduce((accumulator, item) => accumulator + item.max_limit*item.quantity, 0);
+                    const totalRebuy = tournament.purchases.filter((data)=> data.type == "purchase").reduce((accumulator, data) => accumulator + data.max_limit*item["amount"], 0);
                     if (totalRebuy > tournament.max_rebuy) {
                         throw new Error("Número máximo de rebuys atingido")
                     }
@@ -54,6 +54,7 @@ class VerifyBuyTournamentService {
             }
         })
     
+        return tournament
     }
 }
 

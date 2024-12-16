@@ -29,7 +29,11 @@ class ListClientsChairService {
                 create_at: "asc"
             },
             include: {
-                client_tournaments: true
+                client_tournaments: {
+                    include: {
+                        purchases: true
+                    }
+                }
             }
         })
 

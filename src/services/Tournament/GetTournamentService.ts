@@ -23,7 +23,8 @@ class GetTournamentService {
                         date_out: "desc"
                     },
                     include: {
-                        client: true
+                        client: true,
+                        purchases: true
                     }
                 },
                 purchases: true,

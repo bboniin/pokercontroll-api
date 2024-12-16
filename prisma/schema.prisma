@@ -278,9 +278,9 @@ model Purchase {
   name                  String             
   value                 Float               
   token                 Int        
-  is_staff              Boolean
-  value_staff           Float
-  token_staff           Int
+  is_staff              Boolean             @default(true)
+  value_staff           Float               @default(0)
+  token_staff           Int                 @default(0)
   type                  String            
   max_limit             Int?                  
   
@@ -342,13 +342,10 @@ model Order {
 
 model ClientPurchase {
   id                    String              @id @default(uuid())
-  cashier               String
+  type                  String
   name                  String              
-  value                 Float              
-  token                 Int                
-  type                  String   
-  quantity              Int              
-  max_limit             Int?                 
+  value                 Float    
+  amount                Int                   
   total_value           Float           
   purchase_id           String            
   client_id             String
