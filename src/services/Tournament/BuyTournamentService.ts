@@ -1,32 +1,45 @@
-import prismaClient from '../../prisma'
+import prismaClient from "../../prisma";
 
 interface TournamentRequest {
-    totalToken: number;
-    totalValue: number;
-    tournament_id: string;
+  totalToken: number;
+  totalValue: number;
+  tournament_id: string;
 }
 
 class BuyTournamentService {
-    async execute({ totalToken, totalValue, tournament_id }: TournamentRequest) {
-        
-        const tournamentGet = await prismaClient.tournament.findFirst({
-            where: {
-                id: tournament_id
-            }
-        })
+  async execute({ totalToken, totalValue, tournament_id }: TournamentRequest) {
+    const tournamentGet = await prismaClient.tournament.findFirst({
+      where: {
+        id: tournament_id,
+      },
+    });
 
-        const tournament = await prismaClient.tournament.update({
-            where: {
-                id: tournamentGet["id"],
-            },
-            data: {
-                total_tokens: tournamentGet.total_tokens+totalToken,
-                totalAward_accumulated:  tournamentGet.totalAward_accumulated+totalValue,
-            },
-        })
+    const tournament = await prismaClient.tournament.update({
+      where: {
+        id: tournamentGet["id"],
+      },
+      data: {
+        total_tokens: tournamentGet.total_tokens + totalToken,
+        totalAward_accumulated:
+          tournamentGet.totalAward_accumulated + totalValue,
+      },
+      include: {
+        clients: {
+          orderBy: {
+            date_out: "desc",
+          },
+          include: {
+            client: true,
+            purchases: true,
+          },
+        },
+        purchases: true,
+        clients_purchases: true,
+      },
+    });
 
-        return tournament
-    }
+    return tournament;
+  }
 }
 
-export { BuyTournamentService }
+export { BuyTournamentService };

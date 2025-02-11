@@ -63,6 +63,7 @@ model Club {
   stocks             Stock[]
   invoices           Invoice[]
   suppliers          Supplier[]
+  rankings           Ranking[]
 
   @@map("clubs")
 }
@@ -88,6 +89,7 @@ model Client {
   orders             Order[]
   client_tournaments ClientTournament[]
   commands           Command[]
+  clients_points     ClientPoints[]
 
   @@map("clients")
 }
@@ -266,6 +268,7 @@ model Tournament {
   clients                       ClientTournament[]
   purchases                     Purchase[]
   clients_purchases             ClientPurchase[]
+  rankings                      TournamentRanking[]
     
   @@map("tournaments")
 }
@@ -352,7 +355,7 @@ model ClientPurchase {
   client                ClientTournament    @relation(fields: [client_id], references: [id], onDelete: Cascade)
   tournament_id         String
   tournament            Tournament          @relation(fields: [tournament_id], references: [id], onDelete: Cascade)            
-  created_at            DateTime            @default(now())
+  create_at            DateTime            @default(now())
 
   @@map("client_purchases")
 }
@@ -390,4 +393,58 @@ model ProductOrder {
   update_at    DateTime? @default(now())
 
   @@map("product_orders")
+}
+
+model Ranking {
+  id                    String              @id @default(uuid())
+  name                  String   
+  description           String  
+  status                String
+  club_id               String
+  goal_value            Float
+  club                  Club                @relation(fields: [club_id], references: [id], onDelete: Cascade)            
+  create_at             DateTime            @default(now())   
+  update_at             DateTime            @default(now())
+
+  clients_points        ClientPoints[]
+  tournaments           TournamentRanking[]
+
+  @@map("rankings")
+}
+
+model ClientPoints {
+  id                    String              @id @default(uuid())
+  client_id             String
+  ranking_id            String              
+  points                Int                
+  client                Client              @relation(fields: [client_id], references: [id], onDelete: Cascade) 
+  ranking               Ranking             @relation(fields: [ranking_id], references: [id], onDelete: Cascade) 
+  create_at             DateTime             @default(now())
+  update_at             DateTime            @default(now())
+
+  @@map("clients_points")
+}
+
+model TournamentRanking {
+  id                    String                      @id @default(uuid())
+  tournament_id         String
+  ranking_id            String
+  value                 Float
+  tournament            Tournament                  @relation(fields: [tournament_id], references: [id], onDelete: Cascade)
+  ranking               Ranking                     @relation(fields: [ranking_id], references: [id], onDelete: Cascade)
+
+  tournament_rules      TournamentRankingRule[]
+
+  @@map("tournament_ranking")
+}
+
+model TournamentRankingRule {
+  id                      String                @id @default(uuid())
+  tournament_ranking_id   String
+  min_position            Int?    
+  max_position            Int?   
+  points                  Int     
+  tournamentRanking       TournamentRanking     @relation(fields: [tournament_ranking_id], references: [id], onDelete: Cascade)
+
+  @@map("tournament_ranking_rules")
 }
