@@ -416,13 +416,14 @@ model ClientPoints {
   id                    String              @id @default(uuid())
   client_id             String
   ranking_id            String              
-  points                Int                
+  points                Int               
+  position              Int                
   client                Client              @relation(fields: [client_id], references: [id], onDelete: Cascade) 
   ranking               Ranking             @relation(fields: [ranking_id], references: [id], onDelete: Cascade) 
   create_at             DateTime             @default(now())
   update_at             DateTime            @default(now())
 
-  @@map("clients_points")
+  @@map("client_points")
 }
 
 model TournamentRanking {

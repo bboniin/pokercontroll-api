@@ -89,6 +89,7 @@ class FinishTournamentService {
             data: {
               client_id: client.client_id,
               points: data.points,
+              position: idx + 1,
               ranking_id: data.ranking_id,
             },
           });
