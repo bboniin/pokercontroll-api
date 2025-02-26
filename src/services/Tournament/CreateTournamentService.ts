@@ -12,6 +12,8 @@ interface TournamentRequest {
   nivel_max_in: number;
   nivel_max_timechip: number;
   percentage_players_award: number;
+  vacancy_value: number;
+  vacancy_total: number;
   is_rebuy: boolean;
   show_max: boolean;
   rankings: Array<[]>;
@@ -35,6 +37,8 @@ class CreateTournamentService {
     rankings,
     club_id,
     purchases,
+    vacancy_total,
+    vacancy_value,
   }: TournamentRequest) {
     if (
       !name ||
@@ -58,6 +62,12 @@ class CreateTournamentService {
       throw new Error(
         "Preencha pelo menos uma opção de compra em Entrada, Compras e Serviços"
       );
+    }
+
+    if (vacancy_total) {
+      if (!vacancy_value) {
+        throw new Error("Preencha o valor das vagas");
+      }
     }
 
     if (rankings.length) {
@@ -98,6 +108,17 @@ class CreateTournamentService {
         intervals: intervals,
       },
     });
+
+    const vacancies = Array.from({ length: vacancy_total }).map((_, index) => ({
+      value: vacancy_value,
+      tournament_id: tournament.id,
+    }));
+
+    if (vacancies.length) {
+      await prismaClient.vacancy.createMany({
+        data: vacancies,
+      });
+    }
 
     Promise.all(
       await purchases.map(async (item) => {

@@ -110,16 +110,6 @@ class CreateDealerService {
       });
 
       if (value) {
-        await prismaClient.client.update({
-          where: {
-            id: client_id,
-          },
-          data: {
-            debt: client.debt + value - valuePaid - valueDebit,
-            receive: client.receive - valueDebit,
-          },
-        });
-
         await prismaClient.club.update({
           where: {
             id: club_id,
@@ -146,16 +136,6 @@ class CreateDealerService {
       });
 
       if (value) {
-        await prismaClient.client.update({
-          where: {
-            id: client_id,
-          },
-          data: {
-            receive: client.receive + value - valuePaid - valueReceive,
-            debt: client.debt - valueReceive,
-          },
-        });
-
         await prismaClient.club.update({
           where: {
             id: club_id,

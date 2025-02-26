@@ -90,6 +90,7 @@ model Client {
   client_tournaments ClientTournament[]
   commands           Command[]
   clients_points     ClientPoints[]
+  vacancys           Vacancy[]
 
   @@map("clients")
 }
@@ -269,6 +270,7 @@ model Tournament {
   purchases                     Purchase[]
   clients_purchases             ClientPurchase[]
   rankings                      TournamentRanking[]
+  vacancys                      Vacancy[]
     
   @@map("tournaments")
 }
@@ -425,6 +427,23 @@ model ClientPoints {
 
   @@map("client_points")
 }
+
+model Vacancy {
+  id                    String              @id @default(uuid())                           
+  description           String?  
+  client_id             String?
+  tournament_id         String              
+  value                 Float                               
+  rescue                Boolean             @default(false)               
+  date_rescue           DateTime            @default(now())
+  client                Client?             @relation(fields: [client_id], references: [id], onDelete: Cascade) 
+  tournament            Tournament          @relation(fields: [tournament_id], references: [id], onDelete: Cascade) 
+  create_at             DateTime            @default(now())
+  update_at             DateTime            @default(now())
+
+  @@map("vacancys")
+}
+
 
 model TournamentRanking {
   id                    String                      @id @default(uuid())

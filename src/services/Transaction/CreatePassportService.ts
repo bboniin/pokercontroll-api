@@ -104,16 +104,6 @@ class CreatePassportService {
       });
 
       if (value) {
-        await prismaClient.client.update({
-          where: {
-            id: client_id,
-          },
-          data: {
-            debt: client.debt + (value - valuePaid - valueReceive),
-            receive: client.receive - valueDebit,
-          },
-        });
-
         await prismaClient.club.update({
           where: {
             id: club_id,
@@ -139,30 +129,7 @@ class CreatePassportService {
         },
       });
 
-      console.log({
-        type: type,
-        value: value,
-        client_id: client_id,
-        club_id: club_id,
-        sector_id: sector_id,
-        operation: operation,
-        date_payment: date_payment,
-        observation: observation,
-        paid: paid,
-        value_paid: valuePaid + valueReceive + valueDebit,
-      });
-
       if (value) {
-        await prismaClient.client.update({
-          where: {
-            id: client_id,
-          },
-          data: {
-            receive: client.receive + value - valuePaid - valueReceive,
-            debt: client.debt - valueReceive,
-          },
-        });
-
         await prismaClient.club.update({
           where: {
             id: club_id,

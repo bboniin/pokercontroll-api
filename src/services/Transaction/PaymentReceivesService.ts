@@ -1,110 +1,123 @@
-import prismaClient from '../../prisma'
+import prismaClient from "../../prisma";
 
 interface TransactionRequest {
-    club_id: string;
-    client_id: string;
-    value: number;
+  club_id: string;
+  client_id: string;
+  value: number;
 }
 
 class PaymentReceivesService {
-    async execute({ club_id, client_id, value}: TransactionRequest) {
+  async execute({ club_id, client_id, value }: TransactionRequest) {
+    const valueTotal = value;
 
-        if (!club_id || !client_id || !value) {
-            throw new Error("id cliente, clube e valor a ser pago são obrigatórios")
+    if (!club_id || !client_id || !value) {
+      throw new Error("id cliente, clube e valor a ser pago são obrigatórios");
+    }
+    const client = await prismaClient.client.findFirst({
+      where: {
+        id: client_id,
+        club_id: club_id,
+      },
+    });
+
+    if (!client) {
+      throw new Error("Cliente não encontrada");
+    }
+
+    if (parseFloat(client.receive.toFixed(2)) < value) {
+      throw new Error(
+        "Valor de pagamento com saldo é maior do que o cliente tem a receber"
+      );
+    }
+
+    const transactions = await prismaClient.transaction.findMany({
+      where: {
+        client_id: client_id,
+        club_id: club_id,
+        paid: false,
+        operation: "saida",
+      },
+      orderBy: {
+        create_at: "asc",
+      },
+    });
+
+    if (transactions.length == 0) {
+      throw new Error("Nenhuma transação não encontrada");
+    }
+
+    let valueTransaction = [];
+
+    await transactions.map((item) => {
+      if (value) {
+        let valuePaid = item.value - item.value_paid;
+        if (valuePaid <= value) {
+          valueTransaction.push(valuePaid);
+          value -= valuePaid;
+        } else {
+          valueTransaction.push(value);
+          value = 0;
         }
-        const client = await prismaClient.client.findFirst({
-            where: {
-                id: client_id,
-                club_id: club_id
-            }
-        })
+      } else {
+        valueTransaction.push(0);
+      }
+    });
 
-        if (!client) {
-            throw new Error("Cliente não encontrada")
+    await Promise.all(
+      await transactions.map(async (item, index) => {
+        if (valueTransaction[index]) {
+          let valuePaid = item.value - item.value_paid;
+          if (valuePaid <= valueTransaction[index]) {
+            await prismaClient.transaction.update({
+              where: {
+                id: item.id,
+              },
+              data: {
+                paid: true,
+                value_paid: item.value,
+              },
+            });
+            await prismaClient.methodsTransaction.create({
+              data: {
+                name: "Saldo",
+                percentage: 0,
+                value: valueTransaction[index],
+                transaction_id: item.id,
+              },
+            });
+          } else {
+            await prismaClient.transaction.update({
+              where: {
+                id: item.id,
+              },
+              data: {
+                value_paid: item.value_paid + valueTransaction[index],
+              },
+            });
+            await prismaClient.methodsTransaction.create({
+              data: {
+                name: "Saldo",
+                percentage: 0,
+                value: valueTransaction[index],
+                transaction_id: item.id,
+              },
+            });
+          }
         }
+      })
+    );
 
-        if (parseFloat(client.receive.toFixed(2)) < value) {
-            throw new Error("Valor de pagamento com saldo é maior do que o cliente tem a receber")
-        }
+    await prismaClient.client.update({
+      where: {
+        id: client.id,
+      },
+      data: {
+        receive: client.receive - valueTotal,
+      },
+    });
 
-        const transactions = await prismaClient.transaction.findMany({
-            where: {
-                client_id: client_id,
-                club_id: club_id,
-                paid: false,
-                operation: "saida"
-            },
-            orderBy: {
-                create_at: "asc"
-            }
-        })
-
-        if (transactions.length == 0) {
-            throw new Error("Nenhuma transação não encontrada")
-        }
-
-
-        let valueTransaction = []
-
-        await transactions.map((item) => { 
-            if (value) { 
-                let valuePaid = item.value - item.value_paid
-                if (valuePaid <= value) { 
-                    valueTransaction.push(valuePaid)
-                    value-=valuePaid
-                } else {
-                    valueTransaction.push(value)
-                    value=0
-                }
-            } else {
-                valueTransaction.push(0)
-            }
-        })
-
-        await transactions.map(async (item, index) => {
-            if (valueTransaction[index]) {
-                let valuePaid = item.value - item.value_paid
-                if (valuePaid <= valueTransaction[index]) {
-                    await prismaClient.transaction.update({
-                        where: {
-                            id: item.id
-                        },
-                        data: {
-                            paid: true,
-                            value_paid: item.value
-                        }
-                    })
-                    await prismaClient.methodsTransaction.create({
-                        data: {
-                            name: "Saldo",
-                            percentage: 0,
-                            value: valueTransaction[index],
-                            transaction_id: item.id
-                        }
-                    })
-                } else {
-                    await prismaClient.transaction.update({
-                        where: {
-                            id: item.id
-                        },
-                        data: {
-                            value_paid: item.value_paid + valueTransaction[index]
-                        }
-                    })
-                    await prismaClient.methodsTransaction.create({
-                        data: {
-                            name: "Saldo",
-                            percentage: 0,
-                            value: valueTransaction[index],
-                            transaction_id: item.id
-                        }
-                    })
-                }
-            }
-        })
-        
-        return ("Pagamentos realizados com sucesso")
-     }
+    return "Pagamentos realizados com sucesso";
+  }
 }
 
-export { PaymentReceivesService }
+export { PaymentReceivesService };

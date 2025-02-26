@@ -93,6 +93,9 @@ import { CreateRankingController } from "./controllers/Ranking/CreateRankingCont
 import { GetRankingController } from "./controllers/Ranking/GetRankingController";
 import { StartRankingController } from "./controllers/Ranking/StartRankingController";
 import { FinishRankingController } from "./controllers/Ranking/FinishRankingController";
+import { OpenTournamentController } from "./controllers/Tournament/OpenTournamentController";
+import { RescueVacancyController } from "./controllers/Vacancy/RescueVacancyController";
+import { SendVacancyController } from "./controllers/Vacancy/SendVacancyController";
 
 const upload = multer(uploadConfig);
 
@@ -184,6 +187,10 @@ router.put(
   new InitialTournamentController().handle
 );
 router.put(
+  "/open-tournament/:tournament_id",
+  new OpenTournamentController().handle
+);
+router.put(
   "/finish-tournament/:tournament_id",
   new FinishTournamentController().handle
 );
@@ -198,6 +205,10 @@ router.put(
   upload.single("file"),
   new EditProductController().handle
 );
+
+router.put("/rescue/vacancy/:vacancy_id", new RescueVacancyController().handle);
+router.put("/send/vacancy/:vacancy_id", new SendVacancyController().handle);
+
 router.get("/product/:product_id", new GetProductController().handle);
 router.get("/products", new ListProductsController().handle);
 router.delete("/product/:product_id", new DeleteProductController().handle);
