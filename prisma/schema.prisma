@@ -282,10 +282,10 @@ model Purchase {
   cashier               String
   name                  String             
   value                 Float               
-  token                 Int        
+  token                 Int?                @default(0)
   is_staff              Boolean             @default(true)
-  value_staff           Float               @default(0)
-  token_staff           Int                 @default(0)
+  value_staff           Float?               @default(0)
+  token_staff           Int?                 @default(0)
   type                  String            
   max_limit             Int?                  
   
