@@ -88,7 +88,7 @@ class ConfirmedTransactionService {
         observation: observation,
         paid: valueCredit ? false : true,
         value_paid:
-          transaction.value_paid + valuePaid + valueReceive + valueDebit,
+          transaction.value_paid + valuePaid + valueDebit + valueReceive,
       },
     });
 
@@ -101,18 +101,17 @@ class ConfirmedTransactionService {
           balance: club.balance + valueMethods,
         },
       });
-    } else {
       if (transaction.client_id) {
         await prismaClient.client.update({
           where: {
             id: client["id"],
           },
           data: {
-            receive: client["receive"] - valueReceive,
+            debt: client["debt"] - valuePaid,
           },
         });
       }
-
+    } else {
       await prismaClient.club.update({
         where: {
           id: club_id,
@@ -121,6 +120,17 @@ class ConfirmedTransactionService {
           balance: club.balance - valuePaid,
         },
       });
+
+      if (transaction.client_id) {
+        await prismaClient.client.update({
+          where: {
+            id: client["id"],
+          },
+          data: {
+            receive: client["receive"] - valuePaid,
+          },
+        });
+      }
     }
 
     methods_transaction.map(async (item) => {

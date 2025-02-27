@@ -37,6 +37,7 @@ class BuyTournamentController {
         client_id,
         club_id,
         value: valueCredit,
+        club: false,
       });
     }
 

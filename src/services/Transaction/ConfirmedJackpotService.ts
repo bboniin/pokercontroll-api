@@ -88,50 +88,30 @@ class ConfirmedJackpotService {
         observation: observation,
         paid: valueCredit ? false : true,
         value_paid:
-          transaction.value_paid + valuePaid + valueReceive + valueDebit,
+          transaction.value_paid + valuePaid + valueDebit + valueReceive,
       },
     });
 
     if (transaction.operation == "entrada") {
-      if (valueDebit) {
-        await prismaClient.club.update({
-          where: {
-            id: club_id,
-          },
-          data: {
-            balance: club.balance - valueDebit,
-          },
-        });
-        await prismaClient.club.update({
-          where: {
-            id: club_id,
-          },
-          data: {
-            jackpot: club.jackpot + valueMethods + valueDebit,
-          },
-        });
-      } else {
-        await prismaClient.club.update({
-          where: {
-            id: club_id,
-          },
-          data: {
-            jackpot: club.jackpot + valueMethods,
-          },
-        });
-      }
-    } else {
+      await prismaClient.club.update({
+        where: {
+          id: club_id,
+        },
+        data: {
+          jackpot: club.jackpot + valueMethods,
+        },
+      });
       if (transaction.client_id) {
         await prismaClient.client.update({
           where: {
             id: client["id"],
           },
           data: {
-            receive: client["receive"] - valuePaid - valueReceive,
+            debt: client["debt"] - valuePaid,
           },
         });
       }
-
+    } else {
       await prismaClient.club.update({
         where: {
           id: club_id,
@@ -140,6 +120,17 @@ class ConfirmedJackpotService {
           jackpot: club.jackpot - valuePaid,
         },
       });
+
+      if (transaction.client_id) {
+        await prismaClient.client.update({
+          where: {
+            id: client["id"],
+          },
+          data: {
+            receive: client["receive"] - valuePaid,
+          },
+        });
+      }
     }
 
     methods_transaction.map(async (item) => {

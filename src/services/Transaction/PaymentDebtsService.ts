@@ -112,6 +112,7 @@ class PaymentDebtsService {
       },
       data: {
         debt: client.debt - valueTotal,
+        receive: client.receive - valueTotal,
       },
     });
 

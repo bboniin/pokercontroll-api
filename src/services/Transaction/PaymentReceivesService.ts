@@ -112,6 +112,7 @@ class PaymentReceivesService {
         id: client.id,
       },
       data: {
+        debt: client.debt - valueTotal,
         receive: client.receive - valueTotal,
       },
     });

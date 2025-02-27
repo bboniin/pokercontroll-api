@@ -1,36 +1,80 @@
-import { Request, Response } from 'express';
-import { CreateTransactionService } from '../../services/Transaction/CreateTransactionService';
-import { PaymentDebtsService } from '../../services/Transaction/PaymentDebtsService';
+import { Request, Response } from "express";
+import { CreateTransactionService } from "../../services/Transaction/CreateTransactionService";
+import { PaymentDebtsService } from "../../services/Transaction/PaymentDebtsService";
+import { VerifyCreditTransactionService } from "../../services/Transaction/VerifyCreditTransactionService";
 
 class RewardCashController {
-    async handle(req: Request, res: Response) {
-        const { sector_id, value, methods_transaction, client_id, date_payment, observation } = req.body
+  async handle(req: Request, res: Response) {
+    const {
+      sector_id,
+      value,
+      methods_transaction,
+      client_id,
+      date_payment,
+      observation,
+    } = req.body;
 
-        let club_id = req.club_id
+    let club_id = req.club_id;
 
-        let valueDebit = methods_transaction.filter((item) => item["id"] == "Pag Dívida" ).length != 0 ? methods_transaction.filter((item) => item["id"] == "Pag Dívida")[0].value : 0
-        let valueCredit = methods_transaction.filter((item) => item["id"] == "Crédito").length != 0 ? methods_transaction.filter((item) => item["id"] == "Crédito")[0].value : 0
-        
-        const paymentDebtsService = new PaymentDebtsService
+    let valueDebit =
+      methods_transaction.filter((item) => item["id"] == "Pag Dívida").length !=
+      0
+        ? methods_transaction.filter((item) => item["id"] == "Pag Dívida")[0]
+            .value
+        : 0;
+    let valueCredit =
+      methods_transaction.filter((item) => item["id"] == "Crédito").length != 0
+        ? methods_transaction.filter((item) => item["id"] == "Crédito")[0].value
+        : 0;
 
-        if (valueDebit) {
-            await paymentDebtsService.execute({
-                value: valueDebit, client_id, club_id
-            })
-        }
+    if (valueCredit) {
+      const verifyCreditTransactionService =
+        new VerifyCreditTransactionService();
 
-        const createTransactionService = new CreateTransactionService
-
-        const transaction = await createTransactionService.execute({
-            paid: valueDebit == value ? true : valueCredit ? false : true, value, type: "clube", methods_transaction: methods_transaction, items_transaction: [{
-                name: "cash",
-                amount: 1,
-                value: value
-            }], client_id, sector_id, club_id, date_payment, observation, operation: "saida", valueReceive: 0, valueDebit
-        })
-
-        return res.json(transaction)
+      await verifyCreditTransactionService.execute({
+        client_id,
+        club_id,
+        value: valueCredit,
+        club: true,
+      });
     }
+
+    const paymentDebtsService = new PaymentDebtsService();
+
+    if (valueDebit) {
+      await paymentDebtsService.execute({
+        value: valueDebit,
+        client_id,
+        club_id,
+      });
+    }
+
+    const createTransactionService = new CreateTransactionService();
+
+    const transaction = await createTransactionService.execute({
+      paid: valueDebit == value ? true : valueCredit ? false : true,
+      value,
+      type: "clube",
+      methods_transaction: methods_transaction,
+      items_transaction: [
+        {
+          name: "cash",
+          amount: 1,
+          value: value,
+        },
+      ],
+      client_id,
+      sector_id,
+      club_id,
+      date_payment,
+      observation,
+      operation: "saida",
+      valueReceive: 0,
+      valueDebit,
+    });
+
+    return res.json(transaction);
+  }
 }
 
-export { RewardCashController }
+export { RewardCashController };

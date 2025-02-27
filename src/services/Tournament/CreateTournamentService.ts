@@ -120,6 +120,7 @@ class CreateTournamentService {
       });
     }
 
+    console.log(purchases);
     Promise.all(
       await purchases.map(async (item) => {
         if (item["type"] == "entrie") {
@@ -136,6 +137,7 @@ class CreateTournamentService {
           });
         }
         if (item["type"] == "service") {
+          console.log(item);
           await prismaClient.purchase.create({
             data: {
               name: item["name"],

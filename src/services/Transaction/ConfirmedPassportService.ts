@@ -88,35 +88,26 @@ class ConfirmedPassportService {
         observation: observation,
         paid: valueCredit ? false : true,
         value_paid:
-          transaction.value_paid + valuePaid + valueReceive + valueDebit,
+          transaction.value_paid + valuePaid + valueDebit + valueReceive,
       },
     });
 
     if (transaction.operation == "entrada") {
-      if (valueDebit) {
-        await prismaClient.club.update({
+      await prismaClient.club.update({
+        where: {
+          id: club_id,
+        },
+        data: {
+          passport: club.passport + valueMethods,
+        },
+      });
+      if (transaction.client_id) {
+        await prismaClient.client.update({
           where: {
-            id: club_id,
+            id: client["id"],
           },
           data: {
-            balance: club.balance - valueDebit,
-          },
-        });
-        await prismaClient.club.update({
-          where: {
-            id: club_id,
-          },
-          data: {
-            passport: club.passport + valueMethods + valueDebit,
-          },
-        });
-      } else {
-        await prismaClient.club.update({
-          where: {
-            id: club_id,
-          },
-          data: {
-            passport: club.passport + valueMethods,
+            debt: client["debt"] - valuePaid,
           },
         });
       }
@@ -129,6 +120,17 @@ class ConfirmedPassportService {
           passport: club.passport - valuePaid,
         },
       });
+
+      if (transaction.client_id) {
+        await prismaClient.client.update({
+          where: {
+            id: client["id"],
+          },
+          data: {
+            receive: client["receive"] - valuePaid,
+          },
+        });
+      }
     }
 
     methods_transaction.map(async (item) => {
