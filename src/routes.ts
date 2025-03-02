@@ -98,6 +98,7 @@ import { RescueVacancyController } from "./controllers/Vacancy/RescueVacancyCont
 import { SendVacancyController } from "./controllers/Vacancy/SendVacancyController";
 import { ListVacancyController } from "./controllers/Vacancy/ListVacancysController";
 import { PaymentComandTransactionController } from "./controllers/Transaction/PaymentComandTransactionController";
+import { CanceledClientTournamentController } from "./controllers/Tournament/CanceledClientTournamentController";
 
 const upload = multer(uploadConfig);
 
@@ -178,6 +179,10 @@ router.post("/reward-tournament", new RewardTournamentController().handle);
 router.put(
   "/exit-tournament/:client_id",
   new ExitClientTournamentController().handle
+);
+router.put(
+  "/canceled-client/:client_id",
+  new CanceledClientTournamentController().handle
 );
 router.put(
   "/paused-tournament/:tournament_id",

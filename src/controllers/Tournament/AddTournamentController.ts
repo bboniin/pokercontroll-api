@@ -41,6 +41,7 @@ class AddTournamentController {
       );
       if (purchaseInfo) {
         item.name = purchaseInfo.name;
+        item.type = purchaseInfo.type;
         item.cashier = purchaseInfo.cashier;
         item.token = purchaseInfo.token;
         item.value = purchaseInfo.value;
@@ -87,15 +88,16 @@ class AddTournamentController {
       (item) => item["id"] != "Crédito"
     );
 
+    let token = timechip ? tournament.timechip : 0;
+
     const addTournamentService = new AddTournamentService();
 
     const clientTournament = await addTournamentService.execute({
       chair,
       client_id,
       tournament_id,
+      tokenTimechip: token,
     });
-
-    let token = timechip ? tournament.timechip : 0;
 
     let totalToken = token;
 
@@ -219,7 +221,6 @@ class AddTournamentController {
             break;
           }
         }
-
         await prismaClient.clientPurchase.create({
           data: {
             name: item.name,

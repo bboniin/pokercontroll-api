@@ -115,7 +115,7 @@ class CreateDealerService {
             id: club_id,
           },
           data: {
-            dealer: club.dealer + valueMethods,
+            dealer: parseFloat((club.dealer + valueMethods).toFixed(2)),
           },
         });
       }
@@ -141,7 +141,7 @@ class CreateDealerService {
             id: club_id,
           },
           data: {
-            dealer: club.dealer - valuePaid,
+            dealer: parseFloat((club.dealer - valuePaid).toFixed(2)),
           },
         });
       }

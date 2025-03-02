@@ -98,7 +98,7 @@ class ConfirmedDealerService {
           id: club_id,
         },
         data: {
-          dealer: club.dealer + valueMethods,
+          dealer: parseFloat((club.dealer + valueMethods).toFixed(2)),
         },
       });
       if (transaction.client_id) {
@@ -107,7 +107,7 @@ class ConfirmedDealerService {
             id: client["id"],
           },
           data: {
-            debt: client["debt"] - valuePaid,
+            debt: parseFloat((client["debt"] - valuePaid).toFixed(2)),
           },
         });
       }
@@ -117,7 +117,7 @@ class ConfirmedDealerService {
           id: club_id,
         },
         data: {
-          dealer: club.dealer - valuePaid,
+          dealer: parseFloat((club.dealer - valuePaid).toFixed(2)),
         },
       });
 
@@ -127,7 +127,7 @@ class ConfirmedDealerService {
             id: client["id"],
           },
           data: {
-            receive: client["receive"] - valuePaid,
+            receive: parseFloat((client["receive"] - valuePaid).toFixed(2)),
           },
         });
       }

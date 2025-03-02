@@ -98,7 +98,7 @@ class ConfirmedJackpotService {
           id: club_id,
         },
         data: {
-          jackpot: club.jackpot + valueMethods,
+          jackpot: parseFloat((club.jackpot + valueMethods).toFixed(2)),
         },
       });
       if (transaction.client_id) {
@@ -107,7 +107,7 @@ class ConfirmedJackpotService {
             id: client["id"],
           },
           data: {
-            debt: client["debt"] - valuePaid,
+            debt: parseFloat((client["debt"] - valuePaid).toFixed(2)),
           },
         });
       }
@@ -117,7 +117,7 @@ class ConfirmedJackpotService {
           id: club_id,
         },
         data: {
-          jackpot: club.jackpot - valuePaid,
+          jackpot: parseFloat((club.jackpot - valuePaid).toFixed(2)),
         },
       });
 
@@ -127,7 +127,7 @@ class ConfirmedJackpotService {
             id: client["id"],
           },
           data: {
-            receive: client["receive"] - valuePaid,
+            receive: parseFloat((client["receive"] - valuePaid).toFixed(2)),
           },
         });
       }

@@ -4,10 +4,16 @@ interface TournamentRequest {
   client_id: string;
   chair: string;
   tournament_id: string;
+  tokenTimechip: number;
 }
 
 class AddTournamentService {
-  async execute({ client_id, chair, tournament_id }: TournamentRequest) {
+  async execute({
+    client_id,
+    chair,
+    tournament_id,
+    tokenTimechip,
+  }: TournamentRequest) {
     if (!client_id || !chair || !tournament_id) {
       throw new Error(
         "Id do cliente, do torneio e posição da mesa é obrigatório"
@@ -45,6 +51,7 @@ class AddTournamentService {
             date_in: new Date(),
             award: 0,
             chair_tournament: "T" + chair,
+            timechip: tokenTimechip,
             exit: false,
           },
         });
@@ -58,6 +65,7 @@ class AddTournamentService {
         data: {
           client_id: client_id,
           tournament_id: tournament_id,
+          timechip: tokenTimechip || 0,
           date_in: new Date(),
           award: 0,
           chair_tournament: "T" + chair,

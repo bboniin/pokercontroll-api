@@ -81,9 +81,13 @@ class CreatePassportService {
           .reduce((total, value) => total + value)
       : 0;
 
+    console.log(date_payment);
     if (paid) {
       date_payment = new Date();
     }
+
+    console.log(valuePaid);
+    console.log(date_payment);
 
     let transaction = null;
 
@@ -109,7 +113,7 @@ class CreatePassportService {
             id: club_id,
           },
           data: {
-            passport: club.passport + valueMethods,
+            passport: parseFloat((club.passport + valueMethods).toFixed(2)),
           },
         });
       }
@@ -135,7 +139,7 @@ class CreatePassportService {
             id: club_id,
           },
           data: {
-            passport: club.passport - valuePaid,
+            passport: parseFloat((club.passport - valuePaid).toFixed(2)),
           },
         });
       }

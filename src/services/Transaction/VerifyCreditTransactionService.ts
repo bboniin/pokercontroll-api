@@ -22,7 +22,7 @@ class VerifyCreditTransactionService {
           id: client_id,
         },
         data: {
-          receive: client.receive + value,
+          receive: parseFloat((client.receive + value).toFixed(2)),
         },
       });
     } else {
@@ -34,7 +34,7 @@ class VerifyCreditTransactionService {
             id: client_id,
           },
           data: {
-            debt: client.debt + value,
+            debt: parseFloat((client.debt + value).toFixed(2)),
           },
         });
       }

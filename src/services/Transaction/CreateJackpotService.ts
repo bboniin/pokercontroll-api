@@ -109,7 +109,7 @@ class CreateJackpotService {
             id: club_id,
           },
           data: {
-            jackpot: club.jackpot + valueMethods,
+            jackpot: parseFloat((club.jackpot + valueMethods).toFixed(2)),
           },
         });
       }
@@ -134,7 +134,9 @@ class CreateJackpotService {
             id: club_id,
           },
           data: {
-            jackpot: club.jackpot - valuePaid - valueDebit,
+            jackpot: parseFloat(
+              (club.jackpot - valuePaid - valueDebit).toFixed(2)
+            ),
           },
         });
       }

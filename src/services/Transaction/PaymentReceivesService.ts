@@ -112,8 +112,8 @@ class PaymentReceivesService {
         id: client.id,
       },
       data: {
-        debt: client.debt - valueTotal,
-        receive: client.receive - valueTotal,
+        debt: parseFloat((client.debt - valueTotal).toFixed(2)),
+        receive: parseFloat((client.receive - valueTotal).toFixed(2)),
       },
     });
 

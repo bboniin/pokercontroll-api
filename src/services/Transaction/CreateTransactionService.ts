@@ -115,7 +115,7 @@ class CreateTransactionService {
             id: club_id,
           },
           data: {
-            balance: club.balance + valueMethods,
+            balance: parseFloat((club.balance + valueMethods).toFixed(2)),
           },
         });
       }
@@ -141,7 +141,7 @@ class CreateTransactionService {
             id: club_id,
           },
           data: {
-            balance: club.balance - valuePaid,
+            balance: parseFloat((club.balance - valuePaid).toFixed(2)),
           },
         });
       }

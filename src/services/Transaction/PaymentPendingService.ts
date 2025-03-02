@@ -72,7 +72,7 @@ class PaymentPendingService {
         id: client.id,
       },
       data: {
-        debt: client.debt - valuePaid,
+        debt: parseFloat((client.debt - valuePaid).toFixed(2)),
       },
     });
 
@@ -210,10 +210,14 @@ class PaymentPendingService {
           id: club_id,
         },
         data: {
-          balance: client.club.balance + totalPaidClub,
-          dealer: client.club.dealer + totalPaidDealer,
-          passport: client.club.passport + totalPaidPassport,
-          jackpot: client.club.jackpot + totalPaidJackpot,
+          balance: parseFloat((client.club.balance + totalPaidClub).toFixed(2)),
+          dealer: parseFloat((client.club.dealer + totalPaidDealer).toFixed(2)),
+          passport: parseFloat(
+            (client.club.passport + totalPaidPassport).toFixed(2)
+          ),
+          jackpot: parseFloat(
+            (client.club.jackpot + totalPaidJackpot).toFixed(2)
+          ),
         },
       });
     }

@@ -96,21 +96,21 @@ model Client {
 }
 
 model Transaction {
-  id                  String    @id @default(uuid())
-  type                String    @default("clube")
+  id                  String     @id @default(uuid())
+  type                String     @default("clube")
   paid                Boolean
   value               Float
   value_paid          Float
-  operation           String    @default("entrada")
+  operation           String     @default("entrada")
   client_id           String?
   sector_id           String? 
   observation         String?
-  date_payment        DateTime? @default(now())
+  date_payment        DateTime?  @default(now())
   client              Client?    @relation(fields: [client_id], references: [id], onDelete: Cascade)
   club_id             String
-  club                Club    @relation(fields: [club_id], references: [id], onDelete: Cascade)
-  create_at           DateTime? @default(now())
-  update_at           DateTime? @default(now())
+  club                Club       @relation(fields: [club_id], references: [id], onDelete: Cascade)
+  create_at           DateTime?  @default(now())
+  update_at           DateTime?  @default(now())
 
   methods_transaction MethodsTransaction[]
   items_transaction   ItemsTransaction[]
@@ -367,6 +367,7 @@ model ClientTournament {
   date_in            DateTime?   @default(now())
   date_out           DateTime?   @default(now())
   award              Float       @default(0)
+  timechip           Int         @default(0)
   client_id          String
   chair_tournament   String?     @default("")
   exit               Boolean     @default(false)

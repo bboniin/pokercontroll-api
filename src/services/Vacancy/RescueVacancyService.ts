@@ -59,7 +59,7 @@ class RescueVacancyService {
         id: client_id,
       },
       data: {
-        receive: client.receive + vacancy.value,
+        receive: parseFloat((client.receive + vacancy.value).toFixed(2)),
       },
     });
 

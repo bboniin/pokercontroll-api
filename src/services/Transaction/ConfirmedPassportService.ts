@@ -98,7 +98,7 @@ class ConfirmedPassportService {
           id: club_id,
         },
         data: {
-          passport: club.passport + valueMethods,
+          passport: parseFloat((club.passport + valueMethods).toFixed(2)),
         },
       });
       if (transaction.client_id) {
@@ -107,7 +107,7 @@ class ConfirmedPassportService {
             id: client["id"],
           },
           data: {
-            debt: client["debt"] - valuePaid,
+            debt: parseFloat((client["debt"] - valuePaid).toFixed(2)),
           },
         });
       }
@@ -117,7 +117,7 @@ class ConfirmedPassportService {
           id: club_id,
         },
         data: {
-          passport: club.passport - valuePaid,
+          passport: parseFloat((club.passport - valuePaid).toFixed(2)),
         },
       });
 
@@ -127,7 +127,7 @@ class ConfirmedPassportService {
             id: client["id"],
           },
           data: {
-            receive: client["receive"] - valuePaid,
+            receive: parseFloat((client["receive"] - valuePaid).toFixed(2)),
           },
         });
       }
