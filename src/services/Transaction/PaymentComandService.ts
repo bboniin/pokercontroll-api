@@ -7,15 +7,24 @@ interface TransactionRequest {
   date_payment: Date;
   observation: string;
   methods_transaction: Array<[]>;
+  transactions: Array<
+    [
+      {
+        value: number;
+        value_paid: number;
+      }
+    ]
+  >;
 }
 
-class PaymentPendingService {
+class PaymentComandService {
   async execute({
     club_id,
     client_id,
     observation,
     date_payment,
     methods_transaction,
+    transactions,
   }: TransactionRequest) {
     if (!club_id || !client_id || methods_transaction.length == 0) {
       throw new Error(
@@ -50,8 +59,8 @@ class PaymentPendingService {
       throw new Error("Cliente não encontrada");
     }
 
-    if (client.transactions.length == 0) {
-      throw new Error("Nenhuma transação encontrada");
+    if (transactions.length == 0) {
+      throw new Error("Nenhuma transação enviada");
     }
 
     let methodsPay = methods_transaction.filter(
@@ -222,4 +231,4 @@ class PaymentPendingService {
   }
 }
 
-export { PaymentPendingService };
+export { PaymentComandService };

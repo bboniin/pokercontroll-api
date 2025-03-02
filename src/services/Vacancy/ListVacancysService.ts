@@ -33,7 +33,7 @@ class ListVacancysService {
         },
       },
       orderBy: {
-        create_at: "asc",
+        create_at: "desc",
       },
       include: {
         tournament: true,

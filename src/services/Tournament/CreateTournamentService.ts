@@ -16,6 +16,7 @@ interface TournamentRequest {
   vacancy_total: number;
   is_rebuy: boolean;
   show_max: boolean;
+  vacancy_name: string;
   rankings: Array<[]>;
   purchases: Array<[]>;
 }
@@ -38,6 +39,7 @@ class CreateTournamentService {
     club_id,
     purchases,
     vacancy_total,
+    vacancy_name,
     vacancy_value,
   }: TournamentRequest) {
     if (
@@ -54,19 +56,13 @@ class CreateTournamentService {
       throw new Error("Preencha os campos obrigatórios");
     }
 
-    if (
-      !purchases.some((data) => data["type"] == "service") ||
-      !purchases.some((data) => data["type"] == "purchase") ||
-      !purchases.some((data) => data["type"] == "entrie")
-    ) {
-      throw new Error(
-        "Preencha pelo menos uma opção de compra em Entrada, Compras e Serviços"
-      );
+    if (!purchases.some((data) => data["type"] == "entrie")) {
+      throw new Error("Preencha pelo menos uma opção de compra em Entrada");
     }
 
     if (vacancy_total) {
-      if (!vacancy_value) {
-        throw new Error("Preencha o valor das vagas");
+      if (!vacancy_value || !vacancy_name) {
+        throw new Error("Preencha o valor e nome das vagas");
       }
     }
 
@@ -111,6 +107,7 @@ class CreateTournamentService {
 
     const vacancies = Array.from({ length: vacancy_total }).map((_, index) => ({
       value: vacancy_value,
+      description: vacancy_name,
       tournament_id: tournament.id,
     }));
 
@@ -120,7 +117,6 @@ class CreateTournamentService {
       });
     }
 
-    console.log(purchases);
     Promise.all(
       await purchases.map(async (item) => {
         if (item["type"] == "entrie") {

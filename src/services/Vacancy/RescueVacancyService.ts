@@ -33,7 +33,7 @@ class RescueVacancyService {
 
     const transaction = await prismaClient.transaction.create({
       data: {
-        type: "vaga",
+        type: "clube",
         value: vacancy.value,
         club_id: club_id,
         client_id: client_id,

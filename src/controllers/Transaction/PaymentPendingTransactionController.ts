@@ -15,10 +15,6 @@ class PaymentPendingTransactionController {
         ? methods_transaction.filter((item) => item["id"] == "Saldo")[0].value
         : 0;
 
-    if (!valueReceive) {
-      throw new Error("Digite quanto deseja pagar");
-    }
-
     if (client_id) {
       const listPendingService = new ListTransactionsPendingService();
 
@@ -42,7 +38,6 @@ class PaymentPendingTransactionController {
       date_payment,
       methods_transaction,
       observation,
-      valueReceive,
       client_id,
     });
 

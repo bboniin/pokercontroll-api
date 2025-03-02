@@ -97,6 +97,7 @@ import { OpenTournamentController } from "./controllers/Tournament/OpenTournamen
 import { RescueVacancyController } from "./controllers/Vacancy/RescueVacancyController";
 import { SendVacancyController } from "./controllers/Vacancy/SendVacancyController";
 import { ListVacancyController } from "./controllers/Vacancy/ListVacancysController";
+import { PaymentComandTransactionController } from "./controllers/Transaction/PaymentComandTransactionController";
 
 const upload = multer(uploadConfig);
 
@@ -152,6 +153,10 @@ router.get(
 router.put(
   "/transactions-pending/:client_id",
   new PaymentPendingTransactionController().handle
+);
+router.put(
+  "/transactions-comand/:client_id",
+  new PaymentComandTransactionController().handle
 );
 
 router.get(

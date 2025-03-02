@@ -22,6 +22,7 @@ class CreateTournamentController {
       rankings,
       vacancy_value,
       vacancy_total,
+      vacancy_name,
     } = req.body;
 
     let club_id = req.club_id;
@@ -55,6 +56,7 @@ class CreateTournamentController {
       intervals,
       club_id,
       rake,
+      vacancy_name,
       max_rebuy,
       nivel_max_timechip,
       percentage_players_award,
