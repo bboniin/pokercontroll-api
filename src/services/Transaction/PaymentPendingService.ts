@@ -81,7 +81,7 @@ class PaymentPendingService {
     let totalPaidPassport = 0;
     let totalPaidJackpot = 0;
 
-    let methods_transactionC = methods_transaction.filter(
+    methods_transaction = methods_transaction.filter(
       (item) => item["id"] != "Crédito"
     );
 
@@ -89,7 +89,7 @@ class PaymentPendingService {
       client.transactions.map(async (item) => {
         let { payCredit, methodsPay, methodsC } = await getMethodsPay(
           item.value - item.value_paid,
-          methods_transactionC
+          methods_transaction
         );
 
         if (methodsPay.length) {
@@ -195,7 +195,7 @@ class PaymentPendingService {
           );
         }
 
-        methods_transactionC = methodsC;
+        methods_transaction = methodsC;
       })
     );
 
