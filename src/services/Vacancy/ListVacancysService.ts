@@ -3,34 +3,27 @@ import prismaClient from "../../prisma";
 interface vacancyRequest {
   club_id: string;
   page: number;
-  all: boolean;
+  name: string;
 }
 
 class ListVacancysService {
-  async execute({ club_id, page, all }: vacancyRequest) {
-    let filter = {};
-
-    if (!all) {
-      filter = {
-        skip: page * 30,
-        take: 30,
-      };
-    }
-
+  async execute({ club_id, page, name }: vacancyRequest) {
+    console.log(name);
     const vacancysTotal = await prismaClient.vacancy.count({
       where: {
         tournament: {
           club_id: club_id,
         },
+        name: name,
       },
     });
 
     const vacancys = await prismaClient.vacancy.findMany({
-      ...filter,
       where: {
         tournament: {
           club_id: club_id,
         },
+        name: name,
       },
       orderBy: {
         create_at: "desc",
@@ -39,6 +32,8 @@ class ListVacancysService {
         tournament: true,
         client: true,
       },
+      skip: page * 30,
+      take: 30,
     });
 
     return { vacancys, vacancysTotal };

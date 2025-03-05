@@ -280,9 +280,9 @@ model Purchase {
   name                  String             
   value                 Float               
   token                 Int?                @default(0)
-  is_staff              Boolean             @default(true)
-  value_staff           Float?               @default(0)
-  token_staff           Int?                 @default(0)
+  is_staff              Boolean             @default(false)
+  value_staff           Float?              @default(0)
+  token_staff           Int?                @default(0)
   type                  String            
   max_limit             Int?                  
   
@@ -354,7 +354,7 @@ model ClientPurchase {
   client                ClientTournament    @relation(fields: [client_id], references: [id], onDelete: Cascade)
   tournament_id         String
   tournament            Tournament          @relation(fields: [tournament_id], references: [id], onDelete: Cascade)            
-  create_at            DateTime            @default(now())
+  create_at             DateTime            @default(now())
 
   @@map("client_purchases")
 }
@@ -427,7 +427,8 @@ model ClientPoints {
 }
 
 model Vacancy {
-  id                    String              @id @default(uuid())                           
+  id                    String              @id @default(uuid())                          
+  name                  String?                      
   description           String?  
   client_id             String?
   tournament_id         String              

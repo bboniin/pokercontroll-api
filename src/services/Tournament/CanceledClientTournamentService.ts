@@ -159,11 +159,18 @@ class CanceledClientTournamentService {
 
     Promise.all(
       await chairClient.purchases.map(async (item) => {
-        if (item.type != "service") {
+        if (item.type == "staff") {
           const purchase = tournamentGet.purchases.find(
             (purchase) => item.purchase_id === purchase.id
           );
-          tokens += item.amount * purchase.token;
+          tokens += item.amount * purchase.token_staff;
+        } else {
+          if (item.type != "service") {
+            const purchase = tournamentGet.purchases.find(
+              (purchase) => item.purchase_id === purchase.id
+            );
+            tokens += item.amount * purchase.token;
+          }
         }
       })
     );

@@ -10,11 +10,15 @@ interface TournamentRequest {
   nivel_max_in: number;
   nivel_max_timechip: number;
   percentage_players_award: number;
-  vacancy_value: number;
-  vacancy_total: number;
-  vacancy_name: string;
   rankings: Array<[]>;
   purchases: Array<[]>;
+  vacancys: Array<{
+    name: string;
+    description: string;
+    value: number;
+    tournament_id: string;
+    id: string;
+  }>;
 }
 
 class CreateTournamentService {
@@ -30,9 +34,7 @@ class CreateTournamentService {
     rankings,
     club_id,
     purchases,
-    vacancy_total,
-    vacancy_name,
-    vacancy_value,
+    vacancys,
   }: TournamentRequest) {
     if (
       !name ||
@@ -51,9 +53,9 @@ class CreateTournamentService {
       throw new Error("Preencha pelo menos uma opção de compra em Entrada");
     }
 
-    if (vacancy_total) {
-      if (!vacancy_value || !vacancy_name) {
-        throw new Error("Preencha o valor e nome das vagas");
+    if (vacancys) {
+      if (vacancys.some((data) => !data["name"] || !data["value"])) {
+        throw new Error("Preencha todos os campos das vagas");
       }
     }
 
@@ -92,20 +94,25 @@ class CreateTournamentService {
       },
     });
 
-    const vacancies = Array.from({ length: vacancy_total }).map((_, index) => ({
-      value: vacancy_value,
-      description: vacancy_name,
-      tournament_id: tournament.id,
-    }));
+    let vacancysArray = [];
+    vacancys.map((item) => {
+      vacancysArray.push({
+        name: item.name,
+        description: item.description,
+        value: item.value,
+        tournament_id: tournament.id,
+      });
+    });
 
-    if (vacancies.length) {
+    if (vacancysArray.length) {
       await prismaClient.vacancy.createMany({
-        data: vacancies,
+        data: vacancysArray,
       });
     }
 
     Promise.all(
       await purchases.map(async (item) => {
+        console.log(item);
         if (item["type"] == "entrie") {
           await prismaClient.purchase.create({
             data: {
@@ -115,6 +122,9 @@ class CreateTournamentService {
               max_limit: item["max_limit"],
               token: item["token"],
               type: item["type"],
+              value_staff: item["value_staff"] || 0,
+              token_staff: item["token_staff"] || 0,
+              is_staff: item["is_staff"] || false,
               tournament_id: tournament.id,
             },
           });
@@ -141,6 +151,9 @@ class CreateTournamentService {
               max_limit: item["max_limit"],
               token: item["token"],
               type: item["type"],
+              value_staff: item["value_staff"] || 0,
+              token_staff: item["token_staff"] || 0,
+              is_staff: item["is_staff"] || false,
               tournament_id: tournament.id,
             },
           });

@@ -16,9 +16,7 @@ class CreateTournamentController {
       percentage_players_award,
       purchases,
       rankings,
-      vacancy_value,
-      vacancy_total,
-      vacancy_name,
+      vacancys,
     } = req.body;
 
     let club_id = req.club_id;
@@ -51,14 +49,12 @@ class CreateTournamentController {
       totalAward_guaranteed,
       intervals,
       club_id,
-      vacancy_name,
+      vacancys,
       nivel_max_timechip,
       percentage_players_award,
       nivel_max_in,
       purchases,
       rankings,
-      vacancy_value,
-      vacancy_total,
     });
 
     return res.json(tournament);

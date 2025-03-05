@@ -72,12 +72,32 @@ class BuyTournamentController {
 
     let totalToken = 0;
     let totalValue = 0;
+    let totalTokenStaff = 0;
+    let totalValueStaff = 0;
 
     await Promise.all(
       purchases.map(async (item) => {
         const purchaseInfo = tournament.purchases.find(
           (purchase) => item.id == purchase.id
         );
+
+        if (item.buy_staff) {
+          totalTokenStaff += item.token_staff * item.amount;
+          totalValueStaff += item.value_staff * item.amount;
+
+          await prismaClient.clientPurchase.create({
+            data: {
+              name: "Staff",
+              type: "staff",
+              tournament_id: tournament.id,
+              client_id: clientTournament.id,
+              purchase_id: item.id,
+              value: item.value_staff,
+              total_value: item.value_staff * item.amount,
+              amount: item.amount,
+            },
+          });
+        }
         switch (item.cashier) {
           case "dealer": {
             let { payCredit, methodsPay, methodsC } = await getMethodsPay(
@@ -211,12 +231,40 @@ class BuyTournamentController {
       })
     );
 
+    if (totalValueStaff) {
+      let { payCredit, methodsPay, methodsC } = await getMethodsPay(
+        totalValueStaff,
+        methods_transactionC
+      );
+      const createDealerService = new CreateDealerService();
+      await createDealerService.execute({
+        paid: payCredit ? false : true,
+        value: totalValueStaff,
+        type: "dealer",
+        methods_transaction: methodsPay,
+        client_id,
+        sector_id: tournament_id,
+        club_id,
+        date_payment,
+        observation,
+        items_transaction: {
+          name: "Staff",
+          amount: 1,
+          value: totalValueStaff,
+        },
+        operation: "entrada",
+        valueReceive,
+        valueDebit: 0,
+      });
+      methods_transactionC = methodsC;
+    }
+
     const buyTournamentService = new BuyTournamentService();
 
     await buyTournamentService.execute({
       tournament_id: tournament_id,
       totalValue,
-      totalToken,
+      totalToken: totalToken + totalTokenStaff,
     });
 
     return res.json("Compra realizada com sucesso");

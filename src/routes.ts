@@ -99,6 +99,7 @@ import { SendVacancyController } from "./controllers/Vacancy/SendVacancyControll
 import { ListVacancyController } from "./controllers/Vacancy/ListVacancysController";
 import { PaymentComandTransactionController } from "./controllers/Transaction/PaymentComandTransactionController";
 import { CanceledClientTournamentController } from "./controllers/Tournament/CanceledClientTournamentController";
+import { ListGroupVacancyController } from "./controllers/Vacancy/ListGroupVacancysController";
 
 const upload = multer(uploadConfig);
 
@@ -220,6 +221,7 @@ router.put(
 router.put("/rescue/vacancy/:vacancy_id", new RescueVacancyController().handle);
 router.put("/send/vacancy/:vacancy_id", new SendVacancyController().handle);
 router.get("/vacancys", new ListVacancyController().handle);
+router.get("/group/vacancys", new ListGroupVacancyController().handle);
 
 router.get("/product/:product_id", new GetProductController().handle);
 router.get("/products", new ListProductsController().handle);
