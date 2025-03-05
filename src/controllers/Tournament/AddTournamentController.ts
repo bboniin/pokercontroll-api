@@ -216,7 +216,7 @@ class AddTournamentController {
               valueDebit: 0,
             });
             methods_transactionC = methodsC;
-            totalValue -= item.value * item.amount;
+            totalValue += item.value * item.amount;
             totalToken += item.token * item.amount;
             break;
           }

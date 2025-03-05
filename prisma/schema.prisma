@@ -135,6 +135,7 @@ model Cash {
   id           String    @id @default(uuid())
   name         String
   closed       Boolean 
+  chairs       Int       @default(15) 
   club_id      String
   date_in      DateTime? @default(now())
   date_out     DateTime? @default(now())
@@ -243,7 +244,6 @@ model Tournament {
   chairs                        Int
   total_tokens                  Int
   is_rebuy                      Boolean   @default(true)
-  rake                          Float     @default(0)
   staff                         Float     @default(0)
   max_timechip                  Int       @default(0)
   max_in                        Int       @default(0)

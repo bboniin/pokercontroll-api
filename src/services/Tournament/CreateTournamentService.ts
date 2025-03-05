@@ -8,7 +8,6 @@ interface TournamentRequest {
   intervals: string;
   club_id: string;
   max_rebuy: number;
-  rake: number;
   nivel_max_in: number;
   nivel_max_timechip: number;
   percentage_players_award: number;
@@ -29,7 +28,6 @@ class CreateTournamentService {
     totalAward_guaranteed,
     intervals,
     max_rebuy,
-    rake,
     nivel_max_in,
     nivel_max_timechip,
     percentage_players_award,
@@ -48,7 +46,6 @@ class CreateTournamentService {
       !chairs ||
       !totalAward_guaranteed ||
       !intervals ||
-      !rake ||
       !nivel_max_in ||
       !percentage_players_award ||
       !club_id
@@ -88,7 +85,6 @@ class CreateTournamentService {
         name: name,
         timechip: timechip,
         max_rebuy: max_rebuy || 0,
-        rake: rake,
         chairs: chairs,
         is_rebuy: is_rebuy,
         max_in: nivel_max_in,
@@ -133,7 +129,6 @@ class CreateTournamentService {
           });
         }
         if (item["type"] == "service") {
-          console.log(item);
           await prismaClient.purchase.create({
             data: {
               name: item["name"],

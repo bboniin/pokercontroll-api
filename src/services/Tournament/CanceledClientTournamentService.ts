@@ -157,7 +157,6 @@ class CanceledClientTournamentService {
 
     let tokens = chairClient.timechip || 0;
 
-    console.log(tokens, chairClient.timechip);
     Promise.all(
       await chairClient.purchases.map(async (item) => {
         if (item.type != "service") {
@@ -168,8 +167,6 @@ class CanceledClientTournamentService {
         }
       })
     );
-
-    console.log(tokens);
 
     const tournament = await prismaClient.tournament.update({
       where: {

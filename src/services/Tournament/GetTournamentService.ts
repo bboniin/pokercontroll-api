@@ -36,6 +36,23 @@ class GetTournamentService {
       },
     });
 
+    let niveis = tournament.blinds.split("-");
+    let newNiveis = [];
+    Promise.all(
+      await niveis.map(async (item) => {
+        let [small, big] = item.split("/");
+        if (small.endsWith("000")) {
+          small = small.slice(0, -3) + "K";
+        }
+        if (big.endsWith("000")) {
+          big = big.slice(0, -3) + "K";
+        }
+        newNiveis.push(small + "/" + big);
+      })
+    );
+
+    tournament["niveis"] = newNiveis;
+
     return tournament;
   }
 }

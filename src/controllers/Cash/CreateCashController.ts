@@ -1,20 +1,22 @@
-import { Request, Response } from 'express';
-import { CreateCashService } from '../../services/Cash/CreateCashService';
+import { Request, Response } from "express";
+import { CreateCashService } from "../../services/Cash/CreateCashService";
 
 class CreateCashController {
-    async handle(req: Request, res: Response) {
-        const { name } = req.body
+  async handle(req: Request, res: Response) {
+    const { name, chairs } = req.body;
 
-        let club_id = req.club_id;
+    let club_id = req.club_id;
 
-        const createCashService = new CreateCashService;
+    const createCashService = new CreateCashService();
 
-        const cash = await createCashService.execute({
-            club_id, name
-        });
+    const cash = await createCashService.execute({
+      club_id,
+      name,
+      chairs,
+    });
 
-        return res.json(cash);
-    }
+    return res.json(cash);
+  }
 }
 
-export { CreateCashController }
+export { CreateCashController };

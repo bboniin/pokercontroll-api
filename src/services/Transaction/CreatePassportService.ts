@@ -81,13 +81,9 @@ class CreatePassportService {
           .reduce((total, value) => total + value)
       : 0;
 
-    console.log(date_payment);
     if (paid) {
       date_payment = new Date();
     }
-
-    console.log(valuePaid);
-    console.log(date_payment);
 
     let transaction = null;
 
