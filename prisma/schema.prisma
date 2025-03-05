@@ -243,16 +243,13 @@ model Tournament {
   timechip                      Int
   chairs                        Int
   total_tokens                  Int
-  is_rebuy                      Boolean   @default(true)
   staff                         Float     @default(0)
   max_timechip                  Int       @default(0)
   max_in                        Int       @default(0)
-  max_rebuy                     Int       @default(0)
   paused                        Boolean   @default(false)
   time_paused                   DateTime? @default(now())
   seconds_paused                Int       @default(0)
   max_count                     Int       @default(0)
-  show_max                      Boolean   @default(true)
   totalAward                    Float     @default(0)
   totalAward_guaranteed         Float
   totalAward_accumulated        Float

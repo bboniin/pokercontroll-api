@@ -7,14 +7,11 @@ interface TournamentRequest {
   totalAward_guaranteed: number;
   intervals: string;
   club_id: string;
-  max_rebuy: number;
   nivel_max_in: number;
   nivel_max_timechip: number;
   percentage_players_award: number;
   vacancy_value: number;
   vacancy_total: number;
-  is_rebuy: boolean;
-  show_max: boolean;
   vacancy_name: string;
   rankings: Array<[]>;
   purchases: Array<[]>;
@@ -27,12 +24,9 @@ class CreateTournamentService {
     chairs,
     totalAward_guaranteed,
     intervals,
-    max_rebuy,
     nivel_max_in,
     nivel_max_timechip,
     percentage_players_award,
-    show_max,
-    is_rebuy,
     rankings,
     club_id,
     purchases,
@@ -84,12 +78,9 @@ class CreateTournamentService {
       data: {
         name: name,
         timechip: timechip,
-        max_rebuy: max_rebuy || 0,
         chairs: chairs,
-        is_rebuy: is_rebuy,
         max_in: nivel_max_in,
         max_timechip: nivel_max_timechip,
-        show_max: show_max,
         percentage_players_award: percentage_players_award,
         totalAward_guaranteed: totalAward_guaranteed,
         club_id: club_id,

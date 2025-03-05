@@ -37,6 +37,7 @@ class RescueVacancyService {
         value: vacancy.value,
         club_id: club_id,
         client_id: client_id,
+        sector_id: vacancy.tournament_id,
         operation: "saida",
         date_payment: addMonths(new Date(), 1),
         observation: "",

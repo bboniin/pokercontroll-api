@@ -35,6 +35,11 @@ class BuyTournamentService {
         },
         purchases: true,
         clients_purchases: true,
+        vacancys: {
+          include: {
+            client: true,
+          },
+        },
       },
     });
 

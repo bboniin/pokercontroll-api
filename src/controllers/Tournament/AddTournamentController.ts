@@ -50,7 +50,7 @@ class AddTournamentController {
       }
     });
 
-    let totalValue = value;
+    let totalValue = 0;
 
     let valueCredit =
       methods_transaction.filter((item) => item["id"] == "Crédito").length != 0

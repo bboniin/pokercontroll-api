@@ -39,17 +39,6 @@ class ExitClientTournamentService {
       throw new Error("Cliente não foi encontrado");
     }
 
-    const chairClientPosition = await prismaClient.clientTournament.findFirst({
-      where: {
-        tournament_id: tournament_id,
-        position: position,
-      },
-    });
-
-    if (chairClientPosition) {
-      throw new Error("Outro jogador já foi eliminado nessa posição");
-    }
-
     const award = position
       ? parseFloat(tournamentGet.award.split("-")[position - 1])
       : 0;

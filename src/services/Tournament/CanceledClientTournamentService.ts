@@ -168,6 +168,12 @@ class CanceledClientTournamentService {
       })
     );
 
+    await prismaClient.clientTournament.delete({
+      where: {
+        id: chairClient.id,
+      },
+    });
+
     const tournament = await prismaClient.tournament.update({
       where: {
         id: tournament_id,
@@ -179,15 +185,22 @@ class CanceledClientTournamentService {
           (valueCreditClub + totalPaidClub),
       },
       include: {
-        clients: true,
-        club: true,
+        clients: {
+          orderBy: {
+            date_out: "desc",
+          },
+          include: {
+            client: true,
+            purchases: true,
+          },
+        },
         purchases: true,
-      },
-    });
-
-    await prismaClient.clientTournament.delete({
-      where: {
-        id: chairClient.id,
+        clients_purchases: true,
+        vacancys: {
+          include: {
+            client: true,
+          },
+        },
       },
     });
 
