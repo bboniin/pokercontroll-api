@@ -51,6 +51,7 @@ class PausedTournamentService {
               client: true,
             },
           },
+          rankings: true,
         },
       });
       return tournamentEdit;
@@ -80,6 +81,7 @@ class PausedTournamentService {
               client: true,
             },
           },
+          rankings: true,
         },
       });
       return tournamentEdit;
