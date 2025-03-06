@@ -70,6 +70,7 @@ class EditTournamentService {
             client: true,
           },
         },
+        rankings: true,
       },
     });
 

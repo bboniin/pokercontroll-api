@@ -58,6 +58,7 @@ class InitialTournamentService {
             client: true,
           },
         },
+        rankings: true,
       },
     });
 

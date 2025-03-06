@@ -43,6 +43,7 @@ class OpenTournamentService {
             client: true,
           },
         },
+        rankings: true,
       },
     });
 

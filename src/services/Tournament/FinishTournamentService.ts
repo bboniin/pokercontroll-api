@@ -60,6 +60,7 @@ class FinishTournamentService {
             client: true,
           },
         },
+        rankings: true,
       },
     });
 

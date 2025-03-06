@@ -58,6 +58,7 @@ class EndRegisterTournamentService {
             client: true,
           },
         },
+        rankings: true,
       },
     });
 

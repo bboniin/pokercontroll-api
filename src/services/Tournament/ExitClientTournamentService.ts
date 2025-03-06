@@ -77,6 +77,7 @@ class ExitClientTournamentService {
             client: true,
           },
         },
+        rankings: true,
       },
     });
 

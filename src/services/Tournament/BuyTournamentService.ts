@@ -40,6 +40,7 @@ class BuyTournamentService {
             client: true,
           },
         },
+        rankings: true,
       },
     });
 

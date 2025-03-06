@@ -208,6 +208,7 @@ class CanceledClientTournamentService {
             client: true,
           },
         },
+        rankings: true,
       },
     });
 

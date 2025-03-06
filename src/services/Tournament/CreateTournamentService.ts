@@ -38,7 +38,6 @@ class CreateTournamentService {
   }: TournamentRequest) {
     if (
       !name ||
-      !timechip ||
       !chairs ||
       !totalAward_guaranteed ||
       !intervals ||
@@ -79,7 +78,7 @@ class CreateTournamentService {
     const tournament = await prismaClient.tournament.create({
       data: {
         name: name,
-        timechip: timechip,
+        timechip: timechip || 0,
         chairs: chairs,
         max_in: nivel_max_in,
         max_timechip: nivel_max_timechip,

@@ -33,8 +33,13 @@ class GetTournamentService {
             client: true,
           },
         },
+        rankings: true,
       },
     });
+
+    if (!tournament) {
+      throw new Error("Torneio não encontrado");
+    }
 
     let niveis = tournament.blinds.split("-");
     let newNiveis = [];
