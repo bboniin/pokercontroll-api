@@ -8,7 +8,6 @@ interface vacancyRequest {
 
 class ListVacancysService {
   async execute({ club_id, page, name }: vacancyRequest) {
-    console.log(name);
     const vacancysTotal = await prismaClient.vacancy.count({
       where: {
         tournament: {

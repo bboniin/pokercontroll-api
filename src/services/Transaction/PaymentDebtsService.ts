@@ -4,10 +4,11 @@ interface TransactionRequest {
   club_id: string;
   client_id: string;
   value: number;
+  confirm: boolean;
 }
 
 class PaymentDebtsService {
-  async execute({ club_id, client_id, value }: TransactionRequest) {
+  async execute({ club_id, client_id, value, confirm }: TransactionRequest) {
     const valueTotal = value;
 
     if (!club_id || !client_id || !value) {
@@ -110,10 +111,14 @@ class PaymentDebtsService {
       where: {
         id: client.id,
       },
-      data: {
-        debt: parseFloat((client.debt - valueTotal).toFixed(2)),
-        receive: parseFloat((client.receive - valueTotal).toFixed(2)),
-      },
+      data: confirm
+        ? {
+            debt: parseFloat((client.debt - valueTotal).toFixed(2)),
+            receive: parseFloat((client.receive - valueTotal).toFixed(2)),
+          }
+        : {
+            debt: parseFloat((client.debt - valueTotal).toFixed(2)),
+          },
     });
 
     return "Pagamentos realizados com sucesso";

@@ -55,6 +55,7 @@ class ConfirmedTransactionController {
           value: valueDebit,
           client_id: transaction.client_id,
           club_id,
+          confirm: true,
         });
       }
 
@@ -65,6 +66,7 @@ class ConfirmedTransactionController {
           value: valueReceive,
           client_id: transaction.client_id,
           club_id,
+          confirm: true,
         });
       }
     }

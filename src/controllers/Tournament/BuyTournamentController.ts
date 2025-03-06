@@ -46,13 +46,14 @@ class BuyTournamentController {
         ? methods_transaction.filter((item) => item["id"] == "Saldo")[0].value
         : 0;
 
-    const paymentDebtsService = new PaymentReceivesService();
+    const paymentReceivesService = new PaymentReceivesService();
 
     if (valueReceive) {
-      await paymentDebtsService.execute({
+      await paymentReceivesService.execute({
         value: valueReceive,
         client_id,
         club_id,
+        confirm: false,
       });
     }
 

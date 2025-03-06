@@ -21,8 +21,6 @@ class ListGroupVacancysService {
       },
     });
 
-    console.log(vacancys);
-
     const groupedVacancys = vacancys.reduce((acc, vacancy) => {
       const { name } = vacancy;
 
@@ -34,8 +32,6 @@ class ListGroupVacancysService {
 
       return acc;
     }, {} as Record<string, typeof vacancys>);
-
-    console.log(groupedVacancys);
 
     const groupedArray = Object.entries(groupedVacancys).map(
       ([name, vacancys]) => ({

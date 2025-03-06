@@ -51,6 +51,7 @@ class CreateTransactionController {
         value: valueReceive,
         client_id: client_id,
         club_id,
+        confirm: false,
       });
     }
 
@@ -68,6 +69,7 @@ class CreateTransactionController {
         value: valueDebit,
         client_id,
         club_id,
+        confirm: false,
       });
     }
 

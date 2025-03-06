@@ -82,6 +82,7 @@ class AddTournamentController {
         value: valueReceive,
         client_id,
         club_id,
+        confirm: false,
       });
     }
 
@@ -106,7 +107,6 @@ class AddTournamentController {
 
     await Promise.all(
       purchases.map(async (item) => {
-        console.log(item);
         if (item.buy_staff) {
           totalTokenStaff += item.token_staff * item.amount;
           totalValueStaff += item.value_staff * item.amount;
@@ -124,7 +124,6 @@ class AddTournamentController {
             },
           });
         }
-        console.log(totalTokenStaff, totalValueStaff);
         switch (item.cashier) {
           case "dealer": {
             let { payCredit, methodsPay, methodsC } = await getMethodsPay(

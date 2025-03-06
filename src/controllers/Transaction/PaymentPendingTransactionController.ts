@@ -27,6 +27,7 @@ class PaymentPendingTransactionController {
           value: valueReceive,
           client_id,
           club_id,
+          confirm: true,
         });
       }
     }

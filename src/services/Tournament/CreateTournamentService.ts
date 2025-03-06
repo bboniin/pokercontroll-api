@@ -111,7 +111,6 @@ class CreateTournamentService {
 
     Promise.all(
       await purchases.map(async (item) => {
-        console.log(item);
         if (item["type"] == "entrie") {
           await prismaClient.purchase.create({
             data: {

@@ -42,6 +42,7 @@ class ExitClientCashController {
         value: valueDebit,
         client_id,
         club_id,
+        confirm: false,
       });
     }
 
