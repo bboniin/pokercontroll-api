@@ -24,6 +24,30 @@ class BuyTournamentController {
 
     let club_id = req.club_id;
 
+    const getTournamentService = new GetTournamentService();
+
+    const tournament = await getTournamentService.execute({
+      id: tournament_id,
+      club_id,
+    });
+
+    purchases.map((item) => {
+      const purchaseInfo = tournament.purchases.find(
+        (data) => data.id == item.id
+      );
+      if (purchaseInfo) {
+        item.name = purchaseInfo.name;
+        item.type = purchaseInfo.type;
+        item.cashier = purchaseInfo.cashier;
+        item.token = purchaseInfo.token;
+        item.value = purchaseInfo.value;
+        item.token_staff = purchaseInfo.token_staff;
+        item.value_staff = purchaseInfo.value_staff;
+      } else {
+        throw new Error("Compra não encontrada");
+      }
+    });
+
     let valueCredit =
       methods_transaction.filter((item) => item["id"] == "Crédito").length != 0
         ? methods_transaction.filter((item) => item["id"] == "Crédito")[0].value
@@ -63,13 +87,13 @@ class BuyTournamentController {
 
     const verifyBuyTournamentService = new VerifyBuyTournamentService();
 
-    const tournament = await verifyBuyTournamentService.execute({
+    const tournamentPur = await verifyBuyTournamentService.execute({
       client_id,
       purchases,
       tournament_id: tournament_id,
     });
 
-    const clientTournament = tournament.clients[0];
+    const clientTournament = tournamentPur.clients[0];
 
     let totalToken = 0;
     let totalValue = 0;
@@ -78,10 +102,6 @@ class BuyTournamentController {
 
     await Promise.all(
       purchases.map(async (item) => {
-        const purchaseInfo = tournament.purchases.find(
-          (purchase) => item.id == purchase.id
-        );
-
         if (item.buy_staff) {
           totalTokenStaff += item.token_staff * item.amount;
           totalValueStaff += item.value_staff * item.amount;
@@ -102,13 +122,13 @@ class BuyTournamentController {
         switch (item.cashier) {
           case "dealer": {
             let { payCredit, methodsPay, methodsC } = await getMethodsPay(
-              purchaseInfo.value * item.amount,
+              item.value * item.amount,
               methods_transactionC
             );
             const createDealerService = new CreateDealerService();
             await createDealerService.execute({
               paid: payCredit ? false : true,
-              value: purchaseInfo.value * item.amount,
+              value: item.value * item.amount,
               type: item.cashier,
               methods_transaction: methodsPay,
               client_id,
@@ -119,7 +139,7 @@ class BuyTournamentController {
               items_transaction: {
                 name: item.name,
                 amount: item.amount,
-                value: purchaseInfo.value * item.amount,
+                value: item.value * item.amount,
               },
               operation: "entrada",
               valueReceive,
@@ -130,13 +150,13 @@ class BuyTournamentController {
           }
           case "passport": {
             let { payCredit, methodsPay, methodsC } = await getMethodsPay(
-              purchaseInfo.value * item.amount,
+              item.value * item.amount,
               methods_transactionC
             );
             const createPassportService = new CreatePassportService();
             await createPassportService.execute({
               paid: payCredit ? false : true,
-              value: purchaseInfo.value * item.amount,
+              value: item.value * item.amount,
               type: item.cashier,
               methods_transaction: methodsPay,
               client_id,
@@ -147,7 +167,7 @@ class BuyTournamentController {
               items_transaction: {
                 name: item.name,
                 amount: item.amount,
-                value: purchaseInfo.value * item.amount,
+                value: item.value * item.amount,
               },
               operation: "entrada",
               valueReceive,
@@ -158,13 +178,13 @@ class BuyTournamentController {
           }
           case "jackpot": {
             let { payCredit, methodsPay, methodsC } = await getMethodsPay(
-              purchaseInfo.value * item.amount,
+              item.value * item.amount,
               methods_transactionC
             );
             const createJackpotService = new CreateJackpotService();
             await createJackpotService.execute({
               paid: payCredit ? false : true,
-              value: purchaseInfo.value * item.amount,
+              value: item.value * item.amount,
               type: item.cashier,
               methods_transaction: methodsPay,
               client_id,
@@ -175,7 +195,7 @@ class BuyTournamentController {
               items_transaction: {
                 name: item.name,
                 amount: item.amount,
-                value: purchaseInfo.value * item.amount,
+                value: item.value * item.amount,
               },
               operation: "entrada",
               valueReceive,
@@ -186,13 +206,13 @@ class BuyTournamentController {
           }
           default: {
             let { payCredit, methodsPay, methodsC } = await getMethodsPay(
-              purchaseInfo.value * item.amount,
+              item.value * item.amount,
               methods_transactionC
             );
             const createTransactionService = new CreateTransactionService();
             await createTransactionService.execute({
               paid: payCredit ? false : true,
-              value: purchaseInfo.value * item.amount,
+              value: item.value * item.amount,
               type: "clube",
               methods_transaction: methodsPay,
               client_id,
@@ -204,7 +224,7 @@ class BuyTournamentController {
                 {
                   name: item.name,
                   amount: item.amount,
-                  value: purchaseInfo.value * item.amount,
+                  value: item.value * item.amount,
                 },
               ],
               operation: "entrada",
@@ -212,20 +232,20 @@ class BuyTournamentController {
               valueDebit: 0,
             });
             methods_transactionC = methodsC;
-            totalValue += purchaseInfo.value * item.amount;
-            totalToken += purchaseInfo.token * item.amount;
+            totalValue += item.value * item.amount;
+            totalToken += item.token * item.amount;
             break;
           }
         }
         await prismaClient.clientPurchase.create({
           data: {
-            name: purchaseInfo.name,
-            type: purchaseInfo.type,
+            name: item.name,
+            type: item.type,
             tournament_id: tournament.id,
             client_id: clientTournament.id,
-            purchase_id: purchaseInfo.id,
-            value: purchaseInfo.value,
-            total_value: purchaseInfo.value * item.amount,
+            purchase_id: item.id,
+            value: item.value,
+            total_value: item.value * item.amount,
             amount: item.amount,
           },
         });
