@@ -62,6 +62,22 @@ class EndRegisterTournamentService {
       },
     });
 
+    Promise.all(
+      await tournamentC.rankings.map(async (item) => {
+        if (item.type == "percentage") {
+          item = await prismaClient.tournamentRanking.update({
+            where: {
+              id: item.id,
+            },
+            data: {
+              value:
+                tournamentC.totalAward_accumulated * (item.percentage / 100),
+            },
+          });
+        }
+      })
+    );
+
     return tournamentC;
   }
 }

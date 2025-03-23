@@ -100,6 +100,17 @@ import { ListVacancyController } from "./controllers/Vacancy/ListVacancysControl
 import { PaymentComandTransactionController } from "./controllers/Transaction/PaymentComandTransactionController";
 import { CanceledClientTournamentController } from "./controllers/Tournament/CanceledClientTournamentController";
 import { ListGroupVacancyController } from "./controllers/Vacancy/ListGroupVacancysController";
+import { TransferClubeController } from "./controllers/Tournament/TransferClubeController";
+import { CreateTransactionBankController } from "./controllers/Bank/CreateTransactionsBankController";
+import { ListTransactionsBankController } from "./controllers/Bank/ListTransactionsBankController";
+import { DeleteBankController } from "./controllers/Bank/DeleteBankController";
+import { ListBanksController } from "./controllers/Bank/ListBanksController";
+import { EditBankController } from "./controllers/Bank/EditBankController";
+import { CreateBankController } from "./controllers/Bank/CreateBankController";
+import { ListPayablesController } from "./controllers/Payable/ListPayablesController";
+import { DeletePayableController } from "./controllers/Payable/DeletePayableController";
+import { EditPayableController } from "./controllers/Payable/EditPayableController";
+import { CreatePayableController } from "./controllers/Payable/CreatePayableController";
 
 const upload = multer(uploadConfig);
 
@@ -122,6 +133,7 @@ router.put(
 );
 router.post("/transaction", new CreateTransactionController().handle);
 router.post("/transaction-club", new CreateTransactionClubeController().handle);
+router.post("/transfer-club", new TransferClubeController().handle);
 router.put("/transaction/:id", new EditTransactionController().handle);
 
 router.get("/clients", new ListClientsController().handle);
@@ -266,6 +278,18 @@ router.post("/supplier", new CreateSupplierController().handle);
 router.put("/supplier/:supplier_id", new EditSupplierController().handle);
 router.get("/suppliers", new ListSuppliersController().handle);
 router.delete("/supplier/:supplier_id", new DeleteSupplierController().handle);
+
+router.post("/bank", new CreateBankController().handle);
+router.put("/bank/:bank_id", new EditBankController().handle);
+router.get("/banks", new ListBanksController().handle);
+router.delete("/bank/:bank_id", new DeleteBankController().handle);
+router.post("/transaction/bank", new CreateTransactionBankController().handle);
+router.get("/bank/:bank_id", new ListTransactionsBankController().handle);
+
+router.post("/payable", new CreatePayableController().handle);
+router.put("/payable/:payable_id", new EditPayableController().handle);
+router.get("/payables", new ListPayablesController().handle);
+router.delete("/payable/:payable_id", new DeletePayableController().handle);
 
 router.post("/invoice", new CreateInvoiceController().handle);
 router.get("/invoices", new ListInvoicesController().handle);

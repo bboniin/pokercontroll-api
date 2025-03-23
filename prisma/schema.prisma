@@ -64,6 +64,8 @@ model Club {
   invoices           Invoice[]
   suppliers          Supplier[]
   rankings           Ranking[]
+  banks              Bank[]
+  payables           Payable[]
 
   @@map("clubs")
 }
@@ -449,6 +451,8 @@ model TournamentRanking {
   tournament_id         String
   ranking_id            String
   value                 Float
+  percentage            Float                       @default(0)
+  type                  String                      @default("value")
   tournament            Tournament                  @relation(fields: [tournament_id], references: [id], onDelete: Cascade)
   ranking               Ranking                     @relation(fields: [ranking_id], references: [id], onDelete: Cascade)
 
@@ -466,4 +470,52 @@ model TournamentRankingRule {
   tournamentRanking       TournamentRanking     @relation(fields: [tournament_ranking_id], references: [id], onDelete: Cascade)
 
   @@map("tournament_ranking_rules")
+}
+
+model Bank {
+  id                    String              @id @default(uuid())
+  name                  String
+  balance               Float                 
+  club_id               String                
+  club                  Club               @relation(fields: [club_id], references: [id], onDelete: Cascade)
+  create_at             DateTime            @default(now())
+  update_at             DateTime            @default(now())
+
+  transactions          TransactionBank[]
+
+  @@map("banks")
+}
+
+model TransactionBank {
+  id                    String              @id @default(uuid())
+  name                  String
+  value                 Float
+  observation           String?
+  operation             String        
+  bank_id               String                
+  bank                  Bank               @relation(fields: [bank_id], references: [id], onDelete: Cascade)        
+  create_at             DateTime            @default(now())
+  update_at             DateTime            @default(now())
+
+  @@map("transactions_bank")
+}
+
+model Payable {
+  id                    String              @id @default(uuid())
+  name                  String
+  recurrence            Boolean
+  observation           String?
+  value                 Float
+  installments          Int?   
+  installmentsPaid      Int?    
+  period                String    
+  active                Boolean             @default(true)         
+  account               String                
+  club_id               String        
+  date_charge           DateTime            @default(now())        
+  club                  Club                @relation(fields: [club_id], references: [id], onDelete: Cascade) 
+  create_at             DateTime            @default(now())
+  update_at             DateTime            @default(now())
+
+  @@map("payables")
 }

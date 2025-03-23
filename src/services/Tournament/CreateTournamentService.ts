@@ -166,6 +166,8 @@ class CreateTournamentService {
             tournament_id: tournament.id,
             ranking_id: data["id"],
             value: data["value"],
+            percentage: data["percentage"],
+            type: data["type"],
           },
         });
 
