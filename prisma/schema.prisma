@@ -101,6 +101,7 @@ model Transaction {
   id                  String     @id @default(uuid())
   type                String     @default("clube")
   paid                Boolean
+  editable            Boolean    @default(false)
   value               Float
   value_paid          Float
   operation           String     @default("entrada")
@@ -508,6 +509,7 @@ model Payable {
   value                 Float
   installments          Int?   
   installmentsPaid      Int?    
+  value_estimated       Boolean             @default(false)
   period                String    
   active                Boolean             @default(true)         
   account               String                

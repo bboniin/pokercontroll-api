@@ -11,6 +11,8 @@ class CreatePayableController {
       installments,
       account,
       period,
+      date_charge,
+      value_estimated,
     } = req.body;
 
     let club_id = req.club_id;
@@ -25,6 +27,8 @@ class CreatePayableController {
       account,
       period,
       recurrence,
+      date_charge,
+      value_estimated,
       club_id,
     });
     return res.json(payable);

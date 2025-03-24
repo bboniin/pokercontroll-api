@@ -1,4 +1,11 @@
-import { addDays, addMonths, addYears } from "date-fns";
+import {
+  addDays,
+  addMonths,
+  addYears,
+  isToday,
+  isTomorrow,
+  startOfDay,
+} from "date-fns";
 import prismaClient from "../../prisma";
 
 interface PayableRequest {
@@ -9,7 +16,9 @@ interface PayableRequest {
   period: string;
   observation: string;
   account: string;
+  date_charge: Date;
   recurrence: boolean;
+  value_estimated: boolean;
 }
 
 function periodToDays(period) {
@@ -50,7 +59,9 @@ class CreatePayableService {
     installments,
     account,
     observation,
+    date_charge,
     recurrence,
+    value_estimated,
   }: PayableRequest) {
     if (
       !account ||
@@ -58,12 +69,19 @@ class CreatePayableService {
       !period ||
       (!recurrence && !installments) ||
       !name ||
+      !date_charge ||
       !club_id
     ) {
       throw new Error("Preencha os campos obrigatórios");
     }
 
-    const date_charge = periodToDays(period);
+    date_charge = startOfDay(new Date(date_charge));
+
+    let newDateCharge = date_charge;
+
+    if (isToday(date_charge) || isTomorrow(date_charge)) {
+      newDateCharge = periodToDays(period);
+    }
 
     const payable = await prismaClient.payable.create({
       data: {
@@ -72,40 +90,44 @@ class CreatePayableService {
         period: period,
         installments: recurrence ? 0 : installments,
         observation: observation,
-        installmentsPaid: 1,
+        installmentsPaid: newDateCharge != date_charge ? 1 : 0,
         account: account,
         recurrence: recurrence,
-        date_charge: date_charge,
+        date_charge: newDateCharge,
+        value_estimated: value_estimated,
         club_id: club_id,
       },
     });
 
-    const transaction = await prismaClient.transaction.create({
-      data: {
-        type: account,
-        value: value,
-        club_id: club_id,
-        operation: "saida",
-        date_payment: new Date(),
-        observation: recurrence
-          ? "Cobrança recorrente"
-          : `1/${installments} parcelas`,
-        paid: false,
-        value_paid: 0,
-        sector_id: payable.id,
-        items_transaction: {
-          create: [
-            {
-              name: name,
-              value: value,
-              amount: 1,
-            },
-          ],
+    if (newDateCharge != date_charge) {
+      await prismaClient.transaction.create({
+        data: {
+          type: account,
+          value: value,
+          club_id: club_id,
+          operation: "saida",
+          date_payment: date_charge,
+          observation: recurrence
+            ? "Cobrança recorrente"
+            : `1/${installments} parcelas`,
+          paid: false,
+          value_paid: 0,
+          editable: value_estimated,
+          sector_id: payable.id,
+          items_transaction: {
+            create: [
+              {
+                name: name,
+                value: value,
+                amount: 1,
+              },
+            ],
+          },
         },
-      },
-    });
+      });
+    }
 
-    return transaction;
+    return "Despesa recorrente criada";
   }
 }
 

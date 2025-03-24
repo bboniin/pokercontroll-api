@@ -13,6 +13,7 @@ interface PayableRequest {
   account: string;
   recurrence: boolean;
   date_charge: Date;
+  value_estimated: boolean;
 }
 
 class EditPayableService {
@@ -29,6 +30,7 @@ class EditPayableService {
     active,
     recurrence,
     date_charge,
+    value_estimated,
   }: PayableRequest) {
     if (
       !payable_id ||
@@ -68,6 +70,7 @@ class EditPayableService {
         observation: observation,
         recurrence: recurrence,
         date_charge: date_charge,
+        value_estimated: value_estimated,
         installmentsPaid: recurrence ? 0 : installmentsPaid || 1,
       },
     });

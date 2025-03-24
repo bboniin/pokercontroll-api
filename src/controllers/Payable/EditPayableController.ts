@@ -14,6 +14,7 @@ class EditPayableController {
       account,
       period,
       recurrence,
+      value_estimated,
       date_charge,
     } = req.body;
 
@@ -32,6 +33,7 @@ class EditPayableController {
       payable_id,
       installmentsPaid,
       active,
+      value_estimated,
       recurrence,
       date_charge,
     });

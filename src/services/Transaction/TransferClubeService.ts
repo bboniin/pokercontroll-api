@@ -33,97 +33,166 @@ class TransferClubeService {
       throw new Error("Caixas são obrigátorios obrigatório");
     }
 
-    if (!typesTransaction[type] || !typesTransaction[typeOut]) {
-      throw new Error("Caixa é inválido");
-    }
-
     let updateBalance = {};
+    let bank = {};
+    let bankOut = {};
 
-    switch (type) {
-      case "clube":
-        updateBalance["balance"] = parseFloat(
-          (club.balance - value).toFixed(2)
-        );
-        break;
-      case "passport":
-        updateBalance["passport"] = parseFloat(
-          (club.passport - value).toFixed(2)
-        );
-        break;
-      case "dealer":
-        updateBalance["dealer"] = parseFloat((club.dealer - value).toFixed(2));
-        break;
-      case "jackpot":
-        updateBalance["jackpot"] = parseFloat(
-          (club.jackpot - value).toFixed(2)
-        );
-        break;
+    if (!typesTransaction[type]) {
+      bank = await prismaClient.bank.findUnique({
+        where: {
+          id: type,
+        },
+      });
+
+      if (!bank) {
+        throw new Error("Caixa para retirar é inválido");
+      }
+      type = bank["name"];
     }
 
-    switch (typeOut) {
-      case "clube":
-        updateBalance["balance"] = parseFloat(
-          (club.balance + value).toFixed(2)
-        );
-        break;
-      case "passport":
-        updateBalance["passport"] = parseFloat(
-          (club.passport + value).toFixed(2)
-        );
-        break;
-      case "dealer":
-        updateBalance["dealer"] = parseFloat((club.dealer + value).toFixed(2));
-        break;
-      case "jackpot":
-        updateBalance["jackpot"] = parseFloat(
-          (club.jackpot + value).toFixed(2)
-        );
-        break;
+    if (!typesTransaction[typeOut]) {
+      bankOut = await prismaClient.bank.findUnique({
+        where: {
+          id: typeOut,
+        },
+      });
+
+      if (!bankOut) {
+        throw new Error("Caixa para receber é inválido");
+      }
+
+      typeOut = bankOut["name"];
     }
 
-    const transactionOut = await prismaClient.transaction.create({
-      data: {
-        type: type,
-        value: value,
-        club_id: club_id,
-        operation: "saida",
-        date_payment: new Date(),
-        observation: observation,
-        paid: true,
-        value_paid: value,
-        items_transaction: {
-          create: [
-            {
-              name: `Transferencia enviada para ${typeOut}`,
-              value: value,
-              amount: 1,
-            },
-          ],
+    if (bank["id"]) {
+      await prismaClient.bank.update({
+        where: {
+          id: bank["id"],
         },
-      },
-    });
+        data: {
+          balance: bank["balance"] - value,
+        },
+      });
+      await prismaClient.transactionBank.create({
+        data: {
+          name: `Transferencia enviada para ${typeOut}`,
+          value: value,
+          operation: "saida",
+          bank_id: bank["id"],
+          observation: observation,
+        },
+      });
+    } else {
+      switch (type) {
+        case "clube":
+          updateBalance["balance"] = parseFloat(
+            (club.balance - value).toFixed(2)
+          );
+          break;
+        case "passport":
+          updateBalance["passport"] = parseFloat(
+            (club.passport - value).toFixed(2)
+          );
+          break;
+        case "dealer":
+          updateBalance["dealer"] = parseFloat(
+            (club.dealer - value).toFixed(2)
+          );
+          break;
+        case "jackpot":
+          updateBalance["jackpot"] = parseFloat(
+            (club.jackpot - value).toFixed(2)
+          );
+          break;
+      }
+      await prismaClient.transaction.create({
+        data: {
+          type: type,
+          value: value,
+          club_id: club_id,
+          operation: "saida",
+          date_payment: new Date(),
+          observation: observation,
+          paid: true,
+          value_paid: value,
+          items_transaction: {
+            create: [
+              {
+                name: `Transferencia enviada para ${typeOut}`,
+                value: value,
+                amount: 1,
+              },
+            ],
+          },
+        },
+      });
+    }
 
-    const transactionReceive = await prismaClient.transaction.create({
-      data: {
-        type: typeOut,
-        value: value,
-        club_id: club_id,
-        operation: "entrada",
-        date_payment: new Date(),
-        observation: observation,
-        paid: true,
-        value_paid: value,
-        items_transaction: {
-          create: [
-            {
-              name: `Transferencia recebida de ${type}`,
-              value: value,
-              amount: 1,
-            },
-          ],
+    if (bankOut["id"]) {
+      await prismaClient.bank.update({
+        where: {
+          id: bankOut["id"],
         },
-      },
-    });
+        data: {
+          balance: bankOut["balance"] + value,
+        },
+      });
+
+      await prismaClient.transactionBank.create({
+        data: {
+          name: `Transferencia recebida de ${type}`,
+          value: value,
+          operation: "entrada",
+          bank_id: bankOut["id"],
+          observation: observation,
+        },
+      });
+    } else {
+      switch (typeOut) {
+        case "clube":
+          updateBalance["balance"] = parseFloat(
+            (club.balance + value).toFixed(2)
+          );
+          break;
+        case "passport":
+          updateBalance["passport"] = parseFloat(
+            (club.passport + value).toFixed(2)
+          );
+          break;
+        case "dealer":
+          updateBalance["dealer"] = parseFloat(
+            (club.dealer + value).toFixed(2)
+          );
+          break;
+        case "jackpot":
+          updateBalance["jackpot"] = parseFloat(
+            (club.jackpot + value).toFixed(2)
+          );
+          break;
+      }
+
+      await prismaClient.transaction.create({
+        data: {
+          type: typeOut,
+          value: value,
+          club_id: club_id,
+          operation: "entrada",
+          date_payment: new Date(),
+          observation: observation,
+          paid: true,
+          value_paid: value,
+          items_transaction: {
+            create: [
+              {
+                name: `Transferencia recebida de ${type}`,
+                value: value,
+                amount: 1,
+              },
+            ],
+          },
+        },
+      });
+    }
 
     await prismaClient.club.update({
       where: {
@@ -132,7 +201,7 @@ class TransferClubeService {
       data: updateBalance,
     });
 
-    return { transactionReceive, transactionOut };
+    return "Transferencia realizada com sucesso";
   }
 }
 
