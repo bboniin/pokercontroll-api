@@ -3,7 +3,8 @@ import { TransferClubeService } from "../../services/Transaction/TransferClubeSe
 
 class TransferClubeController {
   async handle(req: Request, res: Response) {
-    const { value, type, name, typeOut, observation } = req.body;
+    const { value, type, name, typeOut, observation, methods_transaction } =
+      req.body;
 
     let club_id = req.club_id;
 
@@ -15,6 +16,7 @@ class TransferClubeController {
       typeOut,
       club_id,
       observation,
+      methods_transaction,
     });
 
     return res.json(transaction);

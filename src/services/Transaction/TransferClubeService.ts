@@ -6,6 +6,7 @@ interface TransactionRequest {
   value: number;
   club_id: string;
   observation: string;
+  methods_transaction: Array<[]>;
 }
 
 const typesTransaction = {
@@ -22,6 +23,7 @@ class TransferClubeService {
     club_id,
     typeOut,
     observation,
+    methods_transaction,
   }: TransactionRequest) {
     const club = await prismaClient.club.findUnique({
       where: {
@@ -31,6 +33,21 @@ class TransferClubeService {
 
     if (!type || !typeOut) {
       throw new Error("Caixas são obrigátorios obrigatório");
+    }
+
+    if (!!typesTransaction[type] != !!typesTransaction[typeOut]) {
+      if (methods_transaction.length) {
+        if (
+          value !=
+          methods_transaction
+            .map((method) => method["value"])
+            .reduce((total, value) => total + value)
+        ) {
+          throw new Error("Valor restante tem que ser zerado");
+        }
+      } else {
+        throw new Error("Selecione o método de pagamento");
+      }
     }
 
     let updateBalance = {};
@@ -105,7 +122,7 @@ class TransferClubeService {
           );
           break;
       }
-      await prismaClient.transaction.create({
+      const transaction = await prismaClient.transaction.create({
         data: {
           type: type,
           value: value,
@@ -126,6 +143,36 @@ class TransferClubeService {
           },
         },
       });
+
+      if (
+        !!typesTransaction[type] != !!typesTransaction[typeOut] &&
+        typesTransaction[type]
+      ) {
+        methods_transaction.map(async (item) => {
+          const method = await prismaClient.method.findFirst({
+            where: {
+              id: item["id"],
+            },
+          });
+          let balance = method["balance"] - item["value"];
+          await prismaClient.method.update({
+            where: {
+              id: item["id"],
+            },
+            data: {
+              balance: balance,
+            },
+          });
+          await prismaClient.methodsTransaction.create({
+            data: {
+              name: item["name"],
+              percentage: item["percentage"],
+              value: item["value"],
+              transaction_id: transaction.id,
+            },
+          });
+        });
+      }
     }
 
     if (bankOut["id"]) {
@@ -171,7 +218,7 @@ class TransferClubeService {
           break;
       }
 
-      await prismaClient.transaction.create({
+      const transaction = await prismaClient.transaction.create({
         data: {
           type: typeOut,
           value: value,
@@ -192,6 +239,35 @@ class TransferClubeService {
           },
         },
       });
+      if (
+        !!typesTransaction[type] != !!typesTransaction[typeOut] &&
+        typesTransaction[typeOut]
+      ) {
+        methods_transaction.map(async (item) => {
+          const method = await prismaClient.method.findFirst({
+            where: {
+              id: item["id"],
+            },
+          });
+          let balance = method["balance"] + item["value"];
+          await prismaClient.method.update({
+            where: {
+              id: item["id"],
+            },
+            data: {
+              balance: balance,
+            },
+          });
+          await prismaClient.methodsTransaction.create({
+            data: {
+              name: item["name"],
+              percentage: item["percentage"],
+              value: item["value"],
+              transaction_id: transaction.id,
+            },
+          });
+        });
+      }
     }
 
     await prismaClient.club.update({

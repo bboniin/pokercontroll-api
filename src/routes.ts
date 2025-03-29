@@ -100,7 +100,7 @@ import { ListVacancyController } from "./controllers/Vacancy/ListVacancysControl
 import { PaymentComandTransactionController } from "./controllers/Transaction/PaymentComandTransactionController";
 import { CanceledClientTournamentController } from "./controllers/Tournament/CanceledClientTournamentController";
 import { ListGroupVacancyController } from "./controllers/Vacancy/ListGroupVacancysController";
-import { TransferClubeController } from "./controllers/Tournament/TransferClubeController";
+import { TransferClubeController } from "./controllers/Transaction/TransferClubeController";
 import { CreateTransactionBankController } from "./controllers/Bank/CreateTransactionsBankController";
 import { ListTransactionsBankController } from "./controllers/Bank/ListTransactionsBankController";
 import { DeleteBankController } from "./controllers/Bank/DeleteBankController";
