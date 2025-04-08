@@ -29,6 +29,7 @@ class BuyTournamentController {
     const tournament = await getTournamentService.execute({
       id: tournament_id,
       club_id,
+      blind: false,
     });
 
     purchases.map((item) => {
@@ -41,6 +42,7 @@ class BuyTournamentController {
         item.cashier = purchaseInfo.cashier;
         item.token = purchaseInfo.token;
         item.value = purchaseInfo.value;
+        item.multiple = purchaseInfo.multiple;
         item.token_staff = purchaseInfo.token_staff;
         item.value_staff = purchaseInfo.value_staff;
       } else {
@@ -100,6 +102,8 @@ class BuyTournamentController {
     let totalTokenStaff = 0;
     let totalValueStaff = 0;
 
+    let staffId = Math.random().toString(36).substring(2, 10);
+
     await Promise.all(
       purchases.map(async (item) => {
         if (item.buy_staff) {
@@ -114,10 +118,16 @@ class BuyTournamentController {
               client_id: clientTournament.id,
               purchase_id: item.id,
               value: item.value_staff,
+              identifier: staffId,
               total_value: item.value_staff * item.amount,
               amount: item.amount,
             },
           });
+        }
+
+        if (item.type == "purchase" || item.type == "entrie") {
+          totalValue += item.value * item.amount;
+          totalToken += item.token * item.amount;
         }
         switch (item.cashier) {
           case "dealer": {
@@ -138,8 +148,10 @@ class BuyTournamentController {
               observation,
               items_transaction: {
                 name: item.name,
+                type: item.type,
                 amount: item.amount,
                 value: item.value * item.amount,
+                product_id: item.id,
               },
               operation: "entrada",
               valueReceive,
@@ -166,8 +178,10 @@ class BuyTournamentController {
               observation,
               items_transaction: {
                 name: item.name,
+                type: item.type,
                 amount: item.amount,
                 value: item.value * item.amount,
+                product_id: item.id,
               },
               operation: "entrada",
               valueReceive,
@@ -194,8 +208,10 @@ class BuyTournamentController {
               observation,
               items_transaction: {
                 name: item.name,
+                type: item.type,
                 amount: item.amount,
                 value: item.value * item.amount,
+                product_id: item.id,
               },
               operation: "entrada",
               valueReceive,
@@ -223,8 +239,10 @@ class BuyTournamentController {
               items_transaction: [
                 {
                   name: item.name,
+                  type: item.type,
                   amount: item.amount,
                   value: item.value * item.amount,
+                  product_id: item.id,
                 },
               ],
               operation: "entrada",
@@ -232,8 +250,6 @@ class BuyTournamentController {
               valueDebit: 0,
             });
             methods_transactionC = methodsC;
-            totalValue += item.value * item.amount;
-            totalToken += item.token * item.amount;
             break;
           }
         }
@@ -272,6 +288,7 @@ class BuyTournamentController {
           name: "Staff",
           amount: 1,
           value: totalValueStaff,
+          product_id: staffId,
         },
         operation: "entrada",
         valueReceive,

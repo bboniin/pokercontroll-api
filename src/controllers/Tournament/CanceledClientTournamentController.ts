@@ -4,7 +4,7 @@ import { CanceledClientTournamentService } from "../../services/Tournament/Cance
 class CanceledClientTournamentController {
   async handle(req: Request, res: Response) {
     const { client_id } = req.params;
-    const { tournament_id } = req.body;
+    const { tournament_id, transactions } = req.body;
 
     let club_id = req.club_id;
 
@@ -14,6 +14,8 @@ class CanceledClientTournamentController {
     const tournament = await canceledClientTournamentService.execute({
       client_id,
       tournament_id,
+      transactions,
+      club_id,
     });
 
     return res.json(tournament);

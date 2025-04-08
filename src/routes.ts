@@ -111,6 +111,8 @@ import { ListPayablesController } from "./controllers/Payable/ListPayablesContro
 import { DeletePayableController } from "./controllers/Payable/DeletePayableController";
 import { EditPayableController } from "./controllers/Payable/EditPayableController";
 import { CreatePayableController } from "./controllers/Payable/CreatePayableController";
+import { NewPurchaseTournamentController } from "./controllers/Tournament/NewPurchaseTournamentController";
+import { GetTransactionsTournamentController } from "./controllers/Tournament/GetTransactionsTournamentController";
 
 const upload = multer(uploadConfig);
 
@@ -155,6 +157,10 @@ router.get("/clients-cash", new ClientsCashController().handle);
 router.post("/move-cash", new MoveCashController().handle);
 router.post("/add-cash", new AddCashController().handle);
 router.post("/buy-cash", new BuyCashController().handle);
+router.post(
+  "/new-purchase/:tournament_id",
+  new NewPurchaseTournamentController().handle
+);
 router.post("/reward-cash", new RewardCashController().handle);
 router.get("/clear-cash", new ClearCashController().handle);
 router.get("/cashs", new ListCashsController().handle);
@@ -180,6 +186,10 @@ router.get(
 router.post("/add-tournament", new AddTournamentController().handle);
 router.post("/move-tournament", new MoveTournamentController().handle);
 router.get("/tournament/:tournament_id", new GetTournamentController().handle);
+router.get(
+  "/transactions/tournament/:tournament_id",
+  new GetTransactionsTournamentController().handle
+);
 router.get("/tournaments", new ListTournamentsController().handle);
 router.put("/tournament/:tournament_id", new EditTournamentController().handle);
 router.put(

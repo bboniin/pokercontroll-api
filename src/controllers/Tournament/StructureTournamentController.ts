@@ -1,21 +1,33 @@
-import { Request, Response } from 'express';
-import { StructureTournamentService } from '../../services/Tournament/StructureTournamentService';
+import { Request, Response } from "express";
+import { StructureTournamentService } from "../../services/Tournament/StructureTournamentService";
 
 class StructureTournamentController {
-    async handle(req: Request, res: Response) {
-        const { tournament_id } = req.params
-        const { blinds, intervals, nivel_max_in, nivel_max_timechip,} = req.body
+  async handle(req: Request, res: Response) {
+    const { tournament_id } = req.params;
+    const {
+      blinds,
+      intervals,
+      nivel_max_in,
+      nivel_max_timechip,
+      seconds_ajusted,
+    } = req.body;
 
-        let club_id = req.club_id
+    let club_id = req.club_id;
 
-        const structureTournamentService = new StructureTournamentService
+    const structureTournamentService = new StructureTournamentService();
 
-        const tournament = await structureTournamentService.execute({
-            blinds, intervals, club_id, nivel_max_in, nivel_max_timechip, tournament_id
-        })
+    const tournament = await structureTournamentService.execute({
+      blinds,
+      intervals,
+      club_id,
+      nivel_max_in,
+      nivel_max_timechip,
+      seconds_ajusted,
+      tournament_id,
+    });
 
-        return res.json(tournament)
-    }
+    return res.json(tournament);
+  }
 }
 
-export { StructureTournamentController }
+export { StructureTournamentController };

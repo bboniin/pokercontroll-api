@@ -2,8 +2,10 @@ import prismaClient from "../../prisma";
 
 interface Item {
   name?: string;
+  type?: string;
   value?: number;
   amount?: number;
+  product_id?: number;
 }
 
 interface TransactionRequest {
@@ -152,6 +154,7 @@ class CreateTransactionService {
         data: {
           name: item["name"],
           value: item["value"],
+          type: item["type"] || "",
           amount: item["amount"],
           transaction_id: transaction.id,
         },

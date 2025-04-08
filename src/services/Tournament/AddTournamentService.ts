@@ -14,19 +14,25 @@ class AddTournamentService {
     tournament_id,
     tokenTimechip,
   }: TournamentRequest) {
-    if (!client_id || !chair || !tournament_id) {
+    if (!client_id || !tournament_id) {
       throw new Error(
         "Id do cliente, do torneio e posição da mesa é obrigatório"
       );
     }
 
-    const chairClient = await prismaClient.clientTournament.findFirst({
-      where: {
-        tournament_id: tournament_id,
-        chair_tournament: "T" + chair,
-        exit: false,
-      },
-    });
+    if (chair) {
+      const chairClient = await prismaClient.clientTournament.findFirst({
+        where: {
+          tournament_id: tournament_id,
+          chair_tournament: "T" + chair,
+          exit: false,
+        },
+      });
+
+      if (chairClient) {
+        throw new Error("Posição já está sendo ocupada");
+      }
+    }
 
     const clientTournamentGet = await prismaClient.clientTournament.findFirst({
       where: {
@@ -34,10 +40,6 @@ class AddTournamentService {
         tournament_id: tournament_id,
       },
     });
-
-    if (chairClient) {
-      throw new Error("Posição já está sendo ocupada");
-    }
 
     if (clientTournamentGet) {
       if (clientTournamentGet.exit) {
@@ -50,7 +52,7 @@ class AddTournamentService {
             tournament_id: tournament_id,
             date_in: new Date(),
             award: 0,
-            chair_tournament: "T" + chair,
+            chair_tournament: chair ? "T" + chair : "",
             timechip: tokenTimechip,
             exit: false,
           },
@@ -68,7 +70,7 @@ class AddTournamentService {
           timechip: tokenTimechip || 0,
           date_in: new Date(),
           award: 0,
-          chair_tournament: "T" + chair,
+          chair_tournament: chair ? "T" + chair : "",
         },
       });
 

@@ -4,17 +4,24 @@ import prismaClient from "../../prisma";
 interface TournamentRequest {
   client_id: string;
   tournament_id: string;
+  transactions: Array<string>;
+  club_id: string;
 }
 
 class CanceledClientTournamentService {
-  async execute({ client_id, tournament_id }: TournamentRequest) {
-    if (!client_id || !tournament_id) {
-      throw new Error("Id do cliente e do torneio são obrigatórios");
+  async execute({
+    client_id,
+    tournament_id,
+    transactions,
+    club_id,
+  }: TournamentRequest) {
+    if (!client_id || !tournament_id || !transactions.length) {
+      throw new Error("Id do cliente, torneio e transação são obrigatórios");
     }
-
-    const tournamentGet = await prismaClient.tournament.findUnique({
+    const tournamentGet = await prismaClient.tournament.findFirst({
       where: {
         id: tournament_id,
+        club_id: club_id,
       },
       include: {
         clients: true,
@@ -52,58 +59,137 @@ class CanceledClientTournamentService {
       throw new Error("Cliente não foi encontrado");
     }
 
-    const transactions = await prismaClient.transaction.findMany({
+    const transactionsTournament = await prismaClient.transaction.findMany({
       where: {
         client_id: client_id,
         sector_id: tournamentGet.id,
         operation: "entrada",
       },
+      include: {
+        methods_transaction: true,
+        items_transaction: true,
+      },
     });
 
+    if (!transactionsTournament) {
+      throw new Error("Nenhum transação encontrada");
+    }
+
+    Promise.all(
+      await transactionsTournament.map(async (item) => {
+        if (transactions.some((data) => data == item.id)) {
+          item.items_transaction.map((data) => {
+            if (
+              item.type == "entrie" &&
+              transactions.length != transactionsTournament.length
+            ) {
+              throw new Error(
+                "Se excluir a entrada, deverá excluir todas as compras"
+              );
+            }
+          });
+        }
+      })
+    );
+
     let valueCredit = 0;
-    let valuePaid = 0;
-    let valueCreditClub = 0;
+    let valueBalance = 0;
+    let valueAccumulated = 0;
     let totalPaidClub = 0;
     let totalPaidDealer = 0;
     let totalPaidPassport = 0;
     let totalPaidJackpot = 0;
 
     Promise.all(
-      await transactions.map(async (item) => {
-        valuePaid += item.value_paid;
-        valueCredit += item.value - item.value_paid;
-        switch (item.type) {
-          case "dealer": {
-            totalPaidDealer += item.value;
-            break;
+      await transactionsTournament.map(async (item) => {
+        if (transactions.some((data) => data == item.id)) {
+          let valuePaid = 0;
+          let product_id = "";
+          item.items_transaction.map((data) => {
+            product_id = data.product_id;
+            if (data.type == "entrie" || data.type == "purchase") {
+              valueAccumulated += data.value;
+            }
+          });
+          item.methods_transaction.map((data) => {
+            if (data.id == "Saldo") {
+              valueBalance += data.value;
+              valuePaid += data.value;
+            } else {
+              if (data.id == "Crédito") {
+                valueCredit += data.value;
+              } else {
+                valuePaid += data.value * ((100 - data.percentage) / 100);
+              }
+            }
+          });
+          switch (item.type) {
+            case "dealer": {
+              totalPaidDealer += valuePaid;
+              break;
+            }
+            case "jackpot": {
+              totalPaidJackpot += valuePaid;
+              break;
+            }
+            case "passport": {
+              totalPaidPassport += valuePaid;
+              break;
+            }
+            default: {
+              totalPaidClub += valuePaid;
+            }
           }
-          case "jackpot": {
-            totalPaidJackpot += item.value;
-            break;
-          }
-          case "passport": {
-            totalPaidPassport += item.value;
-            break;
-          }
-          default: {
-            totalPaidClub += item.value;
-            valueCreditClub += item.value - item.value_paid;
+
+          await prismaClient.transaction.delete({
+            where: {
+              id: item.id,
+            },
+          });
+
+          const purchase = await prismaClient.clientPurchase.findFirst({
+            where: {
+              client_id: chairClient.id,
+              OR: [
+                {
+                  id: product_id,
+                },
+                {
+                  identifier: product_id,
+                },
+              ],
+              tournament_id: tournament_id,
+            },
+          });
+
+          if (purchase) {
+            await prismaClient.clientPurchase.delete({
+              where: {
+                id: purchase.id,
+              },
+            });
           }
         }
-
-        await prismaClient.transaction.delete({
-          where: {
-            id: item.id,
-          },
-        });
       })
     );
 
-    if (valuePaid) {
+    await prismaClient.client.update({
+      where: {
+        id: client_id,
+      },
+      data: {
+        receive: parseFloat(
+          (chairClient.client.receive + valueBalance).toFixed(2)
+        ),
+        debt: parseFloat((chairClient.client.debt - valueCredit).toFixed(2)),
+      },
+    });
+
+    if (valueBalance) {
       const transaction = await prismaClient.transaction.create({
         data: {
           type: "clube",
-          value: valuePaid,
+          value: valueBalance,
           club_id: tournamentGet.club.id,
           client_id: client_id,
           operation: "saida",
@@ -116,24 +202,13 @@ class CanceledClientTournamentService {
 
       await prismaClient.itemsTransaction.create({
         data: {
-          name: "Estorno",
-          value: valuePaid,
+          name: "Estorno de Saldo",
+          value: valueBalance,
           amount: 1,
           transaction_id: transaction.id,
         },
       });
     }
-    await prismaClient.client.update({
-      where: {
-        id: client_id,
-      },
-      data: {
-        receive: parseFloat(
-          (chairClient.client.receive + valuePaid).toFixed(2)
-        ),
-        debt: parseFloat((chairClient.client.debt - valueCredit).toFixed(2)),
-      },
-    });
 
     await prismaClient.club.update({
       where: {
@@ -175,11 +250,13 @@ class CanceledClientTournamentService {
       })
     );
 
-    await prismaClient.clientTournament.delete({
-      where: {
-        id: chairClient.id,
-      },
-    });
+    if (transactionsTournament.length == transactions.length) {
+      await prismaClient.clientTournament.delete({
+        where: {
+          id: chairClient.id,
+        },
+      });
+    }
 
     const tournament = await prismaClient.tournament.update({
       where: {
@@ -188,8 +265,7 @@ class CanceledClientTournamentService {
       data: {
         total_tokens: tournamentGet.total_tokens - tokens,
         totalAward_accumulated:
-          tournamentGet.totalAward_accumulated -
-          (valueCreditClub + totalPaidClub),
+          tournamentGet.totalAward_accumulated - valueAccumulated,
       },
       include: {
         clients: {

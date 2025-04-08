@@ -31,7 +31,7 @@ class EditTournamentService {
     });
 
     if (!tournament) {
-      throw new Error("Produto não encontrado");
+      throw new Error("Torneio não encontrado");
     }
 
     let data = {

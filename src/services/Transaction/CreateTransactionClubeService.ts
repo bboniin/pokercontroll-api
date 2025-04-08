@@ -209,6 +209,7 @@ class CreateTransactionClubeService {
         name: items_transaction["name"],
         value: items_transaction["value"],
         amount: items_transaction["amount"],
+        product_id: items_transaction["product_id"] || "",
         transaction_id: transaction.id,
       },
     });

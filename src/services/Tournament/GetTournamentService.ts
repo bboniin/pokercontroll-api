@@ -3,10 +3,11 @@ import prismaClient from "../../prisma";
 interface TournamentRequest {
   id: string;
   club_id: string;
+  blind: boolean;
 }
 
 class GetTournamentService {
-  async execute({ id, club_id }: TournamentRequest) {
+  async execute({ id, club_id, blind }: TournamentRequest) {
     if (!id || !club_id) {
       throw new Error("Envie o id do produto e do clube");
     }
@@ -27,7 +28,18 @@ class GetTournamentService {
           },
         },
         purchases: true,
-        clients_purchases: true,
+        clients_purchases: blind
+          ? {
+              where: {
+                NOT: {
+                  client: {
+                    chair_tournament: "",
+                    exit: false,
+                  },
+                },
+              },
+            }
+          : true,
         vacancys: {
           include: {
             client: true,

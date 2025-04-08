@@ -122,14 +122,16 @@ model Transaction {
 }
 
 model ItemsTransaction {
-  id              String    @id @default(uuid())
+  id              String          @id @default(uuid())
   name            String
+  product_id      String?         @default("")
   value           Float
   amount          Int 
+  type            String?         @default("")
   transaction_id  String
-  transaction     Transaction      @relation(fields: [transaction_id], references: [id], onDelete: Cascade)
-  create_at       DateTime? @default(now())
-  update_at       DateTime? @default(now())
+  transaction     Transaction     @relation(fields: [transaction_id], references: [id], onDelete: Cascade)
+  create_at       DateTime?       @default(now())
+  update_at       DateTime?       @default(now())
 
   @@map("items_transaction")
 }
@@ -252,6 +254,7 @@ model Tournament {
   paused                        Boolean   @default(false)
   time_paused                   DateTime? @default(now())
   seconds_paused                Int       @default(0)
+  seconds_ajusted               Int       @default(0)
   max_count                     Int       @default(0)
   totalAward                    Float     @default(0)
   totalAward_guaranteed         Float
@@ -281,6 +284,7 @@ model Purchase {
   tournament            Tournament          @relation(fields: [tournament_id], references: [id], onDelete: Cascade)
   cashier               String
   name                  String             
+  multiple              Boolean             @default(false)
   value                 Float               
   token                 Int?                @default(0)
   is_staff              Boolean             @default(false)
@@ -350,7 +354,8 @@ model ClientPurchase {
   type                  String
   name                  String              
   value                 Float    
-  amount                Int                   
+  amount                Int           
+  identifier            String?             @default("")         
   total_value           Float           
   purchase_id           String            
   client_id             String
