@@ -5,7 +5,7 @@ interface Item {
   type?: string;
   value?: number;
   amount?: number;
-  product_id?: number;
+  product_id?: string;
 }
 
 interface TransactionRequest {
@@ -155,6 +155,7 @@ class CreateTransactionService {
           name: item["name"],
           value: item["value"],
           type: item["type"] || "",
+          product_id: item["product_id"] || "",
           amount: item["amount"],
           transaction_id: transaction.id,
         },

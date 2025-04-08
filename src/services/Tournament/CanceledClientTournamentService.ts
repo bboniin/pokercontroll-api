@@ -103,6 +103,7 @@ class CanceledClientTournamentService {
         if (transactions.some((data) => data == item.id)) {
           let valuePaid = 0;
           let product_id = "";
+          valueCredit += item.value - item.value_paid;
           item.items_transaction.map((data) => {
             product_id = data.product_id;
             if (data.type == "entrie" || data.type == "purchase") {
@@ -114,11 +115,7 @@ class CanceledClientTournamentService {
               valueBalance += data.value;
               valuePaid += data.value;
             } else {
-              if (data.id == "Crédito") {
-                valueCredit += data.value;
-              } else {
-                valuePaid += data.value * ((100 - data.percentage) / 100);
-              }
+              valuePaid += data.value * ((100 - data.percentage) / 100);
             }
           });
           switch (item.type) {
@@ -159,6 +156,8 @@ class CanceledClientTournamentService {
               tournament_id: tournament_id,
             },
           });
+
+          console.log(purchase);
 
           if (purchase) {
             await prismaClient.clientPurchase.delete({
