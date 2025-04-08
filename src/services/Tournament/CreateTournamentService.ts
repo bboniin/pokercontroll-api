@@ -39,7 +39,6 @@ class CreateTournamentService {
     if (
       !name ||
       !chairs ||
-      !totalAward_guaranteed ||
       !intervals ||
       !nivel_max_in ||
       !percentage_players_award ||
@@ -83,7 +82,7 @@ class CreateTournamentService {
         max_in: nivel_max_in,
         max_timechip: nivel_max_timechip,
         percentage_players_award: percentage_players_award,
-        totalAward_guaranteed: totalAward_guaranteed,
+        totalAward_guaranteed: totalAward_guaranteed || 0,
         club_id: club_id,
         total_tokens: 0,
         totalAward_accumulated: 0,

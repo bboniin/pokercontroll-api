@@ -45,7 +45,13 @@ class NewPurchaseTournamentService {
       throw new Error("Torneio não encontrado");
     }
 
-    if (!name || !cashier || !value || !token || !type) {
+    if (
+      !name ||
+      !cashier ||
+      !value ||
+      (type != "service" && !token) ||
+      (is_staff && !token_staff)
+    ) {
       throw new Error("Preencha todos os campos para adicionar nova compra");
     }
 
