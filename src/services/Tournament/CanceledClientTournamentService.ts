@@ -45,9 +45,7 @@ class CanceledClientTournamentService {
       where: {
         client_id: client_id,
         tournament_id: tournament_id,
-        chair_tournament: {
-          contains: "T",
-        },
+        exit: false,
       },
       include: {
         purchases: true,
