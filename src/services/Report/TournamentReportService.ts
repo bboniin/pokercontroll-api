@@ -50,6 +50,7 @@ class TournamentReportService {
         create_at: "desc",
       },
       include: {
+        client: true,
         methods_transaction: {
           orderBy: {
             create_at: "desc",
