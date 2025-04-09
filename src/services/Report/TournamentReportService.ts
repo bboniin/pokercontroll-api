@@ -78,7 +78,7 @@ class TournamentReportService {
             };
           }
         });
-        methodsIn["nao_pago"].value += item.value;
+        methodsIn["nao_pago"].value += item.value - item.value_paid;
       } else {
         totalOut += item.value;
         item.methods_transaction.map((data) => {
