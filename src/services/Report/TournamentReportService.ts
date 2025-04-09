@@ -74,7 +74,7 @@ class TournamentReportService {
           } else {
             methodsIn[data.name] = {
               name: data.name,
-              value: data.value - item.value_paid,
+              value: data.value,
             };
           }
         });
