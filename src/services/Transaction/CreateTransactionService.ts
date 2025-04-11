@@ -81,6 +81,7 @@ class CreateTransactionService {
           .map((method) => method["value"])
           .reduce((total, value) => total + value)
       : 0;
+
     let valueMethods = methodsPay.length
       ? methodsPay
           .map(

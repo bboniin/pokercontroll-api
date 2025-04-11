@@ -115,7 +115,7 @@ class CreateTournamentService {
             data: {
               name: item["name"],
               cashier: item["cashier"],
-              value: item["value"],
+              value: item["value"] || 0,
               max_limit: item["max_limit"],
               token: item["token"],
               type: item["type"],
@@ -132,7 +132,7 @@ class CreateTournamentService {
             data: {
               name: item["name"],
               cashier: item["cashier"],
-              value: item["value"],
+              value: item["value"] || 0,
               max_limit: item["max_limit"],
               token: item["token"],
               type: item["type"],
@@ -145,7 +145,7 @@ class CreateTournamentService {
             data: {
               name: item["name"],
               cashier: item["cashier"],
-              value: item["value"],
+              value: item["value"] || 0,
               max_limit: item["max_limit"],
               token: item["token"],
               type: item["type"],

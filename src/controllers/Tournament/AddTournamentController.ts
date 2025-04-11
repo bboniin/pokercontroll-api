@@ -158,7 +158,8 @@ class AddTournamentController {
                 product_id: item.id,
               },
               operation: "entrada",
-              valueReceive,
+              valueReceive:
+                methodsPay.find((item) => item["id"] == "Saldo")?.value || 0,
               valueDebit: 0,
             });
             methods_transactionC = methodsC;
@@ -188,7 +189,8 @@ class AddTournamentController {
                 product_id: item.id,
               },
               operation: "entrada",
-              valueReceive,
+              valueReceive:
+                methodsPay.find((item) => item["id"] == "Saldo")?.value || 0,
               valueDebit: 0,
             });
             methods_transactionC = methodsC;
@@ -218,7 +220,8 @@ class AddTournamentController {
                 product_id: item.id,
               },
               operation: "entrada",
-              valueReceive,
+              valueReceive:
+                methodsPay.find((item) => item["id"] == "Saldo")?.value || 0,
               valueDebit: 0,
             });
             methods_transactionC = methodsC;
@@ -250,7 +253,8 @@ class AddTournamentController {
                 },
               ],
               operation: "entrada",
-              valueReceive,
+              valueReceive:
+                methodsPay.find((item) => item["id"] == "Saldo")?.value || 0,
               valueDebit: 0,
             });
             methods_transactionC = methodsC;
@@ -295,7 +299,8 @@ class AddTournamentController {
           product_id: staffId,
         },
         operation: "entrada",
-        valueReceive,
+        valueReceive:
+          methodsPay.find((item) => item["id"] == "Saldo")?.value || 0,
         valueDebit: 0,
       });
       methods_transactionC = methodsC;

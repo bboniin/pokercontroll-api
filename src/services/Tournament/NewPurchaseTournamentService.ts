@@ -48,7 +48,6 @@ class NewPurchaseTournamentService {
     if (
       !name ||
       !cashier ||
-      !value ||
       (type != "service" && !token) ||
       (is_staff && !token_staff)
     ) {
@@ -70,7 +69,7 @@ class NewPurchaseTournamentService {
       data: {
         name: name,
         cashier: cashier,
-        value: value,
+        value: value || 0,
         max_limit: max_limit || 0,
         token: token,
         type: type,

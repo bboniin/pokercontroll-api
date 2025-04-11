@@ -76,7 +76,7 @@ class CanceledClientTournamentService {
     Promise.all(
       await transactionsTournament.map(async (item) => {
         if (transactions.some((data) => data == item.id)) {
-          item.items_transaction.map((data) => {
+          item.items_transaction.map((item) => {
             if (
               item.type == "entrie" &&
               transactions.length != transactionsTournament.length
@@ -98,10 +98,13 @@ class CanceledClientTournamentService {
     let totalPaidPassport = 0;
     let totalPaidJackpot = 0;
 
+    let methos = {};
+
     Promise.all(
       await transactionsTournament.map(async (item) => {
         if (transactions.some((data) => data == item.id)) {
           let valuePaid = 0;
+          let amount = 0;
           let product_id = "";
           valueCredit += item.value - item.value_paid;
           item.items_transaction.map((data) => {
@@ -109,14 +112,16 @@ class CanceledClientTournamentService {
             if (data.type == "entrie" || data.type == "purchase") {
               valueAccumulated += data.value;
             }
+            amount = data.amount;
           });
           item.methods_transaction.map((data) => {
-            if (data.id == "Saldo") {
-              valueBalance += data.value;
-              valuePaid += data.value;
-            } else {
-              valuePaid += data.value * ((100 - data.percentage) / 100);
-            }
+            if (methos[item.id])
+              if (data.name == "Saldo") {
+                valueBalance += data.value;
+                valuePaid += data.value;
+              } else {
+                valuePaid += data.value * ((100 - data.percentage) / 100);
+              }
           });
           switch (item.type) {
             case "dealer": {
@@ -145,6 +150,7 @@ class CanceledClientTournamentService {
           const purchase = await prismaClient.clientPurchase.findFirst({
             where: {
               client_id: chairClient.id,
+              amount: amount,
               OR: [
                 {
                   id: product_id,
@@ -156,8 +162,6 @@ class CanceledClientTournamentService {
               tournament_id: tournament_id,
             },
           });
-
-          console.log(purchase);
 
           if (purchase) {
             await prismaClient.clientPurchase.delete({
