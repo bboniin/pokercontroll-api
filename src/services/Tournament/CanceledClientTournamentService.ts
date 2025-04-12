@@ -100,7 +100,10 @@ class CanceledClientTournamentService {
 
     let methos = {};
 
-    let tokens = chairClient.timechip || 0;
+    let tokens =
+      transactionsTournament.length == transactions.length
+        ? chairClient.timechip || 0
+        : 0;
 
     Promise.all(
       await transactionsTournament.map(async (item) => {
