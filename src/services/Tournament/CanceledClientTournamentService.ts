@@ -185,7 +185,7 @@ class CanceledClientTournamentService {
                 (item) => purchase.purchase_id === item.id
               );
               if (purchaseTournament) {
-                tokens += purchase.amount || 0 * purchaseTournament.token_staff;
+                tokens += purchase.amount * purchaseTournament.token_staff;
               }
             } else {
               if (purchase.type != "service") {
@@ -193,7 +193,7 @@ class CanceledClientTournamentService {
                   (item) => purchase.purchase_id === item.id
                 );
                 if (purchaseTournament) {
-                  tokens += purchase.amount || 0 * purchaseTournament.token;
+                  tokens += purchase.amount * purchaseTournament.token;
                 }
               }
             }
