@@ -187,6 +187,7 @@ class CreateDealerService {
             percentage: item["percentage"],
             value: item["value"],
             transaction_id: transaction.id,
+            method_id: item["id"] || "",
           },
         });
       }

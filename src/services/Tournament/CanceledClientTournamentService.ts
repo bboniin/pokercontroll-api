@@ -98,7 +98,7 @@ class CanceledClientTournamentService {
     let totalPaidPassport = 0;
     let totalPaidJackpot = 0;
 
-    let methos = {};
+    let methods = {};
 
     let tokens =
       transactionsTournament.length == transactions.length
@@ -120,13 +120,24 @@ class CanceledClientTournamentService {
             amount = data.amount;
           });
           item.methods_transaction.map((data) => {
-            if (methos[item.id])
-              if (data.name == "Saldo") {
-                valueBalance += data.value;
-                valuePaid += data.value;
+            if (data.method_id) {
+              if (methods[data.method_id]) {
+                methods[data.method_id].value +=
+                  data.value * ((100 - data.percentage) / 100);
               } else {
-                valuePaid += data.value * ((100 - data.percentage) / 100);
+                methods[data.id] = {
+                  value: data.value * ((100 - data.percentage) / 100),
+                  id: data.method_id,
+                };
               }
+            }
+
+            if (data.name == "Saldo") {
+              valueBalance += data.value;
+              valuePaid += data.value;
+            } else {
+              valuePaid += data.value * ((100 - data.percentage) / 100);
+            }
           });
           switch (item.type) {
             case "dealer": {
@@ -158,7 +169,7 @@ class CanceledClientTournamentService {
               amount: amount,
               OR: [
                 {
-                  id: product_id,
+                  purchase_id: product_id,
                 },
                 {
                   identifier: product_id,
@@ -260,6 +271,27 @@ class CanceledClientTournamentService {
         },
       });
     }
+
+    Promise.all(
+      await Object.values(methods).map(async (item) => {
+        const method = await prismaClient.method.findUnique({
+          where: {
+            id: item["id"],
+          },
+        });
+
+        if (method) {
+          await prismaClient.method.update({
+            where: {
+              id: method.id,
+            },
+            data: {
+              balance: method.balance - item["value"] || 0,
+            },
+          });
+        }
+      })
+    );
 
     const tournament = await prismaClient.tournament.update({
       where: {

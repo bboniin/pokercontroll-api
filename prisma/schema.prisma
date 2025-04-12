@@ -171,6 +171,7 @@ model MethodsTransaction {
   percentage      Float 
   value           Float
   transaction_id  String
+  method_id       String?     @default("")
   transaction     Transaction      @relation(fields: [transaction_id], references: [id], onDelete: Cascade)
   create_at       DateTime? @default(now())
   update_at       DateTime? @default(now())

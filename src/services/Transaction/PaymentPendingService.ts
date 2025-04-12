@@ -188,6 +188,7 @@ class PaymentPendingService {
                     percentage: data["percentage"],
                     value: data["value"],
                     transaction_id: item.id,
+                    method_id: item["id"] || "",
                   },
                 });
               }
