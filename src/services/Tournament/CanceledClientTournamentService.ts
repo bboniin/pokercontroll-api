@@ -77,6 +77,11 @@ class CanceledClientTournamentService {
       await transactionsTournament.map(async (item) => {
         if (transactions.some((data) => data == item.id)) {
           item.items_transaction.map((item) => {
+            console.log(
+              item.type,
+              transactions.length,
+              transactionsTournament.length
+            );
             if (
               item.type == "entrie" &&
               transactions.length != transactionsTournament.length
