@@ -73,27 +73,26 @@ class CanceledClientTournamentService {
       throw new Error("Nenhum transação encontrada");
     }
 
+    let errorDeleted = false;
+
     Promise.all(
       await transactionsTournament.map(async (item) => {
         if (transactions.some((data) => data == item.id)) {
           item.items_transaction.map((item) => {
-            console.log(
-              item.type,
-              transactions.length,
-              transactionsTournament.length
-            );
             if (
               item.type == "entrie" &&
               transactions.length != transactionsTournament.length
             ) {
-              throw new Error(
-                "Se excluir a entrada, deverá excluir todas as compras"
-              );
+              errorDeleted = true;
             }
           });
         }
       })
     );
+
+    if (errorDeleted) {
+      throw new Error("Se excluir a entrada, deverá excluir todas as compras");
+    }
 
     let valueCredit = 0;
     let valueBalance = 0;
