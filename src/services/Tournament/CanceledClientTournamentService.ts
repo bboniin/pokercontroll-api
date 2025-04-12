@@ -100,6 +100,8 @@ class CanceledClientTournamentService {
 
     let methos = {};
 
+    let tokens = chairClient.timechip || 0;
+
     Promise.all(
       await transactionsTournament.map(async (item) => {
         if (transactions.some((data) => data == item.id)) {
@@ -164,6 +166,23 @@ class CanceledClientTournamentService {
           });
 
           if (purchase) {
+            if (purchase.type == "staff") {
+              const purchaseTournament = tournamentGet.purchases.find(
+                (item) => purchase.purchase_id === item.id
+              );
+              if (purchaseTournament) {
+                tokens += purchase.amount || 0 * purchaseTournament.token_staff;
+              }
+            } else {
+              if (purchase.type != "service") {
+                const purchaseTournament = tournamentGet.purchases.find(
+                  (item) => purchase.purchase_id === item.id
+                );
+                if (purchaseTournament) {
+                  tokens += purchase.amount || 0 * purchaseTournament.token;
+                }
+              }
+            }
             await prismaClient.clientPurchase.delete({
               where: {
                 id: purchase.id,
@@ -230,26 +249,6 @@ class CanceledClientTournamentService {
         ),
       },
     });
-
-    let tokens = chairClient.timechip || 0;
-
-    Promise.all(
-      await chairClient.purchases.map(async (item) => {
-        if (item.type == "staff") {
-          const purchase = tournamentGet.purchases.find(
-            (purchase) => item.purchase_id === purchase.id
-          );
-          tokens += item.amount * purchase.token_staff;
-        } else {
-          if (item.type != "service") {
-            const purchase = tournamentGet.purchases.find(
-              (purchase) => item.purchase_id === purchase.id
-            );
-            tokens += item.amount * purchase.token;
-          }
-        }
-      })
-    );
 
     if (transactionsTournament.length == transactions.length) {
       await prismaClient.clientTournament.delete({
