@@ -5,6 +5,7 @@ interface TournamentRequest {
   chair: string;
   tournament_id: string;
   tokenTimechip: number;
+  verify: boolean;
 }
 
 class AddTournamentService {
@@ -13,10 +14,11 @@ class AddTournamentService {
     chair,
     tournament_id,
     tokenTimechip,
+    verify,
   }: TournamentRequest) {
     if (!client_id || !tournament_id) {
       throw new Error(
-        "Id do cliente, do torneio e posição da mesa é obrigatório"
+        "Id do cliente, do torneio e posição na mesa são obrigatórios"
       );
     }
 
@@ -43,38 +45,46 @@ class AddTournamentService {
 
     if (clientTournamentGet) {
       if (clientTournamentGet.exit) {
-        const client = await prismaClient.clientTournament.update({
-          where: {
-            id: clientTournamentGet.id,
-          },
-          data: {
-            client_id: client_id,
-            tournament_id: tournament_id,
-            date_in: new Date(),
-            award: 0,
-            chair_tournament: chair ? "T" + chair : "",
-            timechip: tokenTimechip,
-            exit: false,
-          },
-        });
+        if (verify) {
+          return true;
+        } else {
+          const client = await prismaClient.clientTournament.update({
+            where: {
+              id: clientTournamentGet.id,
+            },
+            data: {
+              client_id: client_id,
+              tournament_id: tournament_id,
+              date_in: new Date(),
+              award: 0,
+              chair_tournament: chair ? "T" + chair : "",
+              timechip: tokenTimechip,
+              exit: false,
+            },
+          });
 
-        return client;
+          return client;
+        }
       } else {
         throw new Error("Cliente já está participando desse torneio");
       }
     } else {
-      const client = await prismaClient.clientTournament.create({
-        data: {
-          client_id: client_id,
-          tournament_id: tournament_id,
-          timechip: tokenTimechip || 0,
-          date_in: new Date(),
-          award: 0,
-          chair_tournament: chair ? "T" + chair : "",
-        },
-      });
+      if (verify) {
+        return true;
+      } else {
+        const client = await prismaClient.clientTournament.create({
+          data: {
+            client_id: client_id,
+            tournament_id: tournament_id,
+            timechip: tokenTimechip || 0,
+            date_in: new Date(),
+            award: 0,
+            chair_tournament: chair ? "T" + chair : "",
+          },
+        });
 
-      return client;
+        return client;
+      }
     }
   }
 }

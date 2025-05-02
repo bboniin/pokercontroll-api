@@ -9,7 +9,7 @@ interface TournamentRequest {
 class GetTournamentService {
   async execute({ id, club_id, blind }: TournamentRequest) {
     if (!id || !club_id) {
-      throw new Error("Envie o id do produto e do clube");
+      throw new Error("Envie o id do torneio e do clube");
     }
 
     const tournament = await prismaClient.tournament.findFirst({

@@ -35,6 +35,16 @@ class AddTournamentController {
       blind: false,
     });
 
+    const addTournamentService = new AddTournamentService();
+
+    await addTournamentService.execute({
+      chair,
+      client_id,
+      tournament_id,
+      tokenTimechip: 0,
+      verify: true,
+    });
+
     purchases.map((item) => {
       const purchaseInfo = tournament.purchases.find(
         (data) => data.id == item.id
@@ -63,7 +73,6 @@ class AddTournamentController {
     if (valueCredit) {
       const verifyCreditTransactionService =
         new VerifyCreditTransactionService();
-
       await verifyCreditTransactionService.execute({
         client_id,
         club_id,
@@ -77,10 +86,10 @@ class AddTournamentController {
         ? methods_transaction.filter((item) => item["id"] == "Saldo")[0].value
         : 0;
 
-    const paymentDebtsService = new PaymentReceivesService();
+    const paymentReceivesService = new PaymentReceivesService();
 
     if (valueReceive) {
-      await paymentDebtsService.execute({
+      await paymentReceivesService.execute({
         value: valueReceive,
         client_id,
         club_id,
@@ -94,13 +103,12 @@ class AddTournamentController {
 
     let token = timechip ? tournament.timechip : 0;
 
-    const addTournamentService = new AddTournamentService();
-
     const clientTournament = await addTournamentService.execute({
       chair,
       client_id,
       tournament_id,
       tokenTimechip: token,
+      verify: false,
     });
 
     let totalToken = token;
@@ -120,7 +128,7 @@ class AddTournamentController {
               name: "Staff",
               type: "staff",
               tournament_id: tournament.id,
-              client_id: clientTournament.id,
+              client_id: clientTournament["id"],
               purchase_id: item.id,
               value: item.value_staff,
               identifier: staffId,
@@ -266,7 +274,7 @@ class AddTournamentController {
             name: item.name,
             type: item.type,
             tournament_id: tournament.id,
-            client_id: clientTournament.id,
+            client_id: clientTournament["id"],
             purchase_id: item.id,
             value: item.value,
             total_value: item.value * item.amount,
