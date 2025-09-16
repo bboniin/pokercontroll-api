@@ -91,7 +91,7 @@ class GetFinancialBoxService {
 
     let newMethods = [
       {
-        name: "Crédito",
+        name: "Pagamento Pendente",
         value_entrie: 0,
         value_out: 0,
       },
@@ -123,14 +123,14 @@ class GetFinancialBoxService {
       const isEntrada = transaction.operation === "entrada";
 
       if (transaction.user_id == user_id && !transaction.paid) {
-        if (!totals["Crédito"]) {
-          totals["Crédito"] = { value_entrie: 0, value_out: 0 };
+        if (!totals["Pagamento Pendente"]) {
+          totals["Pagamento Pendente"] = { value_entrie: 0, value_out: 0 };
         }
         if (isEntrada) {
-          totals["Crédito"].value_entrie +=
+          totals["Pagamento Pendente"].value_entrie +=
             transaction.value - transaction.value_paid;
         } else {
-          totals["Crédito"].value_out +=
+          totals["Pagamento Pendente"].value_out +=
             transaction.value - transaction.value_paid;
         }
       }
