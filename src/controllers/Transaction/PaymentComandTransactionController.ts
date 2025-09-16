@@ -9,6 +9,7 @@ class PaymentComandTransactionController {
       req.body;
 
     let club_id = req.club_id;
+    let user_id = req.user_id;
 
     let valueReceive =
       methods_transaction.filter((item) => item["id"] == "Saldo").length != 0
@@ -23,6 +24,7 @@ class PaymentComandTransactionController {
         client_id,
         club_id,
         confirm: true,
+        user_id,
       });
     }
 
@@ -35,6 +37,7 @@ class PaymentComandTransactionController {
       observation,
       transactions,
       client_id,
+      user_id,
     });
 
     return res.json(transaction);

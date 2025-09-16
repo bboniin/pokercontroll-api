@@ -1,6 +1,10 @@
 import { addDays, addMonths, addYears, endOfDay } from "date-fns";
 import prismaClient from "../../prisma";
 
+interface PayableRequest {
+  user_id: string;
+}
+
 function periodToDays(period) {
   switch (period) {
     case "semanal": {
@@ -31,7 +35,7 @@ function periodToDays(period) {
 }
 
 class ChargePayablesService {
-  async execute() {
+  async execute({ user_id }: PayableRequest) {
     const payables = await prismaClient.payable.findMany({
       where: {
         date_charge: {
@@ -57,6 +61,7 @@ class ChargePayablesService {
             paid: false,
             value_paid: 0,
             sector_id: payable.id,
+            user_id: user_id,
             items_transaction: {
               create: [
                 {

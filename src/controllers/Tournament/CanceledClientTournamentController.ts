@@ -7,6 +7,7 @@ class CanceledClientTournamentController {
     const { tournament_id, transactions } = req.body;
 
     let club_id = req.club_id;
+    let user_id = req.user_id;
 
     const canceledClientTournamentService =
       new CanceledClientTournamentService();
@@ -16,6 +17,7 @@ class CanceledClientTournamentController {
       tournament_id,
       transactions,
       club_id,
+      user_id,
     });
 
     return res.json(tournament);

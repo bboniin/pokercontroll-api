@@ -7,6 +7,7 @@ class RescueVacancyController {
     const { client_id } = req.body;
 
     let club_id = req.club_id;
+    let user_id = req.user_id;
 
     const rescueVacancyService = new RescueVacancyService();
 
@@ -14,6 +15,7 @@ class RescueVacancyController {
       client_id,
       club_id,
       vacancy_id,
+      user_id,
     });
 
     return res.json(supplier);

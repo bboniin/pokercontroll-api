@@ -17,6 +17,7 @@ class AddCashController {
     } = req.body;
 
     let club_id = req.club_id;
+    let user_id = req.user_id;
 
     let valueCredit =
       methods_transaction.filter((item) => item["id"] == "Crédito").length != 0
@@ -48,6 +49,7 @@ class AddCashController {
         client_id: id,
         club_id,
         confirm: false,
+        user_id,
       });
     }
 
@@ -73,6 +75,7 @@ class AddCashController {
       operation: "entrada",
       valueReceive,
       valueDebit: 0,
+      user_id,
     });
 
     const moveCashService = new MoveCashService();

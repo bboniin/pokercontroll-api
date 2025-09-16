@@ -19,18 +19,36 @@ model Admin {
 }
 
 model User {
-  id           String    @id @default(uuid())
-  name         String
-  photo        String?
-  email        String    @unique
-  password     String
-  type         String
-  club_id      String
-  club         Club      @relation(fields: [club_id], references: [id], onDelete: Cascade)
-  create_at    DateTime? @default(now())
-  update_at    DateTime? @default(now())
+  id                    String    @id @default(uuid())
+  name                  String
+  photo                 String?
+  email                 String    @unique
+  password              String
+  type                  String
+  club_id               String
+  club                  Club      @relation(fields: [club_id], references: [id], onDelete: Cascade)
+  create_at             DateTime? @default(now())
+  update_at             DateTime? @default(now())
+
+  transactions          Transaction[]
+  methods_transactions  MethodsTransaction[]
+  financial_boxs        FinancialBox[]
 
   @@map("users")
+}
+
+model FinancialBox {
+  id                 String     @id @default(uuid())
+  value_initial      Float
+  date_initial       DateTime?  @default(now())
+  date_end           DateTime?  @default(now())
+  closed             Boolean    @default(false)
+  club_id            String
+  club               Club      @relation(fields: [club_id], references: [id], onDelete: Cascade)
+  user_id            String?
+  user               User?      @relation(fields: [user_id], references: [id], onDelete: SetNull)
+
+  @@map("financialBoxs")
 }
 
 model Club {
@@ -66,6 +84,7 @@ model Club {
   rankings           Ranking[]
   banks              Bank[]
   payables           Payable[]
+  financial_boxs     FinancialBox[]
 
   @@map("clubs")
 }
@@ -98,25 +117,28 @@ model Client {
 }
 
 model Transaction {
-  id                  String     @id @default(uuid())
-  type                String     @default("clube")
-  paid                Boolean
-  editable            Boolean    @default(false)
-  value               Float
-  value_paid          Float
-  operation           String     @default("entrada")
-  client_id           String?
-  sector_id           String? 
-  observation         String?
-  date_payment        DateTime?  @default(now())
-  client              Client?    @relation(fields: [client_id], references: [id], onDelete: Cascade)
-  club_id             String
-  club                Club       @relation(fields: [club_id], references: [id], onDelete: Cascade)
-  create_at           DateTime?  @default(now())
-  update_at           DateTime?  @default(now())
+  id                      String     @id @default(uuid())
+  type                    String     @default("clube")
+  paid                    Boolean
+  editable                Boolean    @default(false)
+  value                   Float
+  value_paid              Float
+  operation               String     @default("entrada")
+  sector_id               String? 
+  observation             String?
+  date_payment            DateTime?  @default(now())
+  client_id               String?
+  client                  Client?    @relation(fields: [client_id], references: [id], onDelete: Cascade)
+  user_id                 String?
+  user                    User?    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  club_id                 String
+  club                    Club       @relation(fields: [club_id], references: [id], onDelete: Cascade)
+  create_at               DateTime?  @default(now())
+  update_at               DateTime?  @default(now())
 
-  methods_transaction MethodsTransaction[]
-  items_transaction   ItemsTransaction[]
+  methods_transaction     MethodsTransaction[]
+  items_transaction       ItemsTransaction[]
+  historics_transaction   HistoricsTransaction[]
 
   @@map("transactions")
 }
@@ -166,18 +188,34 @@ model Method {
 }
 
 model MethodsTransaction {
-  id              String    @id @default(uuid())
+  id              String        @id @default(uuid())
   name            String
   percentage      Float 
   value           Float
   transaction_id  String
-  method_id       String?     @default("")
-  transaction     Transaction      @relation(fields: [transaction_id], references: [id], onDelete: Cascade)
-  create_at       DateTime? @default(now())
-  update_at       DateTime? @default(now())
+  method_id       String?       @default("")
+  transaction     Transaction   @relation(fields: [transaction_id], references: [id], onDelete: Cascade)
+  create_at       DateTime?     @default(now())
+  update_at       DateTime?     @default(now())
+
+  user_id         String?
+  user            User?         @relation(fields: [user_id], references: [id], onDelete: SetNull)
 
   @@map("methods_transaction")
 }
+
+
+
+model HistoricsTransaction {
+  id              String        @id @default(uuid())
+  description     String
+  transaction_id  String
+  transaction     Transaction   @relation(fields: [transaction_id], references: [id], onDelete: Cascade)
+  create_at       DateTime?     @default(now())
+
+  @@map("historics_transaction")
+}
+
 
 model Category {
   id           String    @id @default(uuid())
@@ -246,6 +284,8 @@ model Tournament {
   intervals                     String
   blinds                        String
   status                        String    @default("criado")
+  type                          String    @default("single")
+  tournament_final              String?    
   timechip                      Int
   chairs                        Int
   total_tokens                  Int

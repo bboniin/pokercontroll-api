@@ -7,6 +7,7 @@ interface TransactionRequest {
   club_id: string;
   observation: string;
   methods_transaction: Array<[]>;
+  user_id: string;
 }
 
 const typesTransaction = {
@@ -24,6 +25,7 @@ class TransferClubeService {
     typeOut,
     observation,
     methods_transaction,
+    user_id,
   }: TransactionRequest) {
     const club = await prismaClient.club.findUnique({
       where: {
@@ -131,6 +133,7 @@ class TransferClubeService {
           date_payment: new Date(),
           observation: observation,
           paid: true,
+          user_id: user_id,
           value_paid: value,
           items_transaction: {
             create: [
@@ -170,6 +173,7 @@ class TransferClubeService {
               value: item["value"],
               transaction_id: transaction.id,
               method_id: item["id"] || "",
+              user_id,
             },
           });
         });
@@ -228,6 +232,7 @@ class TransferClubeService {
           date_payment: new Date(),
           observation: observation,
           paid: true,
+          user_id: user_id,
           value_paid: value,
           items_transaction: {
             create: [
@@ -266,6 +271,7 @@ class TransferClubeService {
               value: item["value"],
               transaction_id: transaction.id,
               method_id: item["id"] || "",
+              user_id,
             },
           });
         });

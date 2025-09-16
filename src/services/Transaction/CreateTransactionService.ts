@@ -22,6 +22,7 @@ interface TransactionRequest {
   valueDebit: number;
   date_payment: Date;
   sector_id: string;
+  user_id: string;
 }
 
 class CreateTransactionService {
@@ -39,6 +40,7 @@ class CreateTransactionService {
     operation,
     date_payment,
     observation,
+    user_id,
   }: TransactionRequest) {
     const client = await prismaClient.client.findFirst({
       where: {
@@ -108,6 +110,7 @@ class CreateTransactionService {
           date_payment: date_payment,
           observation: observation,
           paid: paid,
+          user_id: user_id,
           value_paid: valuePaid + valueReceive + valueDebit,
         },
       });
@@ -134,6 +137,7 @@ class CreateTransactionService {
           date_payment: date_payment,
           observation: observation,
           paid: paid,
+          user_id: user_id,
           value_paid: valuePaid + valueReceive + valueDebit,
         },
       });
@@ -193,6 +197,7 @@ class CreateTransactionService {
             value: item["value"],
             transaction_id: transaction.id,
             method_id: item["id"] || "",
+            user_id,
           },
         });
       }

@@ -9,6 +9,7 @@ class PaymentPendingTransactionController {
     const { methods_transaction, date_payment, observation } = req.body;
 
     let club_id = req.club_id;
+    let user_id = req.user_id;
 
     let valueReceive =
       methods_transaction.filter((item) => item["id"] == "Saldo").length != 0
@@ -28,6 +29,7 @@ class PaymentPendingTransactionController {
           client_id,
           club_id,
           confirm: true,
+          user_id,
         });
       }
     }
@@ -40,6 +42,7 @@ class PaymentPendingTransactionController {
       methods_transaction,
       observation,
       client_id,
+      user_id,
     });
 
     return res.json(transaction);

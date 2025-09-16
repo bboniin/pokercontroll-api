@@ -13,6 +13,7 @@ class CreateOrderController {
       req.body;
 
     let club_id = req.club_id;
+    let user_id = req.user_id;
 
     const verifyProductService = new VerifyProductService();
 
@@ -56,6 +57,7 @@ class CreateOrderController {
         client_id,
         club_id,
         confirm: false,
+        user_id,
       });
     }
 
@@ -81,6 +83,7 @@ class CreateOrderController {
       operation: "entrada",
       valueReceive,
       valueDebit: 0,
+      user_id,
     });
 
     const createOrderService = new CreateOrderService();

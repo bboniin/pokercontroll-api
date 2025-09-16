@@ -8,6 +8,7 @@ interface TransactionRequest {
   date_payment: Date;
   club_id: string;
   observation: string;
+  user_id: string;
   methods_transaction: Array<[]>;
 }
 
@@ -21,6 +22,7 @@ class ConfirmedPassportService {
     date_payment,
     observation,
     methods_transaction,
+    user_id,
   }: TransactionRequest) {
     if (!club_id || !id || methods_transaction.length == 0) {
       throw new Error(
@@ -163,6 +165,7 @@ class ConfirmedPassportService {
             value: item["value"],
             transaction_id: transaction.id,
             method_id: item["id"] || "",
+            user_id,
           },
         });
       }

@@ -14,6 +14,7 @@ class CreateInvoiceController {
     } = req.body;
 
     let club_id = req.club_id;
+    let user_id = req.user_id;
 
     const createInvoiceService = new CreateInvoiceService();
 
@@ -48,6 +49,7 @@ class CreateInvoiceController {
       operation: "saida",
       valueReceive: 0,
       valueDebit: 0,
+      user_id,
     });
 
     return res.json(invoice);

@@ -6,6 +6,7 @@ interface TournamentRequest {
   tournament_id: string;
   transactions: Array<string>;
   club_id: string;
+  user_id: string;
 }
 
 class CanceledClientTournamentService {
@@ -14,6 +15,7 @@ class CanceledClientTournamentService {
     tournament_id,
     transactions,
     club_id,
+    user_id,
   }: TournamentRequest) {
     if (!client_id || !tournament_id || !transactions.length) {
       throw new Error("Id do cliente, torneio e transação são obrigatórios");
@@ -235,6 +237,7 @@ class CanceledClientTournamentService {
           observation: "",
           paid: false,
           value_paid: 0,
+          user_id: user_id,
         },
       });
 

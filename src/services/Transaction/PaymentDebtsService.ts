@@ -5,10 +5,17 @@ interface TransactionRequest {
   client_id: string;
   value: number;
   confirm: boolean;
+  user_id: string;
 }
 
 class PaymentDebtsService {
-  async execute({ club_id, client_id, value, confirm }: TransactionRequest) {
+  async execute({
+    club_id,
+    client_id,
+    value,
+    confirm,
+    user_id,
+  }: TransactionRequest) {
     const valueTotal = value;
 
     if (!club_id || !client_id || !value) {
@@ -84,6 +91,7 @@ class PaymentDebtsService {
               percentage: 0,
               value: valueTransaction[index],
               transaction_id: item.id,
+              user_id,
             },
           });
         } else {
@@ -101,6 +109,7 @@ class PaymentDebtsService {
               percentage: 0,
               value: valueTransaction[index],
               transaction_id: item.id,
+              user_id,
             },
           });
         }

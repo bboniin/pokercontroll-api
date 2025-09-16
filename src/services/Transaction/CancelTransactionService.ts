@@ -2,12 +2,13 @@ import prismaClient from "../../prisma";
 
 interface TransactionRequest {
   club_id: string;
+  user_id: string;
   client_id: string;
   value: number;
 }
 
 class CancelTransactionService {
-  async execute({ club_id, client_id, value }: TransactionRequest) {
+  async execute({ club_id, user_id, client_id, value }: TransactionRequest) {
     let valueTotal = value;
 
     if (!club_id || !client_id || !value) {
@@ -81,6 +82,7 @@ class CancelTransactionService {
               percentage: 0,
               value: valueTransaction[index],
               transaction_id: item.id,
+              user_id,
             },
           });
         } else {
@@ -98,6 +100,7 @@ class CancelTransactionService {
               percentage: 0,
               value: valueTransaction[index],
               transaction_id: item.id,
+              user_id,
             },
           });
         }

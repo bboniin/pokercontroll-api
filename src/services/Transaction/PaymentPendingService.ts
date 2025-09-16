@@ -6,6 +6,7 @@ interface TransactionRequest {
   client_id: string;
   date_payment: Date;
   observation: string;
+  user_id: string;
   methods_transaction: Array<[]>;
 }
 
@@ -16,6 +17,7 @@ class PaymentPendingService {
     observation,
     date_payment,
     methods_transaction,
+    user_id,
   }: TransactionRequest) {
     if (!club_id || !client_id || methods_transaction.length == 0) {
       throw new Error(
@@ -189,6 +191,7 @@ class PaymentPendingService {
                     value: data["value"],
                     transaction_id: item.id,
                     method_id: item["id"] || "",
+                    user_id,
                   },
                 });
               }

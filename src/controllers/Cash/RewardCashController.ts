@@ -15,6 +15,7 @@ class RewardCashController {
     } = req.body;
 
     let club_id = req.club_id;
+    let user_id = req.user_id;
 
     let valueDebit =
       methods_transaction.filter((item) => item["id"] == "Pag Dívida").length !=
@@ -47,6 +48,7 @@ class RewardCashController {
         client_id,
         club_id,
         confirm: false,
+        user_id,
       });
     }
 
@@ -72,6 +74,7 @@ class RewardCashController {
       operation: "saida",
       valueReceive: 0,
       valueDebit,
+      user_id,
     });
 
     return res.json(transaction);

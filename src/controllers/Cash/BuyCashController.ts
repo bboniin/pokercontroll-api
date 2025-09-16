@@ -15,6 +15,7 @@ class BuyCashController {
     } = req.body;
 
     let club_id = req.club_id;
+    let user_id = req.user_id;
 
     let valueCredit =
       methods_transaction.filter((item) => item["id"] == "Crédito").length != 0
@@ -46,6 +47,7 @@ class BuyCashController {
         client_id,
         club_id,
         confirm: false,
+        user_id,
       });
     }
 
@@ -71,6 +73,7 @@ class BuyCashController {
       operation: "entrada",
       valueReceive,
       valueDebit: 0,
+      user_id,
     });
 
     return res.json(transaction);

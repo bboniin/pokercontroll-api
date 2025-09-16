@@ -14,6 +14,7 @@ interface TransactionRequest {
   methods_transaction: Array<[]>;
   items_transaction: object;
   sector_id: string;
+  user_id: string;
 }
 
 class CreatePassportService {
@@ -31,6 +32,7 @@ class CreatePassportService {
     operation,
     date_payment,
     observation,
+    user_id,
   }: TransactionRequest) {
     const client = await prismaClient.client.findFirst({
       where: {
@@ -99,6 +101,7 @@ class CreatePassportService {
           date_payment: date_payment,
           observation: observation,
           paid: paid,
+          user_id: user_id,
           value_paid: valuePaid + valueReceive + valueDebit,
         },
       });
@@ -125,6 +128,7 @@ class CreatePassportService {
           date_payment: date_payment,
           observation: observation,
           paid: paid,
+          user_id: user_id,
           value_paid: valuePaid + valueReceive + valueDebit,
         },
       });
@@ -182,6 +186,7 @@ class CreatePassportService {
             value: item["value"],
             transaction_id: transaction.id,
             method_id: item["id"] || "",
+            user_id,
           },
         });
       }

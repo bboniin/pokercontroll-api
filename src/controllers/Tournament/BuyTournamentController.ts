@@ -23,6 +23,7 @@ class BuyTournamentController {
     } = req.body;
 
     let club_id = req.club_id;
+    let user_id = req.user_id;
 
     const getTournamentService = new GetTournamentService();
 
@@ -80,6 +81,7 @@ class BuyTournamentController {
         client_id,
         club_id,
         confirm: false,
+        user_id,
       });
     }
 
@@ -154,7 +156,7 @@ class BuyTournamentController {
                 product_id: item.id,
               },
               operation: "entrada",
-
+              user_id,
               valueReceive:
                 methodsPay.find((item) => item["id"] == "Saldo")?.value || 0,
               valueDebit: 0,
@@ -185,6 +187,7 @@ class BuyTournamentController {
                 value: item.value * item.amount,
                 product_id: item.id,
               },
+              user_id,
               operation: "entrada",
               valueReceive:
                 methodsPay.find((item) => item["id"] == "Saldo")?.value || 0,
@@ -216,6 +219,7 @@ class BuyTournamentController {
                 value: item.value * item.amount,
                 product_id: item.id,
               },
+              user_id,
               operation: "entrada",
 
               valueReceive:
@@ -252,6 +256,7 @@ class BuyTournamentController {
               ],
               operation: "entrada",
 
+              user_id,
               valueReceive:
                 methodsPay.find((item) => item["id"] == "Saldo")?.value || 0,
               valueDebit: 0,
@@ -299,6 +304,7 @@ class BuyTournamentController {
         },
         operation: "entrada",
 
+        user_id,
         valueReceive:
           methodsPay.find((item) => item["id"] == "Saldo")?.value || 0,
         valueDebit: 0,

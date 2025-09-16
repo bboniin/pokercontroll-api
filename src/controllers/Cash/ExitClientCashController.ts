@@ -11,6 +11,7 @@ class ExitClientCashController {
       req.body;
 
     let club_id = req.club_id;
+    let user_id = req.user_id;
 
     let valueDebit =
       methods_transaction.filter((item) => item["id"] == "Pag Dívida").length !=
@@ -43,6 +44,7 @@ class ExitClientCashController {
         client_id,
         club_id,
         confirm: false,
+        user_id,
       });
     }
 
@@ -68,6 +70,7 @@ class ExitClientCashController {
       operation: "saida",
       valueReceive: 0,
       valueDebit,
+      user_id,
     });
 
     const exitClientCashService = new ExitClientCashService();

@@ -26,6 +26,7 @@ class AddTournamentController {
     } = req.body;
 
     let club_id = req.club_id;
+    let user_id = req.user_id;
 
     const getTournamentService = new GetTournamentService();
 
@@ -94,6 +95,7 @@ class AddTournamentController {
         client_id,
         club_id,
         confirm: false,
+        user_id,
       });
     }
 
@@ -169,6 +171,7 @@ class AddTournamentController {
               valueReceive:
                 methodsPay.find((item) => item["id"] == "Saldo")?.value || 0,
               valueDebit: 0,
+              user_id,
             });
             methods_transactionC = methodsC;
             break;
@@ -200,6 +203,7 @@ class AddTournamentController {
               valueReceive:
                 methodsPay.find((item) => item["id"] == "Saldo")?.value || 0,
               valueDebit: 0,
+              user_id,
             });
             methods_transactionC = methodsC;
             break;
@@ -231,6 +235,7 @@ class AddTournamentController {
               valueReceive:
                 methodsPay.find((item) => item["id"] == "Saldo")?.value || 0,
               valueDebit: 0,
+              user_id,
             });
             methods_transactionC = methodsC;
             break;
@@ -264,6 +269,7 @@ class AddTournamentController {
               valueReceive:
                 methodsPay.find((item) => item["id"] == "Saldo")?.value || 0,
               valueDebit: 0,
+              user_id,
             });
             methods_transactionC = methodsC;
             break;
@@ -310,6 +316,7 @@ class AddTournamentController {
         valueReceive:
           methodsPay.find((item) => item["id"] == "Saldo")?.value || 0,
         valueDebit: 0,
+        user_id,
       });
       methods_transactionC = methodsC;
     }

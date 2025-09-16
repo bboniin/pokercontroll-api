@@ -7,6 +7,7 @@ class TransferClubeController {
       req.body;
 
     let club_id = req.club_id;
+    let user_id = req.user_id;
 
     const transferClubeService = new TransferClubeService();
 
@@ -17,6 +18,7 @@ class TransferClubeController {
       club_id,
       observation,
       methods_transaction,
+      user_id,
     });
 
     return res.json(transaction);

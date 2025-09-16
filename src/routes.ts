@@ -113,6 +113,10 @@ import { EditPayableController } from "./controllers/Payable/EditPayableControll
 import { CreatePayableController } from "./controllers/Payable/CreatePayableController";
 import { NewPurchaseTournamentController } from "./controllers/Tournament/NewPurchaseTournamentController";
 import { GetTransactionsTournamentController } from "./controllers/Tournament/GetTransactionsTournamentController";
+import { StartFinancialBoxController } from "./controllers/FinancialBox/StartFinancialBoxController";
+import { EndFinancialBoxController } from "./controllers/FinancialBox/EndFinancialBoxController";
+import { GetFinancialBoxController } from "./controllers/FinancialBox/GetFinancialBoxController";
+import { ListfinancialBoxsController } from "./controllers/FinancialBox/ListFinancialBoxsController";
 
 const upload = multer(uploadConfig);
 
@@ -308,5 +312,10 @@ router.post("/reports", new GetReportController().handle);
 
 router.get("/clubs", new ListClubsController().handle);
 router.delete("/club/:club_id", new DeleteClubController().handle);
+
+router.post("/financial-box", new StartFinancialBoxController().handle);
+router.put("/financial-box/:box_id", new EndFinancialBoxController().handle);
+router.get("/financial-box", new GetFinancialBoxController().handle);
+router.get("/financial-boxs", new ListfinancialBoxsController().handle);
 
 export { router };

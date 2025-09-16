@@ -12,6 +12,7 @@ interface TransactionRequest {
   valueDebit: number;
   observation: string;
   date_payment: Date;
+  user_id: string;
 }
 
 const typesTransaction = {
@@ -34,6 +35,7 @@ class CreateTransactionClubeService {
     operation,
     date_payment,
     observation,
+    user_id,
   }: TransactionRequest) {
     const club = await prismaClient.club.findUnique({
       where: {
@@ -136,6 +138,7 @@ class CreateTransactionClubeService {
           date_payment: date_payment,
           observation: observation,
           paid: paid,
+          user_id: user_id,
           value_paid: valuePaid + valueReceive + valueDebit,
         },
       });
@@ -157,6 +160,7 @@ class CreateTransactionClubeService {
           date_payment: date_payment,
           observation: observation,
           paid: paid,
+          user_id: user_id,
           value_paid: valuePaid + valueReceive + valueDebit,
         },
       });
@@ -200,6 +204,7 @@ class CreateTransactionClubeService {
             value: item["value"],
             transaction_id: transaction.id,
             method_id: item["id"] || "",
+            user_id,
           },
         });
       }

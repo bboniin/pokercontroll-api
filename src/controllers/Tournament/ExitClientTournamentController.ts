@@ -17,6 +17,7 @@ class ExitClientTournamentController {
     } = req.body;
 
     let club_id = req.club_id;
+    let user_id = req.user_id;
 
     const exitClientTournamentService = new ExitClientTournamentService();
 
@@ -59,6 +60,7 @@ class ExitClientTournamentController {
           client_id,
           club_id,
           confirm: false,
+          user_id,
         });
       }
 
@@ -84,6 +86,7 @@ class ExitClientTournamentController {
         valueDebit,
         observation: observation,
         operation: "saida",
+        user_id,
       });
     }
 

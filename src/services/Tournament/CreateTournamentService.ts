@@ -7,6 +7,8 @@ interface TournamentRequest {
   totalAward_guaranteed: number;
   intervals: string;
   club_id: string;
+  type: string;
+  blinds: string;
   nivel_max_in: number;
   nivel_max_timechip: number;
   percentage_players_award: number;
@@ -35,6 +37,8 @@ class CreateTournamentService {
     club_id,
     purchases,
     vacancys,
+    blinds,
+    type,
   }: TournamentRequest) {
     if (
       !name ||
@@ -84,10 +88,10 @@ class CreateTournamentService {
         percentage_players_award: percentage_players_award,
         totalAward_guaranteed: totalAward_guaranteed || 0,
         club_id: club_id,
+        type: type,
         total_tokens: 0,
         totalAward_accumulated: 0,
-        blinds:
-          "100/100-100/200-100/300-200/400-300/600-400/800-500/1000-600/1200-800/1600-1200/2400-1500/3000-2000/4000-2500/5000-3000/6000-4000/8000-5000/10000-6000/12000-7000/14000-8000/16000-10000/20000-12000/25000-15000/30000-20000/4000-25000/50000-30000/60000-40000/80000-50000/100000-60000/120000-80000/160000-100000/200000-120000/240000-150000/30000-200000/400000-250000/500000-300000/600000",
+        blinds: blinds,
         intervals: intervals,
       },
     });

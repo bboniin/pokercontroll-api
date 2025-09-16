@@ -5,13 +5,14 @@ import { ConfirmedPassportService } from "../../services/Transaction/ConfirmedPa
 import { ConfirmedJackpotService } from "../../services/Transaction/ConfirmedJackpotService";
 import { PaymentDebtsService } from "../../services/Transaction/PaymentDebtsService";
 import { PaymentReceivesService } from "../../services/Transaction/PaymentReceivesService";
-import prismaClient from "../../prisma";
 import { GetTransactionService } from "../../services/Transaction/GetTransactionService";
 
 class ConfirmedTransactionController {
   async handle(req: Request, res: Response) {
     const { id } = req.params;
     const { methods_transaction, date_payment, observation } = req.body;
+
+    let user_id = req.user_id;
 
     const getTransactionService = new GetTransactionService();
 
@@ -56,6 +57,7 @@ class ConfirmedTransactionController {
           client_id: transaction.client_id,
           club_id,
           confirm: true,
+          user_id,
         });
       }
 
@@ -67,6 +69,7 @@ class ConfirmedTransactionController {
           client_id: transaction.client_id,
           club_id,
           confirm: true,
+          user_id,
         });
       }
     }
@@ -83,6 +86,7 @@ class ConfirmedTransactionController {
         valueReceive,
         valueDebit,
         observation,
+        user_id,
       });
 
       return res.json(transaction);
@@ -100,6 +104,7 @@ class ConfirmedTransactionController {
         valueReceive,
         valueDebit,
         observation,
+        user_id,
       });
 
       return res.json(dealer);
@@ -117,6 +122,7 @@ class ConfirmedTransactionController {
         valueReceive,
         valueDebit,
         observation,
+        user_id,
       });
 
       return res.json(jackpot);
@@ -134,6 +140,7 @@ class ConfirmedTransactionController {
         valueReceive,
         valueDebit,
         observation,
+        user_id,
       });
 
       return res.json(passport);

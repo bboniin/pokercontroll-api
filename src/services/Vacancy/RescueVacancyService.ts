@@ -5,10 +5,16 @@ interface TransactionRequest {
   vacancy_id: string;
   club_id: string;
   client_id: string;
+  user_id: string;
 }
 
 class RescueVacancyService {
-  async execute({ vacancy_id, club_id, client_id }: TransactionRequest) {
+  async execute({
+    vacancy_id,
+    club_id,
+    client_id,
+    user_id,
+  }: TransactionRequest) {
     const client = await prismaClient.client.findFirst({
       where: {
         id: client_id,
@@ -42,6 +48,7 @@ class RescueVacancyService {
         date_payment: addMonths(new Date(), 1),
         observation: "",
         paid: false,
+        user_id: user_id,
         value_paid: 0,
       },
     });

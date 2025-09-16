@@ -15,6 +15,7 @@ interface TransactionRequest {
       }
     ]
   >;
+  user_id: string;
 }
 
 class PaymentComandService {
@@ -25,6 +26,7 @@ class PaymentComandService {
     date_payment,
     methods_transaction,
     transactions,
+    user_id,
   }: TransactionRequest) {
     if (!club_id || !client_id || methods_transaction.length == 0) {
       throw new Error(
@@ -198,6 +200,7 @@ class PaymentComandService {
                     value: data["value"],
                     transaction_id: item.id,
                     method_id: item["id"] || "",
+                    user_id,
                   },
                 });
               }

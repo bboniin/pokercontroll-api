@@ -15,6 +15,7 @@ class RewardTournamentController {
     } = req.body;
 
     let club_id = req.club_id;
+    let user_id = req.user_id;
 
     const createTransactionService = new CreateTransactionService();
 
@@ -48,6 +49,7 @@ class RewardTournamentController {
         client_id,
         club_id,
         confirm: false,
+        user_id,
       });
     }
 
@@ -71,6 +73,7 @@ class RewardTournamentController {
       operation: "saida",
       valueReceive: 0,
       valueDebit,
+      user_id,
     });
 
     return res.json(transaction);

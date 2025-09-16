@@ -19,6 +19,7 @@ class CreateTransactionController {
     } = req.body;
 
     let club_id = req.club_id;
+    let user_id = req.user_id;
 
     const createTransactionService = new CreateTransactionService();
 
@@ -52,6 +53,7 @@ class CreateTransactionController {
         client_id: client_id,
         club_id,
         confirm: false,
+        user_id,
       });
     }
 
@@ -70,6 +72,7 @@ class CreateTransactionController {
         client_id,
         club_id,
         confirm: false,
+        user_id,
       });
     }
 
@@ -87,6 +90,7 @@ class CreateTransactionController {
       operation,
       valueReceive,
       valueDebit,
+      user_id,
     });
 
     return res.json(transaction);
