@@ -19,6 +19,7 @@ interface PayableRequest {
   date_charge: Date;
   recurrence: boolean;
   value_estimated: boolean;
+  user_id: string;
 }
 
 function periodToDays(period) {
@@ -62,6 +63,7 @@ class CreatePayableService {
     date_charge,
     recurrence,
     value_estimated,
+    user_id,
   }: PayableRequest) {
     if (
       !account ||
@@ -112,6 +114,7 @@ class CreatePayableService {
             : `1/${installments} parcelas`,
           paid: false,
           value_paid: 0,
+          user_id: user_id,
           editable: value_estimated,
           sector_id: payable.id,
           items_transaction: {

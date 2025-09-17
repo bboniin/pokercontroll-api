@@ -116,7 +116,9 @@ class GetFinancialBoxService {
 
     financialBox["totalEntrie"] = 0;
     financialBox["totalOut"] = 0;
-    // Objeto temporário para acumular os totais
+    financialBox["totalEntrieFuture"] = 0;
+    financialBox["totalOutFuture"] = 0;
+
     const totals = {};
 
     transactions.forEach((transaction) => {
@@ -129,8 +131,12 @@ class GetFinancialBoxService {
         if (isEntrada) {
           totals["Pagamento Pendente"].value_entrie +=
             transaction.value - transaction.value_paid;
+          financialBox["totalEntrieFuture"] +=
+            transaction.value - transaction.value_paid;
         } else {
           totals["Pagamento Pendente"].value_out +=
+            transaction.value - transaction.value_paid;
+          financialBox["totalOutFuture"] +=
             transaction.value - transaction.value_paid;
         }
       }
@@ -141,12 +147,10 @@ class GetFinancialBoxService {
         transaction.methods_transaction.forEach((method) => {
           const methodName = method.name;
 
-          // Inicializar o método no objeto totals se ainda não existir
           if (!totals[methodName]) {
             totals[methodName] = { value_entrie: 0, value_out: 0 };
           }
 
-          // Somar os valores com base na operação
           if (isEntrada) {
             totals[methodName].value_entrie += method.value;
             financialBox["totalEntrie"] += method.value;
@@ -158,7 +162,6 @@ class GetFinancialBoxService {
       }
     });
 
-    // Atualizar o array methodsPay com os totais calculados
     methodsPay.forEach((method) => {
       const total = totals[method.name];
       if (total) {
@@ -167,8 +170,40 @@ class GetFinancialBoxService {
       }
     });
 
+    const methodsWithBalance = methodsPay.map((method) => ({
+      ...method,
+      balance: method["value_entrie"] - method["value_out"],
+    }));
+
+    methodsWithBalance.sort((a, b) => {
+      const balanceA = a.balance;
+      const balanceB = b.balance;
+
+      if (balanceA > 0 && balanceB <= 0) {
+        return -1;
+      }
+      if (balanceA <= 0 && balanceB > 0) {
+        return 1;
+      }
+
+      if (balanceA < 0 && balanceB >= 0) {
+        return -1;
+      }
+      if (balanceA >= 0 && balanceB < 0) {
+        return 1;
+      }
+
+      return balanceB - balanceA;
+    });
+
+    financialBox["totalBalance"] =
+      financialBox["totalEntrie"] - financialBox["totalOut"];
+    financialBox["totalBalanceFuture"] =
+      financialBox["totalBalance"] +
+      financialBox["totalEntrieFuture"] -
+      financialBox["totalOutFuture"];
     financialBox["transactions"] = transactions;
-    financialBox["methods_transaction"] = methodsPay;
+    financialBox["methods_transaction"] = methodsWithBalance;
 
     return financialBox;
   }

@@ -16,6 +16,7 @@ class CreatePayableController {
     } = req.body;
 
     let club_id = req.club_id;
+    let user_id = req.user_id;
 
     const createPayableService = new CreatePayableService();
 
@@ -30,6 +31,7 @@ class CreatePayableController {
       date_charge,
       value_estimated,
       club_id,
+      user_id,
     });
     return res.json(payable);
   }

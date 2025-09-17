@@ -29,14 +29,14 @@ class ListFinancialBoxsService {
       user_id = null;
     }
 
-    const financiallBoxsTotal = await prismaClient.financialBox.count({
+    const financialBoxsTotal = await prismaClient.financialBox.count({
       where: {
         club_id: club_id,
         ...(user_id && { user_id: user_id }),
       },
     });
 
-    const financiallBoxs = await prismaClient.financialBox.findMany({
+    const financialBoxs = await prismaClient.financialBox.findMany({
       ...filter,
       where: {
         ...(user_id && { user_id: user_id }),
@@ -44,9 +44,12 @@ class ListFinancialBoxsService {
       orderBy: {
         date_initial: "asc",
       },
+      include: {
+        user: true,
+      },
     });
 
-    return { financiallBoxs, financiallBoxsTotal };
+    return { financialBoxs, financialBoxsTotal };
   }
 }
 
