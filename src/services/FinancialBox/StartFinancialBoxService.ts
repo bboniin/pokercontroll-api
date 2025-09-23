@@ -11,16 +11,14 @@ class StartFinancialBoxService {
     if (!user_id || !club_id) {
       throw new Error("Preencha os campos obrigatórios");
     }
-
-    const caixa = await prismaClient.user.findFirst({
+    const user = await prismaClient.user.findUnique({
       where: {
         id: user_id,
-        type: "caixa",
       },
     });
 
-    if (!caixa) {
-      throw new Error("Apenas o Operador de Caixa pode iniciar");
+    if (!user) {
+      throw new Error("Usuário não encontrado");
     }
 
     const financialBoxOpen = await prismaClient.financialBox.findFirst({

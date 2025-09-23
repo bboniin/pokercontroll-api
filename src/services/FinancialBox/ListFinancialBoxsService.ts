@@ -21,14 +21,15 @@ class ListFinancialBoxsService {
     const financialBoxsTotal = await prismaClient.financialBox.count({
       where: {
         club_id: club_id,
-        ...(user_id && { user_id: user_id }),
+        user_id: user_id,
       },
     });
 
     const financialBoxs = await prismaClient.financialBox.findMany({
       ...filter,
       where: {
-        ...(user_id && { user_id: user_id }),
+        club_id: club_id,
+        user_id: user_id,
       },
       orderBy: {
         date_end: "desc",

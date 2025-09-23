@@ -40,6 +40,7 @@ class ListFinancialBoxsClubService {
     const financialBoxs = await prismaClient.financialBox.findMany({
       ...filter,
       where: {
+        club_id: club_id,
         ...(user_id && { user_id: user_id }),
       },
       orderBy: {
