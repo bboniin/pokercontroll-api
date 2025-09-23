@@ -6,72 +6,62 @@ interface BoxRequest {
   club_id: string;
 }
 
-class GetFinancialBoxService {
+class GetFinancialBoxClubService {
   async execute({ user_id, club_id, box_id }: BoxRequest) {
-    const user = await prismaClient.user.findUnique({
+    const admin = await prismaClient.user.findUnique({
       where: {
         id: user_id,
       },
     });
 
-    if (!user) {
-      throw new Error("Usuário não encontrado");
+    if (!admin) {
+      throw new Error("Rota restrita para administrador");
     }
 
-    let financialBox = await prismaClient.financialBox.findFirst({
+    const box_ids = box_id.split(",");
+
+    let financialBoxes = await prismaClient.financialBox.findMany({
       where: {
-        id: box_id,
+        id: {
+          in: box_ids,
+        },
         club_id: club_id,
+      },
+      include: {
+        user: true,
       },
     });
 
-    if (box_id) {
-      if (financialBox && financialBox?.user_id != user_id) {
-        throw new Error("Caixa não encontrado");
-      }
+    if (financialBoxes.length === 0) {
+      throw new Error("Caixa(s) não encontrado(s)");
     }
 
-    if (!financialBox) {
-      const financialBoxOpen = await prismaClient.financialBox.findFirst({
-        where: {
-          user_id: user_id,
-          closed: false,
+    const dateConditions = financialBoxes.map((box) => ({
+      OR: [
+        {
+          create_at: {
+            gte: box.date_initial,
+            ...(box.closed ? { lte: box.date_end } : {}),
+          },
         },
-        include: {
-          user: true,
+        {
+          methods_transaction: {
+            some: {
+              user_id: user_id,
+              create_at: {
+                gte: box.date_initial,
+                ...(box.closed ? { lte: box.date_end } : {}),
+              },
+            },
+          },
         },
-      });
-      if (!financialBoxOpen) {
-        throw new Error("Nenhum caixa aberto no momento");
-      }
-      financialBox = financialBoxOpen;
-    }
-
-    const startDate = financialBox.date_initial;
-    const endDate = financialBox.closed ? financialBox.date_end : null;
+      ],
+    }));
 
     const transactions = await prismaClient.transaction.findMany({
       where: {
         club_id: club_id,
-        OR: [
-          {
-            create_at: {
-              gte: startDate,
-              ...(endDate && { lte: endDate }),
-            },
-          },
-          {
-            methods_transaction: {
-              some: {
-                user_id: user_id,
-                create_at: {
-                  gte: startDate,
-                  ...(endDate && { lte: endDate }),
-                },
-              },
-            },
-          },
-        ],
+        OR: dateConditions,
       },
       include: {
         methods_transaction: true,
@@ -79,6 +69,17 @@ class GetFinancialBoxService {
         client: true,
       },
     });
+
+    const financialBox =
+      financialBoxes.length == 1
+        ? financialBoxes[0]
+        : {
+            closed: true,
+            resumed: true,
+            value_initial: financialBoxes.reduce((acumulador, caixaAtual) => {
+              return acumulador + caixaAtual.value_initial;
+            }, 0),
+          };
 
     const methods = await prismaClient.method.findMany({
       where: {
@@ -206,4 +207,4 @@ class GetFinancialBoxService {
   }
 }
 
-export { GetFinancialBoxService };
+export { GetFinancialBoxClubService };

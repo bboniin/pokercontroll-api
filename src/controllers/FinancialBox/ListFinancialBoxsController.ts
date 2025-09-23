@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { ListFinancialBoxsService } from "../../services/FinancialBox/ListFinancialBoxsService";
 
-class ListfinancialBoxsController {
+class ListFinancialBoxsController {
   async handle(req: Request, res: Response) {
     let { page, all } = req.query;
     let club_id = req.club_id;
@@ -20,4 +20,4 @@ class ListfinancialBoxsController {
   }
 }
 
-export { ListfinancialBoxsController };
+export { ListFinancialBoxsController };

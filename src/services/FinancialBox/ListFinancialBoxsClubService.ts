@@ -5,10 +5,11 @@ interface BoxRequest {
   page: number;
   all: boolean;
   user_id: string;
+  admin_id: string;
 }
 
-class ListFinancialBoxsService {
-  async execute({ club_id, page, all, user_id }: BoxRequest) {
+class ListFinancialBoxsClubService {
+  async execute({ club_id, page, all, user_id, admin_id }: BoxRequest) {
     let filter = {};
 
     if (!all) {
@@ -16,6 +17,17 @@ class ListFinancialBoxsService {
         skip: page * 30,
         take: 30,
       };
+    }
+
+    const admin = await prismaClient.user.findFirst({
+      where: {
+        id: admin_id,
+        type: "admin",
+      },
+    });
+
+    if (!admin) {
+      throw new Error("Rota restrira para administrador");
     }
 
     const financialBoxsTotal = await prismaClient.financialBox.count({
@@ -42,4 +54,4 @@ class ListFinancialBoxsService {
   }
 }
 
-export { ListFinancialBoxsService };
+export { ListFinancialBoxsClubService };

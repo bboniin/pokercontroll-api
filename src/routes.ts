@@ -116,7 +116,9 @@ import { GetTransactionsTournamentController } from "./controllers/Tournament/Ge
 import { StartFinancialBoxController } from "./controllers/FinancialBox/StartFinancialBoxController";
 import { EndFinancialBoxController } from "./controllers/FinancialBox/EndFinancialBoxController";
 import { GetFinancialBoxController } from "./controllers/FinancialBox/GetFinancialBoxController";
-import { ListfinancialBoxsController } from "./controllers/FinancialBox/ListFinancialBoxsController";
+import { ListFinancialBoxsController } from "./controllers/FinancialBox/ListFinancialBoxsController";
+import { GetFinancialBoxClubController } from "./controllers/FinancialBox/GetFinancialBoxClubController";
+import { ListFinancialBoxsClubController } from "./controllers/FinancialBox/ListFinancialBoxsClubController";
 
 const upload = multer(uploadConfig);
 
@@ -316,6 +318,14 @@ router.delete("/club/:club_id", new DeleteClubController().handle);
 router.post("/financial-box", new StartFinancialBoxController().handle);
 router.put("/financial-box/:box_id", new EndFinancialBoxController().handle);
 router.get("/financial-box", new GetFinancialBoxController().handle);
-router.get("/financial-boxs", new ListfinancialBoxsController().handle);
+router.get(
+  "/club/financial-boxs",
+  new ListFinancialBoxsClubController().handle
+);
+router.get(
+  "/club/financial-box/:box_id",
+  new GetFinancialBoxClubController().handle
+);
+router.get("/financial-boxs", new ListFinancialBoxsController().handle);
 
 export { router };
