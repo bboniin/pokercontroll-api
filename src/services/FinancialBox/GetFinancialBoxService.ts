@@ -23,6 +23,9 @@ class GetFinancialBoxService {
         id: box_id,
         club_id: club_id,
       },
+      include: {
+        user: true,
+      },
     });
 
     if (box_id) {
@@ -117,9 +120,14 @@ class GetFinancialBoxService {
     financialBox["totalOutFuture"] = 0;
 
     const totals = {};
+    const clients = {};
 
     transactions.forEach((transaction) => {
       const isEntrada = transaction.operation === "entrada";
+
+      if (!clients[transaction.client_id]) {
+        clients[transaction.client_id] = transaction.client;
+      }
 
       if (transaction.user_id == user_id && !transaction.paid) {
         if (!totals["Pagamento Pendente"]) {
@@ -201,6 +209,7 @@ class GetFinancialBoxService {
       financialBox["totalOutFuture"];
     financialBox["transactions"] = transactions;
     financialBox["methods_transaction"] = methodsWithBalance;
+    financialBox["clients"] = clients ? Object.values(clients) : [];
 
     return financialBox;
   }

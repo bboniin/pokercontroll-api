@@ -8,9 +8,10 @@ interface BoxRequest {
 
 class GetFinancialBoxClubService {
   async execute({ user_id, club_id, box_id }: BoxRequest) {
-    const admin = await prismaClient.user.findUnique({
+    const admin = await prismaClient.user.findFirst({
       where: {
         id: user_id,
+        type: "admin",
       },
     });
 
@@ -118,9 +119,14 @@ class GetFinancialBoxClubService {
     financialBox["totalOutFuture"] = 0;
 
     const totals = {};
+    const clients = {};
 
     transactions.forEach((transaction) => {
       const isEntrada = transaction.operation === "entrada";
+
+      if (!clients[transaction.client_id]) {
+        clients[transaction.client_id] = transaction.client;
+      }
 
       if (transaction.user_id == user_id && !transaction.paid) {
         if (!totals["Pagamento Pendente"]) {
@@ -202,6 +208,7 @@ class GetFinancialBoxClubService {
       financialBox["totalOutFuture"];
     financialBox["transactions"] = transactions;
     financialBox["methods_transaction"] = methodsWithBalance;
+    financialBox["clients"] = clients ? Object.values(clients) : [];
 
     return financialBox;
   }
