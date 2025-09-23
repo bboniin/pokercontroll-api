@@ -43,7 +43,7 @@ class ListFinancialBoxsClubService {
         ...(user_id && { user_id: user_id }),
       },
       orderBy: {
-        date_initial: "asc",
+        date_end: "desc",
       },
       include: {
         user: true,
