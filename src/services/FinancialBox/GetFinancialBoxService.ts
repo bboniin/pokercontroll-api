@@ -125,7 +125,7 @@ class GetFinancialBoxService {
     transactions.forEach((transaction) => {
       const isEntrada = transaction.operation === "entrada";
 
-      if (!clients[transaction.client_id]) {
+      if (!clients[transaction.client_id] && transaction.client_id) {
         clients[transaction.client_id] = transaction.client;
       }
 
