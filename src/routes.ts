@@ -119,6 +119,11 @@ import { GetFinancialBoxController } from "./controllers/FinancialBox/GetFinanci
 import { ListFinancialBoxsController } from "./controllers/FinancialBox/ListFinancialBoxsController";
 import { GetFinancialBoxClubController } from "./controllers/FinancialBox/GetFinancialBoxClubController";
 import { ListFinancialBoxsClubController } from "./controllers/FinancialBox/ListFinancialBoxsClubController";
+import { CreateRakeController } from "./controllers/Cash/CreateRakeController";
+import { EditRakeController } from "./controllers/Cash/EditRakeController";
+import { EditBriefcaseController } from "./controllers/Cash/EditBriefcaseController";
+import { ClientsExitTournamentController } from "./controllers/Tournament/ClientsExitTournamentController";
+import { ReturnClientTournamentController } from "./controllers/Tournament/ReturnClientTournamentController";
 
 const upload = multer(uploadConfig);
 
@@ -189,6 +194,11 @@ router.get(
   "/clients-tournament/:tournament_id",
   new ClientsTournamentController().handle
 );
+router.get(
+  "/clients-tournament-exit/:tournament_id",
+  new ClientsExitTournamentController().handle
+);
+router.put("/return-client", new ReturnClientTournamentController().handle);
 router.post("/add-tournament", new AddTournamentController().handle);
 router.post("/move-tournament", new MoveTournamentController().handle);
 router.get("/tournament/:tournament_id", new GetTournamentController().handle);
@@ -270,7 +280,10 @@ router.put("/command/:command_id", new ClosedCommandController().handle);
 
 router.post("/cash", new CreateCashController().handle);
 router.put("/cash/:cash_id", new EndCashController().handle);
+router.put("/briefcase/:id", new EditBriefcaseController().handle);
 router.get("/cash", new GetCashController().handle);
+router.post("/rake/:id", new CreateRakeController().handle);
+router.put("/rake/:id", new EditRakeController().handle);
 
 router.post("/method", new CreateMethodController().handle);
 router.put("/method/:method_id", new EditMethodController().handle);

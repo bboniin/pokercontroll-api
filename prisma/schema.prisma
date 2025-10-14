@@ -159,18 +159,34 @@ model ItemsTransaction {
 }
 
 model Cash {
-  id           String    @id @default(uuid())
-  name         String
-  closed       Boolean 
-  chairs       Int       @default(15) 
-  club_id      String
-  date_in      DateTime? @default(now())
-  date_out     DateTime? @default(now())
-  club         Club      @relation(fields: [club_id], references: [id], onDelete: Cascade)
-  create_at    DateTime? @default(now())
-  update_at    DateTime? @default(now())
+  id                    String    @id @default(uuid())
+  name                  String
+  closed                Boolean 
+  chairs                Int       @default(15) 
+  club_id               String
+  briefcase             Float     @default(0)
+  historic_briefcase   String?
+  date_in               DateTime? @default(now())
+  date_out              DateTime? @default(now())
+  club                  Club      @relation(fields: [club_id], references: [id], onDelete: Cascade)
+  create_at             DateTime? @default(now())
+  update_at             DateTime? @default(now())
+
+  rakes                 Rake[]
 
   @@map("cashs")
+}
+
+
+model Rake {
+  id              String          @id @default(uuid())
+  value           Float
+  historic        String?         
+  cash_id         String
+  cash            Cash            @relation(fields: [cash_id], references: [id], onDelete: Cascade)
+  create_at       DateTime?       @default(now())
+
+  @@map("rakes")
 }
 
 model Method {
