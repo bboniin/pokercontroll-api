@@ -1,25 +1,27 @@
-import { Request, Response } from 'express';
-import { ClientsCashService } from '../../services/Cash/ClientsCashService';
+import { Request, Response } from "express";
+import { ClientsCashService } from "../../services/Cash/ClientsCashService";
 
 class ClientsCashController {
-    async handle(req: Request, res: Response) {
+  async handle(req: Request, res: Response) {
+    let club_id = req.club_id;
+    const { cash_id } = req.query;
+    const clientsCashService = new ClientsCashService();
 
-        let club_id = req.club_id
+    const clients = await clientsCashService.execute({
+      club_id,
+      cash_id: String(cash_id || ""),
+    });
 
-        const clientsCashService = new ClientsCashService
+    clients.map((item) => {
+      if (item["photo"]) {
+        item["photo_url"] =
+          "https://pokercontrol-data.s3.sa-east-1.amazonaws.com/" +
+          item["photo"];
+      }
+    });
 
-        const clients = await clientsCashService.execute({
-            club_id
-        })
-
-        clients.map((item) => {
-            if (item["photo"]) {
-                item["photo_url"] = "https://pokercontrol-data.s3.sa-east-1.amazonaws.com/" + item["photo"];
-            }
-        })
-
-        return res.json(clients)
-    }
+    return res.json(clients);
+  }
 }
 
-export { ClientsCashController }
+export { ClientsCashController };

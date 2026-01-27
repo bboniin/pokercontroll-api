@@ -1,26 +1,36 @@
-import prismaClient from '../../prisma'
+import prismaClient from "../../prisma";
 
 interface ClientRequest {
-    club_id: string;
+  club_id: string;
+  cash_id: string;
 }
 
 class ClientsCashService {
-    async execute({ club_id }: ClientRequest) {
+  async execute({ club_id, cash_id }: ClientRequest) {
+    const clients = await prismaClient.client.findMany({
+      where: {
+        club_id: club_id,
+        chair_cash: {
+          contains: "C",
+        },
+      },
+      orderBy: {
+        create_at: "asc",
+      },
+      include: {
+        transactions: {
+          where: {
+            sector_id: cash_id,
+          },
+          orderBy: {
+            create_at: "asc",
+          },
+        },
+      },
+    });
 
-        const clients = await prismaClient.client.findMany({
-            where: {
-                club_id: club_id,
-                chair_cash: {
-                    contains: "C"
-                }
-            },
-            orderBy: {
-                create_at: "asc"
-            }
-        })
-
-        return (clients)
-    }
+    return clients;
+  }
 }
 
-export { ClientsCashService }
+export { ClientsCashService };
