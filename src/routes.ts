@@ -142,7 +142,7 @@ router.get("/passports", new ListPassportController().handle);
 router.get("/dealers", new ListDealerController().handle);
 router.put(
   "/confirmed-transaction/:id",
-  new ConfirmedTransactionController().handle
+  new ConfirmedTransactionController().handle,
 );
 router.post("/transaction", new CreateTransactionController().handle);
 router.post("/transaction-club", new CreateTransactionClubeController().handle);
@@ -154,12 +154,12 @@ router.get("/clients-chair", new ListClientsChairController().handle);
 router.post(
   "/client",
   upload.single("file"),
-  new CreateClientController().handle
+  new CreateClientController().handle,
 );
 router.put(
   "/client/:client_id",
   upload.single("file"),
-  new EditClientController().handle
+  new EditClientController().handle,
 );
 router.get("/client/:client_id", new GetClientController().handle);
 router.delete("/client/:client_id", new DeleteClientController().handle);
@@ -170,7 +170,7 @@ router.post("/add-cash", new AddCashController().handle);
 router.post("/buy-cash", new BuyCashController().handle);
 router.post(
   "/new-purchase/:tournament_id",
-  new NewPurchaseTournamentController().handle
+  new NewPurchaseTournamentController().handle,
 );
 router.post("/reward-cash", new RewardCashController().handle);
 router.get("/clear-cash", new ClearCashController().handle);
@@ -179,24 +179,24 @@ router.post("/exit-cash/:client_id", new ExitClientCashController().handle);
 
 router.get(
   "/transactions-pending/:client_id",
-  new ListTransactionsPendingController().handle
+  new ListTransactionsPendingController().handle,
 );
 router.put(
   "/transactions-pending/:client_id",
-  new PaymentPendingTransactionController().handle
+  new PaymentPendingTransactionController().handle,
 );
 router.put(
   "/transactions-comand/:client_id",
-  new PaymentComandTransactionController().handle
+  new PaymentComandTransactionController().handle,
 );
 
 router.get(
   "/clients-tournament/:tournament_id",
-  new ClientsTournamentController().handle
+  new ClientsTournamentController().handle,
 );
 router.get(
   "/clients-tournament-exit/:tournament_id",
-  new ClientsExitTournamentController().handle
+  new ClientsExitTournamentController().handle,
 );
 router.put("/return-client", new ReturnClientTournamentController().handle);
 router.post("/add-tournament", new AddTournamentController().handle);
@@ -204,56 +204,56 @@ router.post("/move-tournament", new MoveTournamentController().handle);
 router.get("/tournament/:tournament_id", new GetTournamentController().handle);
 router.get(
   "/transactions/tournament/:tournament_id",
-  new GetTransactionsTournamentController().handle
+  new GetTransactionsTournamentController().handle,
 );
 router.get("/tournaments", new ListTournamentsController().handle);
 router.put("/tournament/:tournament_id", new EditTournamentController().handle);
 router.put(
   "/structure-tournament/:tournament_id",
-  new StructureTournamentController().handle
+  new StructureTournamentController().handle,
 );
 router.post("/tournament", new CreateTournamentController().handle);
 router.post("/buy-tournament", new BuyTournamentController().handle);
 router.post("/reward-tournament", new RewardTournamentController().handle);
 router.put(
   "/exit-tournament/:client_id",
-  new ExitClientTournamentController().handle
+  new ExitClientTournamentController().handle,
 );
 router.put(
   "/canceled-client/:client_id",
-  new CanceledClientTournamentController().handle
+  new CanceledClientTournamentController().handle,
 );
 router.put(
   "/paused-tournament/:tournament_id",
-  new PausedTournamentController().handle
+  new PausedTournamentController().handle,
 );
 
 router.put(
   "/end-register/:tournament_id",
-  new EndRegisterTournamentController().handle
+  new EndRegisterTournamentController().handle,
 );
 router.put(
   "/initial-tournament/:tournament_id",
-  new InitialTournamentController().handle
+  new InitialTournamentController().handle,
 );
 router.put(
   "/open-tournament/:tournament_id",
-  new OpenTournamentController().handle
+  new OpenTournamentController().handle,
 );
 router.put(
   "/finish-tournament/:tournament_id",
-  new FinishTournamentController().handle
+  new FinishTournamentController().handle,
 );
 
 router.post(
   "/product",
   upload.single("file"),
-  new CreateProductController().handle
+  new CreateProductController().handle,
 );
 router.put(
   "/product/:product_id",
   upload.single("file"),
-  new EditProductController().handle
+  new EditProductController().handle,
 );
 
 router.put("/rescue/vacancy/:vacancy_id", new RescueVacancyController().handle);
@@ -333,11 +333,11 @@ router.put("/financial-box/:box_id", new EndFinancialBoxController().handle);
 router.get("/financial-box", new GetFinancialBoxController().handle);
 router.get(
   "/club/financial-boxs",
-  new ListFinancialBoxsClubController().handle
+  new ListFinancialBoxsClubController().handle,
 );
 router.get(
   "/club/financial-box/:box_id",
-  new GetFinancialBoxClubController().handle
+  new GetFinancialBoxClubController().handle,
 );
 router.get("/financial-boxs", new ListFinancialBoxsController().handle);
 

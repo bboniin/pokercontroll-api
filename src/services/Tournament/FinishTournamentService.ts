@@ -69,7 +69,7 @@ class FinishTournamentService {
         tournament_id: tournament_id,
       },
       orderBy: {
-        update_at: "asc",
+        date_out: "asc",
       },
     });
 
@@ -88,7 +88,7 @@ class FinishTournamentService {
     Promise.all(
       await clientTournaments.map((client, idx) => {
         const rulesClient = rules.filter(
-          (r) => idx + 1 >= r.min && idx + 1 <= r.max
+          (r) => idx + 1 >= r.min && idx + 1 <= r.max,
         );
         rulesClient.map(async (data) => {
           await prismaClient.clientPoints.create({
@@ -100,7 +100,7 @@ class FinishTournamentService {
             },
           });
         });
-      })
+      }),
     );
 
     return tournamentC;
