@@ -69,7 +69,7 @@ class FinishTournamentService {
         tournament_id: tournament_id,
       },
       orderBy: {
-        date_out: "asc",
+        date_out: "desc",
       },
     });
 
