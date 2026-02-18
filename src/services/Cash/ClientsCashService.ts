@@ -25,6 +25,9 @@ class ClientsCashService {
           orderBy: {
             create_at: "asc",
           },
+          include: {
+            methods_transaction: true,
+          },
         },
       },
     });
