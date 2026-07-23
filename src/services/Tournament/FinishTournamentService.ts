@@ -3,10 +3,14 @@ import prismaClient from "../../prisma";
 interface TournamentRequest {
   club_id: string;
   tournament_id: string;
+  classifieds: {
+    id: string;
+    tokens: number;
+  }[];
 }
 
 class FinishTournamentService {
-  async execute({ tournament_id, club_id }: TournamentRequest) {
+  async execute({ tournament_id, club_id, classifieds }: TournamentRequest) {
     const tournament = await prismaClient.tournament.findFirst({
       where: {
         club_id: club_id,
@@ -25,15 +29,119 @@ class FinishTournamentService {
       throw new Error("Torneio não encontrado");
     }
 
-    const clientTournament = await prismaClient.clientTournament.findFirst({
-      where: {
-        exit: false,
-        tournament_id: tournament_id,
-      },
-    });
+    if (tournament.type != "classificatorio") {
+      const clientTournament = await prismaClient.clientTournament.findFirst({
+        where: {
+          exit: false,
+          tournament_id: tournament_id,
+        },
+      });
 
-    if (clientTournament) {
-      throw new Error("Elimine todos os jogadores para finalizar o torneio");
+      if (clientTournament) {
+        throw new Error("Elimine todos os jogadores para finalizar o torneio");
+      }
+    } else {
+      const tournamentClassified = await prismaClient.tournament.findUnique({
+        where: {
+          id: tournament.classified_tournament_id,
+        },
+      });
+      if (!tournamentClassified) {
+        throw new Error("Torneio final não encontrado");
+      }
+      const hasInvalidTokens = classifieds.some(
+        (item) =>
+          typeof item.tokens !== "number" ||
+          isNaN(item.tokens) ||
+          !isFinite(item.tokens),
+      );
+
+      if (hasInvalidTokens) {
+        throw new Error(
+          "Todos os classificados devem ter a quantidade de fichas preenchidas.",
+        );
+      }
+
+      const sortedClassifieds = [...classifieds].sort(
+        (a, b) => a.tokens - b.tokens,
+      );
+
+      await prismaClient.$transaction(async (tx) => {
+        let totalTokensClassified = 0;
+
+        for (const item of sortedClassifieds) {
+          const clientTournament = await tx.clientTournament.findFirst({
+            where: {
+              client_id: item.id,
+              tournament_id: tournament_id,
+              exit: false,
+            },
+          });
+
+          if (clientTournament) {
+            const clientTournamentClassified =
+              await tx.clientTournament.findFirst({
+                where: {
+                  client_id: item.id,
+                  tournament_id: tournamentClassified.id,
+                  exit: false,
+                },
+              });
+
+            await tx.clientTournament.update({
+              where: {
+                id: clientTournament.id,
+              },
+              data: {
+                exit: true,
+                tokens_classified: item.tokens,
+                chair_tournament: "",
+                date_out: new Date(),
+              },
+            });
+
+            if (clientTournamentClassified) {
+              await tx.clientTournament.update({
+                where: {
+                  id: clientTournamentClassified.id,
+                },
+                data: {
+                  tokens_classified:
+                    item.tokens > clientTournamentClassified.tokens_classified
+                      ? item.tokens
+                      : clientTournamentClassified.tokens_classified,
+                },
+              });
+              totalTokensClassified +=
+                item.tokens > clientTournamentClassified.tokens_classified
+                  ? item.tokens - clientTournamentClassified.tokens_classified
+                  : 0;
+            } else {
+              await tx.clientTournament.create({
+                data: {
+                  client_id: item.id,
+                  tournament_id: tournamentClassified.id,
+                  tokens_classified: item.tokens,
+                  exit: false,
+                  is_classified: true,
+                  date_in: new Date(),
+                },
+              });
+              totalTokensClassified += item.tokens;
+            }
+          }
+        }
+
+        await tx.tournament.update({
+          where: {
+            id: tournamentClassified.id,
+          },
+          data: {
+            total_tokens:
+              tournamentClassified.total_tokens + totalTokensClassified,
+          },
+        });
+      });
     }
 
     const tournamentC = await prismaClient.tournament.update({

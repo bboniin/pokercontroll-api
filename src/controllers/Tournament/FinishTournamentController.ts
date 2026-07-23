@@ -1,20 +1,22 @@
-import { Request, Response } from 'express';
-import { FinishTournamentService } from '../../services/Tournament/FinishTournamentService';
+import { Request, Response } from "express";
+import { FinishTournamentService } from "../../services/Tournament/FinishTournamentService";
 
 class FinishTournamentController {
-    async handle(req: Request, res: Response) {
-        const { tournament_id } = req.params
+  async handle(req: Request, res: Response) {
+    const { tournament_id } = req.params;
+    const { classifieds } = req.body;
+    let club_id = req.club_id;
 
-        let club_id = req.club_id
+    const finishTournamentService = new FinishTournamentService();
 
-        const finishTournamentService = new FinishTournamentService
+    const tournament = await finishTournamentService.execute({
+      tournament_id,
+      club_id,
+      classifieds,
+    });
 
-        const tournament = await finishTournamentService.execute({
-            tournament_id, club_id
-        })
-
-        return res.json(tournament)
-    }
+    return res.json(tournament);
+  }
 }
 
-export { FinishTournamentController }
+export { FinishTournamentController };

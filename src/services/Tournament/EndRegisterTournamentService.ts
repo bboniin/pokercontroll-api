@@ -9,10 +9,6 @@ interface TournamentRequest {
 
 class EndRegisterTournamentService {
   async execute({ tournament_id, club_id, award, staff }: TournamentRequest) {
-    if (!award) {
-      throw new Error("Modelo de recompensa é obrigátorio");
-    }
-
     const tournament = await prismaClient.tournament.findFirst({
       where: {
         club_id: club_id,
@@ -30,6 +26,10 @@ class EndRegisterTournamentService {
 
     if (!tournament) {
       throw new Error("Torneio não encontrado");
+    }
+
+    if (tournament.type != "classificatorio" && !award) {
+      throw new Error("Modelo de recompensa é obrigátorio");
     }
 
     const tournamentC = await prismaClient.tournament.update({
@@ -75,7 +75,7 @@ class EndRegisterTournamentService {
             },
           });
         }
-      })
+      }),
     );
 
     return tournamentC;

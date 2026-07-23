@@ -124,6 +124,13 @@ import { EditRakeController } from "./controllers/Cash/EditRakeController";
 import { EditBriefcaseController } from "./controllers/Cash/EditBriefcaseController";
 import { ClientsExitTournamentController } from "./controllers/Tournament/ClientsExitTournamentController";
 import { ReturnClientTournamentController } from "./controllers/Tournament/ReturnClientTournamentController";
+import { OrderAdvertisingsController } from "./controllers/Club/OrderAdvertisingsController";
+import { CreateAdvertisingController } from "./controllers/Club/CreateAdvertisingController copy";
+import { DeleteAdvertisingController } from "./controllers/Club/DeleteAdvertisingController";
+import { ListAdvertisingsController } from "./controllers/Club/ListAdvertisingsController";
+import { EditClubController } from "./controllers/Club/EditClubController";
+import { GetClubController } from "./controllers/Club/GetClubController";
+import { EditPurchaseTournamentController } from "./controllers/Tournament/EditPurchaseTournamentController";
 
 const upload = multer(uploadConfig);
 
@@ -169,8 +176,12 @@ router.post("/move-cash", new MoveCashController().handle);
 router.post("/add-cash", new AddCashController().handle);
 router.post("/buy-cash", new BuyCashController().handle);
 router.post(
-  "/new-purchase/:tournament_id",
+  "/purchase/:tournament_id",
   new NewPurchaseTournamentController().handle,
+);
+router.put(
+  "/purchase/:purchase_id",
+  new EditPurchaseTournamentController().handle,
 );
 router.post("/reward-cash", new RewardCashController().handle);
 router.get("/clear-cash", new ClearCashController().handle);
@@ -264,6 +275,28 @@ router.get("/group/vacancys", new ListGroupVacancyController().handle);
 router.get("/product/:product_id", new GetProductController().handle);
 router.get("/products", new ListProductsController().handle);
 router.delete("/product/:product_id", new DeleteProductController().handle);
+
+router.get("/club", new GetClubController().handle);
+router.put(
+  "/club",
+  upload.fields([
+    { name: "photo", maxCount: 1 },
+    { name: "background_image", maxCount: 1 },
+  ]),
+  new EditClubController().handle,
+);
+
+router.get("/advertisings", new ListAdvertisingsController().handle);
+router.post(
+  "/advertising",
+  upload.single("file"),
+  new CreateAdvertisingController().handle,
+);
+router.put("/advertisings", new OrderAdvertisingsController().handle);
+router.delete(
+  "/advertising/:advertising_id",
+  new DeleteAdvertisingController().handle,
+);
 
 router.get("/user", new GetUserController().handle);
 router.post("/user", new CreateUserClubController().handle);

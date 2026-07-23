@@ -1,10 +1,10 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["interactiveTransactions"]
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model Admin {
@@ -21,7 +21,6 @@ model Admin {
 model User {
   id                    String    @id @default(uuid())
   name                  String
-  photo                 String?
   email                 String    @unique
   password              String
   type                  String
@@ -60,12 +59,24 @@ model Club {
   passport           Float     @default(0)  
   jackpot            Float     @default(0)  
   dealer             Float     @default(0)  
+  primary_color      String    @default("")  
+  font_color         String    @default("")  
+  background_color   String    @default("")  
+  background_image   String    @default("")  
+  logo_tournament    Boolean   @default(false)  
+  border_tournament  Boolean   @default(true)  
   access_cash        Boolean   @default(true)
   access_tournament  Boolean   @default(true)
   access_stock       Boolean   @default(true)
   access_order       Boolean   @default(true)
   access_report      Boolean   @default(true)
   access_users       Boolean   @default(true)
+  access_advertising Boolean   @default(true)
+  access_custom      Boolean   @default(true)
+  plan_name          String    @default("Premium")
+  recurrence         String    @default("Mensal")
+  expiration_plan    DateTime  @default(now())
+  value_plan         Float     @default(799.9)
   create_at          DateTime? @default(now())
   update_at          DateTime? @default(now())
   users              User[]
@@ -85,6 +96,7 @@ model Club {
   banks              Bank[]
   payables           Payable[]
   financial_boxs     FinancialBox[]
+  advertisings       Advertising[]
 
   @@map("clubs")
 }
@@ -301,7 +313,7 @@ model Tournament {
   blinds                        String
   status                        String    @default("criado")
   type                          String    @default("single")
-  tournament_final              String?    
+  classified_tournament_id      String?    
   timechip                      Int
   chairs                        Int
   total_tokens                  Int
@@ -413,6 +425,7 @@ model ClientPurchase {
   value                 Float    
   amount                Int           
   identifier            String?             @default("")         
+  token                 Int                 @default(0)
   total_value           Float           
   purchase_id           String            
   client_id             String
@@ -430,6 +443,8 @@ model ClientTournament {
   date_out           DateTime?   @default(now())
   award              Float       @default(0)
   timechip           Int         @default(0)
+  tokens_classified  Int?        @default(0)
+  is_classified      Boolean     @default(false)
   client_id          String
   chair_tournament   String?     @default("")
   exit               Boolean     @default(false)
@@ -522,6 +537,17 @@ model TournamentRanking {
   tournament_rules      TournamentRankingRule[]
 
   @@map("tournament_ranking")
+}
+
+model Advertising {
+  id            String               @id @default(uuid())
+  club_id       String
+  file          String
+  order         Int    
+  repetitions   Int            
+  club          Club                  @relation(fields: [club_id], references: [id], onDelete: Cascade)
+
+  @@map("advertisings")
 }
 
 model TournamentRankingRule {

@@ -45,7 +45,7 @@ class CreateTournamentService {
       !chairs ||
       !intervals ||
       !nivel_max_in ||
-      !percentage_players_award ||
+      (type !== "classificatorio" && !percentage_players_award) ||
       !club_id
     ) {
       throw new Error("Preencha os campos obrigatórios");
@@ -74,7 +74,7 @@ class CreateTournamentService {
           if (!ranking) {
             throw new Error(`Ranking vinculado não encontrado ou encerrado`);
           }
-        })
+        }),
       );
     }
 
@@ -161,7 +161,7 @@ class CreateTournamentService {
             },
           });
         }
-      })
+      }),
     );
 
     Promise.all(
@@ -186,7 +186,7 @@ class CreateTournamentService {
             },
           });
         });
-      })
+      }),
     );
 
     return tournament;

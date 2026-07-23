@@ -1,21 +1,21 @@
-import { Request, Response } from 'express';
-import { DeleteClubService } from '../../services/Club/DeleteClubService';
+import { Request, Response } from "express";
+import { DeleteClubService } from "../../services/Club/DeleteClubService";
 
 class DeleteClubController {
-    async handle(req: Request, res: Response) {
+  async handle(req: Request, res: Response) {
+    const { club_id } = req.params;
 
-        const { club_id } = req.params
+    const user_id = req.user_id;
 
-        let user_id = req.user_id
+    const deleteClubService = new DeleteClubService();
 
-        const deleteClubService = new DeleteClubService
+    const club = await deleteClubService.execute({
+      user_id,
+      club_id,
+    });
 
-        const club = await deleteClubService.execute({
-            user_id, club_id
-        })
-
-        return res.json(club)
-    }
+    return res.json(club);
+  }
 }
 
-export { DeleteClubController }
+export { DeleteClubController };

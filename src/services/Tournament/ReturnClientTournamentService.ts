@@ -26,6 +26,10 @@ class ReturnClientTournamentService {
       throw new Error("Torneio não foi encontrado");
     }
 
+    if (tournamentGet.status == "encerrado") {
+      throw new Error("Torneio já foi encerrado");
+    }
+
     const chairClient = await prismaClient.clientTournament.findFirst({
       where: {
         client_id: client_id,
