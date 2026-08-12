@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
-import { CreateTransactionService } from "../../services/Transaction/CreateTransactionService";
-import { VerifyCreditTransactionService } from "../../services/Transaction/VerifyCreditTransactionService";
-import { PaymentReceivesService } from "../../services/Transaction/PaymentReceivesService";
+import { BuyCashService } from "../../services/Cash/BuyCashService";
 
 class BuyCashController {
   async handle(req: Request, res: Response) {
@@ -17,66 +15,24 @@ class BuyCashController {
     let club_id = req.club_id;
     let user_id = req.user_id;
 
-    let valueCredit =
-      methods_transaction.filter((item) => item["id"] == "Crédito").length != 0
-        ? methods_transaction.filter((item) => item["id"] == "Crédito")[0].value
-        : 0;
+    const buyCashService = new BuyCashService();
 
-    if (valueCredit) {
-      const verifyCreditTransactionService =
-        new VerifyCreditTransactionService();
-
-      await verifyCreditTransactionService.execute({
+    try {
+      const transaction = await buyCashService.execute({
+        value: value ? parseFloat(value) : 0,
+        sector_id,
+        methods_transaction,
         client_id,
+        date_payment,
+        observation,
         club_id,
-        value: valueCredit,
-        club: false,
-      });
-    }
-
-    let valueReceive =
-      methods_transaction.filter((item) => item["id"] == "Saldo").length != 0
-        ? methods_transaction.filter((item) => item["id"] == "Saldo")[0].value
-        : 0;
-
-    const paymentReceivesService = new PaymentReceivesService();
-
-    if (valueReceive) {
-      await paymentReceivesService.execute({
-        value: valueReceive,
-        client_id,
-        club_id,
-        confirm: false,
         user_id,
       });
+
+      return res.json(transaction);
+    } catch (error: any) {
+      return res.status(400).json({ message: error.message });
     }
-
-    const createTransactionService = new CreateTransactionService();
-
-    const transaction = await createTransactionService.execute({
-      paid: valueReceive == value ? true : valueCredit ? false : true,
-      value,
-      type: "clube",
-      methods_transaction,
-      items_transaction: [
-        {
-          name: "cash",
-          amount: 1,
-          value: value,
-        },
-      ],
-      client_id,
-      sector_id,
-      club_id,
-      date_payment,
-      observation,
-      operation: "entrada",
-      valueReceive,
-      valueDebit: 0,
-      user_id,
-    });
-
-    return res.json(transaction);
   }
 }
 

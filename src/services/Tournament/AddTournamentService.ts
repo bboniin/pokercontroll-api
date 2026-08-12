@@ -15,15 +15,16 @@ class AddTournamentService {
     tournament_id,
     tokenTimechip,
     verify,
-  }: TournamentRequest) {
+  }: TournamentRequest, tx?: any) {
+    const prisma = tx || prismaClient;
     if (!client_id || !tournament_id) {
       throw new Error(
-        "Id do cliente, do torneio e posição na mesa são obrigatórios"
+        "Id do cliente, do torneio e posição na mesa são obrigatórios",
       );
     }
 
     if (chair) {
-      const chairClient = await prismaClient.clientTournament.findFirst({
+      const chairClient = await prisma.clientTournament.findFirst({
         where: {
           tournament_id: tournament_id,
           chair_tournament: "T" + chair,
@@ -36,7 +37,7 @@ class AddTournamentService {
       }
     }
 
-    const clientTournamentGet = await prismaClient.clientTournament.findFirst({
+    const clientTournamentGet = await prisma.clientTournament.findFirst({
       where: {
         client_id: client_id,
         tournament_id: tournament_id,
@@ -48,14 +49,13 @@ class AddTournamentService {
         if (verify) {
           return true;
         } else {
-          const client = await prismaClient.clientTournament.update({
+          const client = await prisma.clientTournament.update({
             where: {
               id: clientTournamentGet.id,
             },
             data: {
               client_id: client_id,
               tournament_id: tournament_id,
-              date_in: new Date(),
               award: 0,
               chair_tournament: chair ? "T" + chair : "",
               timechip: tokenTimechip,
@@ -72,12 +72,11 @@ class AddTournamentService {
       if (verify) {
         return true;
       } else {
-        const client = await prismaClient.clientTournament.create({
+        const client = await prisma.clientTournament.create({
           data: {
             client_id: client_id,
             tournament_id: tournament_id,
             timechip: tokenTimechip || 0,
-            date_in: new Date(),
             award: 0,
             chair_tournament: chair ? "T" + chair : "",
           },

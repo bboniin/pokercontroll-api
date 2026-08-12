@@ -3,14 +3,19 @@ import prismaClient from "../../prisma";
 interface ClientRequest {
   club_id: string;
   tournament_id: string;
+  cash_id: string;
 }
 
 class ListClientsChairService {
-  async execute({ club_id, tournament_id }: ClientRequest) {
+  async execute({ club_id, cash_id, tournament_id }: ClientRequest) {
     let filter = {
       club_id: club_id,
       visible: true,
     };
+
+    if (!tournament_id && !cash_id) {
+      throw new Error("Envie o torneio ou a sessão cash");
+    }
 
     if (tournament_id) {
       filter["OR"] = [
@@ -31,7 +36,23 @@ class ListClientsChairService {
         },
       ];
     } else {
-      filter["chair_cash"] = "";
+      filter["OR"] = [
+        {
+          client_cashs: {
+            none: {
+              cash_id: cash_id,
+            },
+          },
+        },
+        {
+          client_cashs: {
+            some: {
+              cash_id: cash_id,
+              exit: true,
+            },
+          },
+        },
+      ];
     }
 
     const clients = await prismaClient.client.findMany({
@@ -45,6 +66,7 @@ class ListClientsChairService {
             purchases: true,
           },
         },
+        client_cashs: true,
       },
     });
 

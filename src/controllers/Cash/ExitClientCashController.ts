@@ -78,6 +78,7 @@ class ExitClientCashController {
     await exitClientCashService.execute({
       client_id,
       club_id,
+      cash_id: sector_id,
     });
 
     return res.json(transaction);

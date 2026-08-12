@@ -19,6 +19,7 @@ class CreateTournamentController {
       vacancys,
       type,
       blinds,
+      target_tournament_id,
     } = req.body;
 
     let club_id = req.club_id;
@@ -60,6 +61,7 @@ class CreateTournamentController {
       rankings,
       type,
       blinds,
+      target_tournament_id,
     });
 
     return res.json(tournament);

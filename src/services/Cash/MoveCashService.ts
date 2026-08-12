@@ -1,52 +1,57 @@
-import prismaClient from '../../prisma'
+import prismaClient from "../../prisma";
 
 interface CashRequest {
-    id: string;
-    chair: string;
-    chair_initial: string;
-    club_id: string;
+  id: string;
+  chair: string;
+  cash_id: string;
+  club_id: string;
 }
 
 class MoveCashService {
-    async execute({ id, chair, chair_initial, club_id }: CashRequest) {
-
-        if (!id || !chair) {
-            throw new Error("Id do cliente e posição da mesa é obrigatório")
-        }
-
-        const chairClient = await prismaClient.client.findFirst({
-            where: {
-                club_id: club_id,
-                chair_cash: "C"+chair
-            }
-        })
-
-        if (chairClient && !chair_initial) {
-            throw new Error("Posição já está sendo ocupada")
-        }
-
-        if (chairClient && chair_initial) {
-            await prismaClient.client.update({
-                where: {
-                    id: chairClient.id,
-                },
-                data: {
-                    chair_cash: "C"+chair_initial,
-                }
-            })
-        }
-
-        const client = await prismaClient.client.update({
-            where: {
-                id: id,
-            },
-            data: {
-                chair_cash: "C"+chair,
-            }
-        })
-
-        return (client)
+  async execute({ id, chair, cash_id }: CashRequest) {
+    if (!id || !chair) {
+      throw new Error("Id do cliente e posição da mesa é obrigatório");
     }
+
+    const getChairCash = await prismaClient.clientCash.findFirst({
+      where: {
+        cash_id: cash_id,
+        chair_cash: chair,
+      },
+    });
+
+    if (getChairCash) {
+      throw new Error("Posição já está sendo ocupada");
+    }
+
+    const getClientCash = await prismaClient.clientCash.findFirst({
+      where: {
+        cash_id: cash_id,
+        client_id: id,
+      },
+    });
+
+    if (getClientCash) {
+      const client = await prismaClient.clientCash.update({
+        where: {
+          id: getClientCash.id,
+        },
+        data: {
+          chair_cash: "C" + chair,
+        },
+      });
+      return client;
+    } else {
+      const client = await prismaClient.clientCash.create({
+        data: {
+          chair_cash: "C" + chair,
+          cash_id: cash_id,
+          client_id: id,
+        },
+      });
+      return client;
+    }
+  }
 }
 
-export { MoveCashService }
+export { MoveCashService };

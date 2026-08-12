@@ -9,15 +9,16 @@ interface TransactionRequest {
 }
 
 class VerifyCreditTransactionService {
-  async execute({ value, club_id, client_id, club }: TransactionRequest) {
-    const client = await prismaClient.client.findFirst({
+  async execute({ value, club_id, client_id, club }: TransactionRequest, tx?: any) {
+    const prisma = tx || prismaClient;
+    const client = await prisma.client.findFirst({
       where: {
         id: client_id,
         club_id: club_id,
       },
     });
     if (club) {
-      await prismaClient.client.update({
+      await prisma.client.update({
         where: {
           id: client_id,
         },
@@ -29,7 +30,7 @@ class VerifyCreditTransactionService {
       if (client.debt + value > client.credit) {
         throw new Error("Crédito insuficiente para essa transação");
       } else {
-        await prismaClient.client.update({
+        await prisma.client.update({
           where: {
             id: client_id,
           },

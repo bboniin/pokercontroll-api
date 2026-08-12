@@ -7,14 +7,15 @@ interface TournamentRequest {
 }
 
 class BuyTournamentService {
-  async execute({ totalToken, totalValue, tournament_id }: TournamentRequest) {
-    const tournamentGet = await prismaClient.tournament.findFirst({
+  async execute({ totalToken, totalValue, tournament_id }: TournamentRequest, tx?: any) {
+    const prisma = tx || prismaClient;
+    const tournamentGet = await prisma.tournament.findFirst({
       where: {
         id: tournament_id,
       },
     });
 
-    const tournament = await prismaClient.tournament.update({
+    const tournament = await prisma.tournament.update({
       where: {
         id: tournamentGet["id"],
       },

@@ -124,7 +124,6 @@ class FinishTournamentService {
                   tokens_classified: item.tokens,
                   exit: false,
                   is_classified: true,
-                  date_in: new Date(),
                 },
               });
               totalTokensClassified += item.tokens;

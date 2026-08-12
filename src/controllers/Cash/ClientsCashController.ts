@@ -4,12 +4,12 @@ import { ClientsCashService } from "../../services/Cash/ClientsCashService";
 class ClientsCashController {
   async handle(req: Request, res: Response) {
     let club_id = req.club_id;
-    const { cash_id } = req.query;
+    const { cash_id } = req.params;
     const clientsCashService = new ClientsCashService();
 
     const clients = await clientsCashService.execute({
       club_id,
-      cash_id: String(cash_id || ""),
+      cash_id: cash_id,
     });
 
     clients.map((item) => {

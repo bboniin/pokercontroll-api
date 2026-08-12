@@ -15,13 +15,14 @@ class PaymentReceivesService {
     value,
     confirm,
     user_id,
-  }: TransactionRequest) {
+  }: TransactionRequest, tx?: any) {
+    const prisma = tx || prismaClient;
     const valueTotal = value;
 
     if (!club_id || !client_id || !value) {
       throw new Error("id cliente, clube e valor a ser pago são obrigatórios");
     }
-    const client = await prismaClient.client.findFirst({
+    const client = await prisma.client.findFirst({
       where: {
         id: client_id,
         club_id: club_id,
@@ -38,7 +39,7 @@ class PaymentReceivesService {
       );
     }
 
-    const transactions = await prismaClient.transaction.findMany({
+    const transactions = await prisma.transaction.findMany({
       where: {
         client_id: client_id,
         club_id: club_id,
@@ -76,7 +77,7 @@ class PaymentReceivesService {
         if (valueTransaction[index]) {
           let valuePaid = item.value - item.value_paid;
           if (valuePaid <= valueTransaction[index]) {
-            await prismaClient.transaction.update({
+            await prisma.transaction.update({
               where: {
                 id: item.id,
               },
@@ -85,7 +86,7 @@ class PaymentReceivesService {
                 value_paid: item.value,
               },
             });
-            await prismaClient.methodsTransaction.create({
+            await prisma.methodsTransaction.create({
               data: {
                 name: "Saldo",
                 percentage: 0,
@@ -95,7 +96,7 @@ class PaymentReceivesService {
               },
             });
           } else {
-            await prismaClient.transaction.update({
+            await prisma.transaction.update({
               where: {
                 id: item.id,
               },
@@ -103,7 +104,7 @@ class PaymentReceivesService {
                 value_paid: item.value_paid + valueTransaction[index],
               },
             });
-            await prismaClient.methodsTransaction.create({
+            await prisma.methodsTransaction.create({
               data: {
                 name: "Saldo",
                 percentage: 0,
@@ -117,7 +118,7 @@ class PaymentReceivesService {
       })
     );
 
-    await prismaClient.client.update({
+    await prisma.client.update({
       where: {
         id: client.id,
       },

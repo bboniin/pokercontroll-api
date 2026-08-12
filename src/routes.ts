@@ -12,6 +12,7 @@ import { ListTransactionsController } from "./controllers/Transaction/ListTransa
 import { ConfirmedTransactionController } from "./controllers/Transaction/ConfirmedTransactionController";
 import { CreateTransactionController } from "./controllers/Transaction/CreateTransactionController";
 import { EditTransactionController } from "./controllers/Transaction/EditTransactionController";
+import { DeleteTransactionController } from "./controllers/Transaction/DeleteTransactionController";
 
 import { ListClientsController } from "./controllers/Client/ListClientsController";
 import { ListClientsChairController } from "./controllers/Client/ListClientsChairController";
@@ -22,7 +23,6 @@ import { GetClientController } from "./controllers/Client/GetClientController";
 
 import { ClientsCashController } from "./controllers/Cash/ClientsCashController";
 import { MoveCashController } from "./controllers/Cash/MoveCashController";
-import { ClearCashController } from "./controllers/Cash/ClearCashController";
 import { ExitClientCashController } from "./controllers/Cash/ExitClientCashController";
 import { BuyCashController } from "./controllers/Cash/BuyCashController";
 import { RewardCashController } from "./controllers/Cash/RewardCashController";
@@ -121,6 +121,8 @@ import { GetFinancialBoxClubController } from "./controllers/FinancialBox/GetFin
 import { ListFinancialBoxsClubController } from "./controllers/FinancialBox/ListFinancialBoxsClubController";
 import { CreateRakeController } from "./controllers/Cash/CreateRakeController";
 import { EditRakeController } from "./controllers/Cash/EditRakeController";
+import { CreateCaixinhaController } from "./controllers/Cash/CreateCaixinhaController";
+import { EditCaixinhaController } from "./controllers/Cash/EditCaixinhaController";
 import { EditBriefcaseController } from "./controllers/Cash/EditBriefcaseController";
 import { ClientsExitTournamentController } from "./controllers/Tournament/ClientsExitTournamentController";
 import { ReturnClientTournamentController } from "./controllers/Tournament/ReturnClientTournamentController";
@@ -131,6 +133,12 @@ import { ListAdvertisingsController } from "./controllers/Club/ListAdvertisingsC
 import { EditClubController } from "./controllers/Club/EditClubController";
 import { GetClubController } from "./controllers/Club/GetClubController";
 import { EditPurchaseTournamentController } from "./controllers/Tournament/EditPurchaseTournamentController";
+import { CreateChipController } from "./controllers/Chip/CreateChipController";
+import { EditChipController } from "./controllers/Chip/EditChipController";
+import { ListChipsController } from "./controllers/Chip/ListChipsController";
+import { DeleteChipController } from "./controllers/Chip/DeleteChipController";
+import { CreateChipAuditController } from "./controllers/Chip/CreateChipAuditController";
+import { ListChipsAuditController } from "./controllers/Chip/ListChipsAuditController";
 
 const upload = multer(uploadConfig);
 
@@ -155,6 +163,7 @@ router.post("/transaction", new CreateTransactionController().handle);
 router.post("/transaction-club", new CreateTransactionClubeController().handle);
 router.post("/transfer-club", new TransferClubeController().handle);
 router.put("/transaction/:id", new EditTransactionController().handle);
+router.delete("/transaction/:id", new DeleteTransactionController().handle);
 
 router.get("/clients", new ListClientsController().handle);
 router.get("/clients-chair", new ListClientsChairController().handle);
@@ -171,7 +180,7 @@ router.put(
 router.get("/client/:client_id", new GetClientController().handle);
 router.delete("/client/:client_id", new DeleteClientController().handle);
 
-router.get("/clients-cash", new ClientsCashController().handle);
+router.get("/clients-cash/:cash_id", new ClientsCashController().handle);
 router.post("/move-cash", new MoveCashController().handle);
 router.post("/add-cash", new AddCashController().handle);
 router.post("/buy-cash", new BuyCashController().handle);
@@ -184,8 +193,6 @@ router.put(
   new EditPurchaseTournamentController().handle,
 );
 router.post("/reward-cash", new RewardCashController().handle);
-router.get("/clear-cash", new ClearCashController().handle);
-router.get("/cashs", new ListCashsController().handle);
 router.post("/exit-cash/:client_id", new ExitClientCashController().handle);
 
 router.get(
@@ -314,9 +321,12 @@ router.put("/command/:command_id", new ClosedCommandController().handle);
 router.post("/cash", new CreateCashController().handle);
 router.put("/cash/:cash_id", new EndCashController().handle);
 router.put("/briefcase/:id", new EditBriefcaseController().handle);
-router.get("/cash", new GetCashController().handle);
+router.get("/cash/:cash_id", new GetCashController().handle);
+router.get("/cash", new ListCashsController().handle);
 router.post("/rake/:id", new CreateRakeController().handle);
 router.put("/rake/:id", new EditRakeController().handle);
+router.post("/caixinha/:id", new CreateCaixinhaController().handle);
+router.put("/caixinha/:id", new EditCaixinhaController().handle);
 
 router.post("/method", new CreateMethodController().handle);
 router.put("/method/:method_id", new EditMethodController().handle);
@@ -327,6 +337,13 @@ router.post("/category", new CreateCategoryController().handle);
 router.put("/category/:category_id", new EditCategoryController().handle);
 router.get("/categories", new ListCategoriesController().handle);
 router.delete("/category/:category_id", new DeleteCategoryController().handle);
+
+router.post("/chip", new CreateChipController().handle);
+router.put("/chip/:chip_id", new EditChipController().handle);
+router.get("/chips", new ListChipsController().handle);
+router.delete("/chip/:chip_id", new DeleteChipController().handle);
+router.post("/chips-audit/:cash_id", new CreateChipAuditController().handle);
+router.get("/chips-audits/:cash_id", new ListChipsAuditController().handle);
 
 router.post("/ranking", new CreateRankingController().handle);
 router.put("/ranking/:ranking_id", new EditRankingController().handle);

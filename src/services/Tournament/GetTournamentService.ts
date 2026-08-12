@@ -24,7 +24,11 @@ class GetTournamentService {
           },
           include: {
             client: true,
-            purchases: true,
+            purchases: {
+              include: {
+                buyer: true,
+              },
+            },
           },
         },
         purchases: true,
@@ -38,8 +42,15 @@ class GetTournamentService {
                   },
                 },
               },
+              include: {
+                buyer: true,
+              },
             }
-          : true,
+          : {
+              include: {
+                buyer: true,
+              },
+            },
         vacancys: {
           include: {
             client: true,
@@ -52,6 +63,21 @@ class GetTournamentService {
     if (!tournament) {
       throw new Error("Torneio não encontrado");
     }
+
+    const transactions = await prismaClient.transaction.findMany({
+      where: {
+        sector_id: tournament.id,
+      },
+      include: {
+        client: true,
+        items_transaction: true,
+      },
+      orderBy: {
+        create_at: "desc",
+      },
+    });
+
+    tournament["transactions"] = transactions;
 
     let niveis = tournament.blinds.split("-");
     let newNiveis = [];
@@ -69,6 +95,15 @@ class GetTournamentService {
     );
 
     tournament["niveis"] = newNiveis;
+
+    if (tournament.classified_tournament_id) {
+      const targetTournament = await prismaClient.tournament.findUnique({
+        where: {
+          id: tournament.classified_tournament_id,
+        },
+      });
+      tournament["target_tournament"] = targetTournament;
+    }
 
     return tournament;
   }

@@ -14,6 +14,9 @@ class GetTransactionService {
       where: {
         id: id,
       },
+      include: {
+        methods_transaction: true,
+      },
     });
 
     if (!transaction) {

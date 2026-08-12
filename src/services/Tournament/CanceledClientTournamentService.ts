@@ -59,9 +59,29 @@ class CanceledClientTournamentService {
       throw new Error("Cliente não foi encontrado");
     }
 
+    const beneficiaryName = chairClient.client ? chairClient.client.name : "";
+
     const transactionsTournament = await prismaClient.transaction.findMany({
       where: {
-        client_id: client_id,
+        OR: [
+          {
+            client_id: client_id,
+            NOT: {
+              observation: {
+                contains: "Pago para ",
+              },
+            },
+          },
+          ...(beneficiaryName
+            ? [
+                {
+                  observation: {
+                    contains: `Pago para ${beneficiaryName}`,
+                  },
+                },
+              ]
+            : []),
+        ],
         sector_id: tournamentGet.id,
         operation: "entrada",
       },
@@ -117,7 +137,9 @@ class CanceledClientTournamentService {
           let valuePaid = 0;
           let amount = 0;
           let product_id = "";
-          valueCredit += item.value - item.value_paid;
+          let transValueCredit = item.value - item.value_paid;
+          let transValueBalance = 0;
+          valueCredit += transValueCredit;
           item.items_transaction.map((data) => {
             product_id = data.product_id;
             if (data.type == "entrie" || data.type == "purchase") {
@@ -140,6 +162,7 @@ class CanceledClientTournamentService {
 
             if (data.name == "Saldo") {
               valueBalance += data.value;
+              transValueBalance += data.value;
               valuePaid += data.value;
             } else {
               valuePaid += data.value * ((100 - data.percentage) / 100);
@@ -168,6 +191,49 @@ class CanceledClientTournamentService {
               id: item.id,
             },
           });
+
+          // Estorna os valores (saldo e crédito) no perfil do cliente que realizou o pagamento
+          if ((transValueBalance > 0 || transValueCredit > 0) && item.client_id) {
+            const transPayer = await prismaClient.client.findFirst({
+              where: { id: item.client_id },
+            });
+            if (transPayer) {
+              await prismaClient.client.update({
+                where: { id: transPayer.id },
+                data: {
+                  receive: parseFloat((transPayer.receive + transValueBalance).toFixed(2)),
+                  debt: parseFloat((transPayer.debt - transValueCredit).toFixed(2)),
+                },
+              });
+            }
+          }
+
+          // Se houve uso de Saldo, gera o estorno/reembolso em uma transação de saída para o investidor/pagador
+          if (transValueBalance > 0 && item.client_id) {
+            const transactionOut = await prismaClient.transaction.create({
+              data: {
+                type: "clube",
+                value: transValueBalance,
+                club_id: tournamentGet.club.id,
+                client_id: item.client_id,
+                operation: "saida",
+                date_payment: addMonths(new Date(), 1),
+                observation: `Estorno de compra de torneio - Beneficiário: ${chairClient.client.name}`,
+                paid: false,
+                value_paid: 0,
+                user_id: user_id,
+              },
+            });
+
+            await prismaClient.itemsTransaction.create({
+              data: {
+                name: "Estorno de Saldo",
+                value: transValueBalance,
+                amount: 1,
+                transaction_id: transactionOut.id,
+              },
+            });
+          }
 
           const purchase = await prismaClient.clientPurchase.findFirst({
             where: {
@@ -213,43 +279,7 @@ class CanceledClientTournamentService {
       })
     );
 
-    await prismaClient.client.update({
-      where: {
-        id: client_id,
-      },
-      data: {
-        receive: parseFloat(
-          (chairClient.client.receive + valueBalance).toFixed(2)
-        ),
-        debt: parseFloat((chairClient.client.debt - valueCredit).toFixed(2)),
-      },
-    });
 
-    if (valueBalance) {
-      const transaction = await prismaClient.transaction.create({
-        data: {
-          type: "clube",
-          value: valueBalance,
-          club_id: tournamentGet.club.id,
-          client_id: client_id,
-          operation: "saida",
-          date_payment: addMonths(new Date(), 1),
-          observation: "",
-          paid: false,
-          value_paid: 0,
-          user_id: user_id,
-        },
-      });
-
-      await prismaClient.itemsTransaction.create({
-        data: {
-          name: "Estorno de Saldo",
-          value: valueBalance,
-          amount: 1,
-          transaction_id: transaction.id,
-        },
-      });
-    }
 
     await prismaClient.club.update({
       where: {

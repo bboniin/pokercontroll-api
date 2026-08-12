@@ -12,16 +12,6 @@ interface CashRequest {
 
 class CreateCashService {
   async execute({ club_id, briefcase, user_id, name, chairs }: CashRequest) {
-    const cashGet = await prismaClient.cash.findFirst({
-      where: {
-        club_id: club_id,
-        closed: false,
-      },
-    });
-    if (cashGet) {
-      throw new Error("Já existe sessão cashgame iniciada");
-    }
-
     if (!briefcase || !name) {
       throw new Error("Preencha o valor da maleta e nome do cashgame");
     }
@@ -47,10 +37,9 @@ class CreateCashService {
           user.name
         } no valor de ${getValue(briefcase)} em ${format(
           new Date(),
-          "dd/MM/yyyy HH:mm"
+          "dd/MM/yyyy HH:mm",
         )}`,
         closed: false,
-        date_in: new Date(),
       },
     });
 

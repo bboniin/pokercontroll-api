@@ -98,6 +98,7 @@ model Club {
   payables           Payable[]
   financial_boxs     FinancialBox[]
   advertisings       Advertising[]
+  chips              Chip[]
 
   @@map("clubs")
 }
@@ -106,7 +107,6 @@ model Client {
   id                 String    @id @default(uuid())
   name               String
   photo              String?   @default("") 
-  chair_cash         String?   @default("")
   phone_number       String?   @default("")
   cpf                String?   @default("")
   address            String?   @default("")
@@ -117,14 +117,17 @@ model Client {
   visible            Boolean   @default(true)
   observation        String?   @default("")
   club               Club      @relation(fields: [club_id], references: [id], onDelete: Cascade)
+  birthday           String?
   create_at          DateTime? @default(now())
   update_at          DateTime? @default(now())
   transactions       Transaction[]
   orders             Order[]
   client_tournaments ClientTournament[]
+  client_cashs       ClientCash[]
   commands           Command[]
   clients_points     ClientPoints[]
   vacancys           Vacancy[]
+  client_purchases_bought ClientPurchase[] @relation("ClientPurchaseBuyer")
 
   @@map("clients")
 }
@@ -178,17 +181,53 @@ model Cash {
   chairs                Int       @default(15) 
   club_id               String
   briefcase             Float     @default(0)
-  historic_briefcase   String?
-  date_in               DateTime? @default(now())
+  historic_briefcase    String?
   date_out              DateTime? @default(now())
   club                  Club      @relation(fields: [club_id], references: [id], onDelete: Cascade)
   create_at             DateTime? @default(now())
   update_at             DateTime? @default(now())
 
   rakes                 Rake[]
+  clients               ClientCash[]
+  boxs                  Box[]
+  chipsAudit            ChipAudit[]
 
   @@map("cashs")
 }
+
+model Chip {
+  id              String          @id @default(uuid())
+  value           Float
+  color           String      
+  club_id         String
+  club            Club            @relation(fields: [club_id], references: [id], onDelete: Cascade)
+  create_at       DateTime?       @default(now())
+
+  @@map("chips")
+}
+model ChipAudit {
+  id                  String     @id @default(uuid())
+  briefcase_value     Float    
+  chips_value         Float    
+  create_at          DateTime   @default(now())
+
+  cash_id             String
+  cash                Cash       @relation(fields: [cash_id], references: [id], onDelete: Cascade)
+
+  @@map("chip_audits")
+}
+model Box {
+  id              String          @id @default(uuid())
+  value           Float
+  historic        String?         
+  cash_id         String
+  observation     String?
+  cash            Cash            @relation(fields: [cash_id], references: [id], onDelete: Cascade)
+  create_at       DateTime?       @default(now())
+
+  @@map("boxs")
+}
+
 
 
 model Rake {
@@ -196,6 +235,7 @@ model Rake {
   value           Float
   historic        String?         
   cash_id         String
+  observation     String?
   cash            Cash            @relation(fields: [cash_id], references: [id], onDelete: Cascade)
   create_at       DateTime?       @default(now())
 
@@ -434,13 +474,29 @@ model ClientPurchase {
   tournament_id         String
   tournament            Tournament          @relation(fields: [tournament_id], references: [id], onDelete: Cascade)            
   create_at             DateTime            @default(now())
+  buyer_id              String?
+  buyer                 Client?             @relation("ClientPurchaseBuyer", fields: [buyer_id], references: [id], onDelete: SetNull)
 
   @@map("client_purchases")
 }
 
+model ClientCash {
+  id                 String      @id @default(uuid())
+  date_out           DateTime?   @default(now())
+  chair_cash         String?     @default("")
+  exit               Boolean     @default(false)
+  client_id          String
+  client             Client      @relation(fields: [client_id], references: [id], onDelete: Cascade)
+  cash_id            String
+  cash               Cash        @relation(fields: [cash_id], references: [id], onDelete: Cascade)
+  create_at          DateTime?   @default(now())
+  update_at          DateTime?   @default(now())
+  
+  @@map("client_cashs")
+}
+
 model ClientTournament {
   id                 String      @id @default(uuid())
-  date_in            DateTime?   @default(now())
   date_out           DateTime?   @default(now())
   award              Float       @default(0)
   timechip           Int         @default(0)

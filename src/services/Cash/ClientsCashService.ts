@@ -6,27 +6,28 @@ interface ClientRequest {
 }
 
 class ClientsCashService {
-  async execute({ club_id, cash_id }: ClientRequest) {
-    const clients = await prismaClient.client.findMany({
+  async execute({ cash_id }: ClientRequest) {
+    const clients = await prismaClient.clientCash.findMany({
       where: {
-        club_id: club_id,
-        chair_cash: {
-          contains: "C",
-        },
+        cash_id: cash_id,
       },
       orderBy: {
-        create_at: "asc",
+        exit: "asc",
       },
       include: {
-        transactions: {
-          where: {
-            sector_id: cash_id,
-          },
-          orderBy: {
-            create_at: "asc",
-          },
+        client: {
           include: {
-            methods_transaction: true,
+            transactions: {
+              where: {
+                sector_id: cash_id,
+              },
+              orderBy: {
+                create_at: "asc",
+              },
+              include: {
+                methods_transaction: true,
+              },
+            },
           },
         },
       },

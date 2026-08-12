@@ -12,9 +12,32 @@ class GetTransactionsTournamentService {
       throw new Error("Envie o id do cliente, torneio e do clube");
     }
 
+    const client = await prismaClient.client.findUnique({
+      where: { id: client_id },
+    });
+    const clientName = client ? client.name : "";
+
     const transactions = await prismaClient.transaction.findMany({
       where: {
-        client_id: client_id,
+        OR: [
+          {
+            client_id: client_id,
+            NOT: {
+              observation: {
+                contains: "Pago para ",
+              },
+            },
+          },
+          ...(clientName
+            ? [
+                {
+                  observation: {
+                    contains: `Pago para ${clientName}`,
+                  },
+                },
+              ]
+            : []),
+        ],
         club_id: club_id,
         sector_id: id,
       },

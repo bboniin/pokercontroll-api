@@ -84,7 +84,7 @@ class AddCashController {
       chair,
       id,
       club_id,
-      chair_initial: "",
+      cash_id: sector_id,
     });
 
     if (client["photo"]) {

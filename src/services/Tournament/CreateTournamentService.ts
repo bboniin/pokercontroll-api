@@ -21,6 +21,7 @@ interface TournamentRequest {
     tournament_id: string;
     id: string;
   }>;
+  target_tournament_id?: string;
 }
 
 class CreateTournamentService {
@@ -39,6 +40,7 @@ class CreateTournamentService {
     vacancys,
     blinds,
     type,
+    target_tournament_id,
   }: TournamentRequest) {
     if (
       !name ||
@@ -93,6 +95,7 @@ class CreateTournamentService {
         totalAward_accumulated: 0,
         blinds: blinds,
         intervals: intervals,
+        classified_tournament_id: target_tournament_id || null,
       },
     });
 
