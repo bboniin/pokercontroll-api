@@ -26,6 +26,11 @@ class ClientsCashService {
               },
               include: {
                 methods_transaction: true,
+                historics_transaction: {
+                  orderBy: {
+                    create_at: "desc",
+                  },
+                },
               },
             },
           },

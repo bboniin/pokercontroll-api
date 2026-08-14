@@ -15,6 +15,7 @@ class GetCashService {
       include: {
         rakes: true,
         boxs: true,
+        jackpots: true,
       },
     });
 
@@ -29,6 +30,11 @@ class GetCashService {
       include: {
         client: true,
         methods_transaction: true,
+        historics_transaction: {
+          orderBy: {
+            create_at: "desc",
+          },
+        },
       },
     });
 
@@ -46,12 +52,14 @@ class GetCashService {
 
     const rake = cash.rakes.reduce((acc, item) => acc + item.value, 0);
     const caixinha = cash.boxs.reduce((acc, item) => acc + item.value, 0);
+    const jackpot = cash.jackpots.reduce((acc, item) => acc + item.value, 0);
 
     cash["transactions"] = transactions;
     cash["total_entrie"] = total_entrie;
     cash["total_out"] = total_out;
     cash["rake"] = rake;
     cash["caixinha"] = caixinha;
+    cash["jackpot"] = jackpot;
 
     return cash;
   }

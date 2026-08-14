@@ -124,6 +124,8 @@ import { EditRakeController } from "./controllers/Cash/EditRakeController";
 import { CreateCaixinhaController } from "./controllers/Cash/CreateCaixinhaController";
 import { EditCaixinhaController } from "./controllers/Cash/EditCaixinhaController";
 import { EditBriefcaseController } from "./controllers/Cash/EditBriefcaseController";
+import { CreateJackpotCashController } from "./controllers/Cash/CreateJackpotCashController";
+import { EditJackpotCashController } from "./controllers/Cash/EditJackpotCashController";
 import { ClientsExitTournamentController } from "./controllers/Tournament/ClientsExitTournamentController";
 import { ReturnClientTournamentController } from "./controllers/Tournament/ReturnClientTournamentController";
 import { OrderAdvertisingsController } from "./controllers/Club/OrderAdvertisingsController";
@@ -132,6 +134,7 @@ import { DeleteAdvertisingController } from "./controllers/Club/DeleteAdvertisin
 import { ListAdvertisingsController } from "./controllers/Club/ListAdvertisingsController";
 import { EditClubController } from "./controllers/Club/EditClubController";
 import { GetClubController } from "./controllers/Club/GetClubController";
+import { GetClubDashboardController } from "./controllers/Club/GetClubDashboardController";
 import { EditPurchaseTournamentController } from "./controllers/Tournament/EditPurchaseTournamentController";
 import { CreateChipController } from "./controllers/Chip/CreateChipController";
 import { EditChipController } from "./controllers/Chip/EditChipController";
@@ -284,6 +287,7 @@ router.get("/products", new ListProductsController().handle);
 router.delete("/product/:product_id", new DeleteProductController().handle);
 
 router.get("/club", new GetClubController().handle);
+router.get("/club/dashboard", new GetClubDashboardController().handle);
 router.put(
   "/club",
   upload.fields([
@@ -327,6 +331,8 @@ router.post("/rake/:id", new CreateRakeController().handle);
 router.put("/rake/:id", new EditRakeController().handle);
 router.post("/caixinha/:id", new CreateCaixinhaController().handle);
 router.put("/caixinha/:id", new EditCaixinhaController().handle);
+router.post("/jackpot/:id", new CreateJackpotCashController().handle);
+router.put("/jackpot/:id", new EditJackpotCashController().handle);
 
 router.post("/method", new CreateMethodController().handle);
 router.put("/method/:method_id", new EditMethodController().handle);

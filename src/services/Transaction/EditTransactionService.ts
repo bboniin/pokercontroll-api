@@ -199,7 +199,48 @@ class EditTransactionService {
         }
       }
 
-      // 6. Atualizar a Transação principal e seus itens
+      // 6. Criar histórico de alterações se aplicável
+      console.log("Valores para comparação:", {
+        dbValue: getTransaction.value,
+        newValue: value,
+        dbObs: getTransaction.observation,
+        newObs: observation,
+        dbDate: getTransaction.date_payment,
+        newDate: date_payment,
+        dbMethods: getTransaction.methods_transaction,
+        newMethods: methods_transaction
+      });
+      let changes: string[] = [];
+      if (Number(getTransaction.value) !== Number(value)) {
+        changes.push(`Valor: R$ ${Number(getTransaction.value).toFixed(2)} -> R$ ${Number(value).toFixed(2)}`);
+      }
+      if ((getTransaction.observation || "") !== (observation || "")) {
+        changes.push(`Obs: "${getTransaction.observation || ""}" -> "${observation || ""}"`);
+      }
+      if (date_payment) {
+        const oldDate = getTransaction.date_payment ? new Date(getTransaction.date_payment).toISOString().split('T')[0] : "-";
+        const newDate = new Date(date_payment).toISOString().split('T')[0];
+        if (oldDate !== newDate) {
+          changes.push(`Data: ${oldDate} -> ${newDate}`);
+        }
+      }
+
+      const oldMethods = getTransaction.methods_transaction?.map((m: any) => `${m.name}: R$ ${Number(m.value).toFixed(2)}`).join(", ") || "";
+      const newMethods = methods_transaction.map((m: any) => `${m.name}: R$ ${Number(m.value).toFixed(2)}`).join(", ") || "";
+      if (oldMethods !== newMethods) {
+        changes.push(`Métodos: [${oldMethods}] -> [${newMethods}]`);
+      }
+
+      if (changes.length > 0) {
+        await tx.historicsTransaction.create({
+          data: {
+            description: changes.join(" | "),
+            transaction_id: id,
+          }
+        });
+      }
+
+      // 7. Atualizar a Transação principal e seus itens
       const valuePaidNew = (methods_transaction.find((m) => m.id === "Crédito")?.value || 0) +
                            (methods_transaction.find((m) => m.id === "Saldo")?.value || 0) +
                            valuePaid;
@@ -224,6 +265,15 @@ class EditTransactionService {
             },
           },
         },
+        include: {
+          methods_transaction: true,
+          items_transaction: true,
+          historics_transaction: {
+            orderBy: {
+              create_at: 'desc'
+            }
+          }
+        }
       });
 
       return updatedTransaction;

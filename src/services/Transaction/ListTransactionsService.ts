@@ -51,6 +51,11 @@ class ListTransactionsService {
             methods_transaction: true,
             items_transaction: true,
             client: true,
+            historics_transaction: {
+              orderBy: {
+                create_at: "desc",
+              },
+            },
           },
         },
       },

@@ -52,6 +52,11 @@ class PaymentComandService {
           include: {
             methods_transaction: true,
             items_transaction: true,
+            historics_transaction: {
+              orderBy: {
+                create_at: "desc",
+              },
+            },
           },
         },
       },

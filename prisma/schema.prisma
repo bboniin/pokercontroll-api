@@ -191,6 +191,7 @@ model Cash {
   clients               ClientCash[]
   boxs                  Box[]
   chipsAudit            ChipAudit[]
+  jackpots              Jackpot[]
 
   @@map("cashs")
 }
@@ -240,6 +241,18 @@ model Rake {
   create_at       DateTime?       @default(now())
 
   @@map("rakes")
+}
+
+model Jackpot {
+  id              String          @id @default(uuid())
+  value           Float
+  historic        String?         
+  cash_id         String
+  observation     String?
+  cash            Cash            @relation(fields: [cash_id], references: [id], onDelete: Cascade)
+  create_at       DateTime?       @default(now())
+
+  @@map("jackpots")
 }
 
 model Method {
