@@ -9,14 +9,14 @@ interface CashRequest {
 
 class MoveCashService {
   async execute({ id, chair, cash_id }: CashRequest) {
-    if (!id || !chair) {
-      throw new Error("Id do cliente e posição da mesa é obrigatório");
+    if (!id || !chair || !cash_id) {
+      throw new Error("Id do cliente, posição da mesa e ID da sessão cash são obrigatórios");
     }
 
     const getChairCash = await prismaClient.clientCash.findFirst({
       where: {
         cash_id: cash_id,
-        chair_cash: chair,
+        chair_cash: "C" + chair,
       },
     });
 
@@ -38,6 +38,8 @@ class MoveCashService {
         },
         data: {
           chair_cash: "C" + chair,
+          exit: false,
+          date_out: null,
         },
       });
       return client;

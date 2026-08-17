@@ -55,7 +55,7 @@ class AddCashController {
 
     const createTransactionService = new CreateTransactionService();
 
-    await createTransactionService.execute({
+    const transaction = await createTransactionService.execute({
       paid: valueReceive == value ? true : valueCredit ? false : true,
       value,
       type: "clube",
@@ -80,20 +80,14 @@ class AddCashController {
 
     const moveCashService = new MoveCashService();
 
-    const client = await moveCashService.execute({
+    await moveCashService.execute({
       chair,
       id,
       club_id,
       cash_id: sector_id,
     });
 
-    if (client["photo"]) {
-      client["photo_url"] =
-        "https://pokercontrol-data.s3.sa-east-1.amazonaws.com/" +
-        client["photo"];
-    }
-
-    return res.json(client);
+    return res.json(transaction);
   }
 }
 

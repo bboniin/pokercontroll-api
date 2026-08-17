@@ -65,7 +65,7 @@ class EditTransactionService {
         (item) =>
           item.id !== "Crédito" &&
           item.id !== "Pag Dívida" &&
-          item.id !== "Saldo"
+          item.id !== "Saldo",
       );
 
       let valuePaid = methodsPay.length
@@ -77,7 +77,8 @@ class EditTransactionService {
       let valueMethods = methodsPay.length
         ? methodsPay
             .map(
-              (method) => method.value * ((100 - (method.percentage || 0)) / 100)
+              (method) =>
+                method.value * ((100 - (method.percentage || 0)) / 100),
             )
             .reduce((total, val) => total + val, 0)
         : 0;
@@ -113,7 +114,9 @@ class EditTransactionService {
             where: { id: item.id },
           });
           if (!method) {
-            throw new Error(`Método de pagamento com ID ${item.id} não encontrado`);
+            throw new Error(
+              `Método de pagamento com ID ${item.id} não encontrado`,
+            );
           }
           let balance =
             operation === "entrada"
@@ -137,7 +140,9 @@ class EditTransactionService {
           throw new Error("Cliente não encontrado");
         }
 
-        const creditMethod = methods_transaction.find((m) => m.id === "Crédito");
+        const creditMethod = methods_transaction.find(
+          (m) => m.id === "Crédito",
+        );
         const saldoMethod = methods_transaction.find((m) => m.id === "Saldo");
 
         let debtDiff = 0;
@@ -183,50 +188,57 @@ class EditTransactionService {
         },
       });
 
-       // 5. Criar os novos métodos associados a essa transação
+      // 5. Criar os novos métodos associados a essa transação
       for (const item of methods_transaction) {
-        if (item.id !== "Crédito" && item.value) {
+        if (item.value) {
           await tx.methodsTransaction.create({
             data: {
               name: item.name,
               percentage: item.percentage || 0,
               value: item.value,
               transaction_id: id,
-              method_id: item.method_id || ((item.id !== "Saldo" && item.id !== "Pag Dívida") ? item.id : ""),
+              method_id:
+                item.method_id ||
+                (item.id !== "Saldo" &&
+                item.id !== "Pag Dívida" &&
+                item.id !== "Crédito"
+                  ? item.id
+                  : ""),
               user_id: user_id || null,
             },
           });
         }
       }
 
-      // 6. Criar histórico de alterações se aplicável
-      console.log("Valores para comparação:", {
-        dbValue: getTransaction.value,
-        newValue: value,
-        dbObs: getTransaction.observation,
-        newObs: observation,
-        dbDate: getTransaction.date_payment,
-        newDate: date_payment,
-        dbMethods: getTransaction.methods_transaction,
-        newMethods: methods_transaction
-      });
       let changes: string[] = [];
       if (Number(getTransaction.value) !== Number(value)) {
-        changes.push(`Valor: R$ ${Number(getTransaction.value).toFixed(2)} -> R$ ${Number(value).toFixed(2)}`);
+        changes.push(
+          `Valor: R$ ${Number(getTransaction.value).toFixed(2)} -> R$ ${Number(value).toFixed(2)}`,
+        );
       }
       if ((getTransaction.observation || "") !== (observation || "")) {
-        changes.push(`Obs: "${getTransaction.observation || ""}" -> "${observation || ""}"`);
+        changes.push(
+          `Obs: "${getTransaction.observation || ""}" -> "${observation || ""}"`,
+        );
       }
       if (date_payment) {
-        const oldDate = getTransaction.date_payment ? new Date(getTransaction.date_payment).toISOString().split('T')[0] : "-";
-        const newDate = new Date(date_payment).toISOString().split('T')[0];
+        const oldDate = getTransaction.date_payment
+          ? new Date(getTransaction.date_payment).toISOString().split("T")[0]
+          : "-";
+        const newDate = new Date(date_payment).toISOString().split("T")[0];
         if (oldDate !== newDate) {
           changes.push(`Data: ${oldDate} -> ${newDate}`);
         }
       }
 
-      const oldMethods = getTransaction.methods_transaction?.map((m: any) => `${m.name}: R$ ${Number(m.value).toFixed(2)}`).join(", ") || "";
-      const newMethods = methods_transaction.map((m: any) => `${m.name}: R$ ${Number(m.value).toFixed(2)}`).join(", ") || "";
+      const oldMethods =
+        getTransaction.methods_transaction
+          ?.map((m: any) => `${m.name}: R$ ${Number(m.value).toFixed(2)}`)
+          .join(", ") || "";
+      const newMethods =
+        methods_transaction
+          .map((m: any) => `${m.name}: R$ ${Number(m.value).toFixed(2)}`)
+          .join(", ") || "";
       if (oldMethods !== newMethods) {
         changes.push(`Métodos: [${oldMethods}] -> [${newMethods}]`);
       }
@@ -236,14 +248,17 @@ class EditTransactionService {
           data: {
             description: changes.join(" | "),
             transaction_id: id,
-          }
+          },
         });
       }
 
       // 7. Atualizar a Transação principal e seus itens
-      const valuePaidNew = (methods_transaction.find((m) => m.id === "Crédito")?.value || 0) +
-                           (methods_transaction.find((m) => m.id === "Saldo")?.value || 0) +
-                           valuePaid;
+      const hasCredit = methods_transaction.some((m) => m.id === "Crédito");
+      const valuePaidNew =
+        valuePaid +
+        (methods_transaction.find((m) => m.id === "Saldo")?.value || 0) +
+        (methods_transaction.find((m) => m.id === "Pag Dívida")?.value || 0);
+      const paidNew = !hasCredit;
 
       const updatedTransaction = await tx.transaction.update({
         where: {
@@ -253,7 +268,10 @@ class EditTransactionService {
           observation: observation,
           value: value,
           value_paid: valuePaidNew,
-          date_payment: date_payment ? new Date(date_payment) : getTransaction.date_payment,
+          paid: paidNew,
+          date_payment: date_payment
+            ? new Date(date_payment)
+            : getTransaction.date_payment,
           items_transaction: {
             updateMany: {
               where: {
@@ -270,10 +288,10 @@ class EditTransactionService {
           items_transaction: true,
           historics_transaction: {
             orderBy: {
-              create_at: 'desc'
-            }
-          }
-        }
+              create_at: "desc",
+            },
+          },
+        },
       });
 
       return updatedTransaction;
@@ -288,7 +306,7 @@ class EditTransactionService {
       (item: any) =>
         item.name !== "Crédito" &&
         item.name !== "Pag Dívida" &&
-        item.name !== "Saldo"
+        item.name !== "Saldo",
     );
 
     let valuePaid = methodsPay.length
@@ -299,9 +317,7 @@ class EditTransactionService {
 
     let valueMethods = methodsPay.length
       ? methodsPay
-          .map(
-            (m: any) => m.value * ((100 - (m.percentage || 0)) / 100)
-          )
+          .map((m: any) => m.value * ((100 - (m.percentage || 0)) / 100))
           .reduce((total: number, val: number) => total + val, 0)
       : 0;
 
@@ -352,8 +368,12 @@ class EditTransactionService {
         where: { id: client_id },
       });
       if (client) {
-        const creditMethod = methods_transaction.find((m: any) => m.name === "Crédito");
-        const saldoMethod = methods_transaction.find((m: any) => m.name === "Saldo");
+        const creditMethod = methods_transaction.find(
+          (m: any) => m.name === "Crédito",
+        );
+        const saldoMethod = methods_transaction.find(
+          (m: any) => m.name === "Saldo",
+        );
 
         let debtDiff = 0;
         let receiveDiff = 0;

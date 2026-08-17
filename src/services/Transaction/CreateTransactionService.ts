@@ -172,8 +172,8 @@ class CreateTransactionService {
 
     await Promise.all(
       methods_transaction.map(async (item) => {
-        if (item["id"] != "Crédito" && item["value"]) {
-          if (item["id"] != "Pag Dívida" && item["id"] != "Saldo") {
+        if (item["value"]) {
+          if (item["id"] != "Pag Dívida" && item["id"] != "Saldo" && item["id"] != "Crédito") {
             const method = await prisma.method.findFirst({
               where: {
                 id: item["id"],
@@ -200,7 +200,7 @@ class CreateTransactionService {
               percentage: item["percentage"],
               value: item["value"],
               transaction_id: transaction.id,
-              method_id: item["method_id"] || item["id"] || "",
+              method_id: item["method_id"] || ((item["id"] != "Saldo" && item["id"] != "Pag Dívida" && item["id"] != "Crédito") ? item["id"] : ""),
               user_id,
             },
           });
