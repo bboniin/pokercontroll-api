@@ -19,6 +19,25 @@ class InitialTournamentService {
       throw new Error("Torneio não encontrado");
     }
 
+    let eventIdToUpdate = tournament.event_id;
+
+    if (tournament.type === "classificatorio" || tournament.type === "final") {
+      const activeEvent = await prismaClient.event.findFirst({
+        where: {
+          club_id,
+          status: "ativo",
+        },
+      });
+
+      if (!activeEvent) {
+        throw new Error(
+          "Torneios do tipo classificatório e final só podem ser iniciados durante um evento ativo. Inicie um evento na Área de Eventos primeiro."
+        );
+      }
+
+      eventIdToUpdate = activeEvent.id;
+    }
+
     let minsTimechip = 0;
     let minsIn = 0;
 
@@ -37,6 +56,7 @@ class InitialTournamentService {
       },
       data: {
         status: "inscricao",
+        event_id: eventIdToUpdate,
         datetime_initial: new Date(),
         datetime_max_in: addMinutes(new Date(), minsIn),
         datetime_max_timechip: addMinutes(new Date(), minsTimechip),

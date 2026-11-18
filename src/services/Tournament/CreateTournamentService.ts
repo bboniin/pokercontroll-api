@@ -80,6 +80,16 @@ class CreateTournamentService {
       );
     }
 
+    // Torneios podem ser criados a qualquer momento.
+    // Se houver um evento ativo, vincula imediatamente ao evento.
+    // Torneios classificatórios e finais só poderão ser iniciados (abertos) durante um evento ativo.
+    const activeEvent = await prismaClient.event.findFirst({
+      where: {
+        club_id,
+        status: "ativo",
+      },
+    });
+
     const tournament = await prismaClient.tournament.create({
       data: {
         name: name,
@@ -96,6 +106,7 @@ class CreateTournamentService {
         blinds: blinds,
         intervals: intervals,
         classified_tournament_id: target_tournament_id || null,
+        event_id: activeEvent ? activeEvent.id : null,
       },
     });
 

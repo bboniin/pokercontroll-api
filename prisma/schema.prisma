@@ -74,6 +74,9 @@ model Club {
   access_users       Boolean   @default(true)
   access_advertising Boolean   @default(true)
   access_custom      Boolean   @default(true)
+  allow_balance_cash Boolean   @default(true)
+  allow_balance_bar  Boolean   @default(true)
+  allow_balance_event Boolean  @default(true)
   plan_name          String    @default("Premium")
   recurrence         String    @default("Mensal")
   expiration_plan    DateTime  @default(now())
@@ -99,6 +102,7 @@ model Club {
   financial_boxs     FinancialBox[]
   advertisings       Advertising[]
   chips              Chip[]
+  events             Event[]
 
   @@map("clubs")
 }
@@ -388,9 +392,11 @@ model Tournament {
   datetime_max_timechip         DateTime? @default(now())
   award                         String?
   club_id                       String
-  club                          Club      @relation(fields: [club_id], references: [id], onDelete: Cascade)
-  create_at                     DateTime? @default(now())
-  update_at                     DateTime? @default(now())
+  club                          Club                @relation(fields: [club_id], references: [id], onDelete: Cascade)
+  event_id                      String?
+  event                         Event?              @relation(fields: [event_id], references: [id], onDelete: SetNull)
+  create_at                     DateTime?           @default(now())
+  update_at                     DateTime?           @default(now())
   
   clients                       ClientTournament[]
   purchases                     Purchase[]
@@ -678,4 +684,17 @@ model Payable {
   update_at             DateTime            @default(now())
 
   @@map("payables")
+}
+
+model Event {
+  id                 String       @id @default(uuid())
+  name               String
+  status             String       @default("ativo")
+  club_id            String
+  club               Club         @relation(fields: [club_id], references: [id], onDelete: Cascade)
+  created_at         DateTime?    @default(now())
+  closed_at          DateTime?
+  tournaments        Tournament[]
+
+  @@map("events")
 }

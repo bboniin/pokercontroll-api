@@ -143,6 +143,14 @@ import { DeleteChipController } from "./controllers/Chip/DeleteChipController";
 import { CreateChipAuditController } from "./controllers/Chip/CreateChipAuditController";
 import { ListChipsAuditController } from "./controllers/Chip/ListChipsAuditController";
 
+import { CreateEventController } from "./controllers/Event/CreateEventController";
+import { StartEventController } from "./controllers/Event/StartEventController";
+import { ListEventsController } from "./controllers/Event/ListEventsController";
+import { GetActiveEventController } from "./controllers/Event/GetActiveEventController";
+import { FinishEventController } from "./controllers/Event/FinishEventController";
+import { DeleteEventController } from "./controllers/Event/DeleteEventController";
+import { UpdateClubBalanceRulesController } from "./controllers/Club/UpdateClubBalanceRulesController";
+
 const upload = multer(uploadConfig);
 
 const router = Router();
@@ -296,6 +304,15 @@ router.put(
   ]),
   new EditClubController().handle,
 );
+router.put("/club/balance-rules", new UpdateClubBalanceRulesController().handle);
+
+// Eventos
+router.post("/event", new CreateEventController().handle);
+router.get("/events", new ListEventsController().handle);
+router.get("/event/active", new GetActiveEventController().handle);
+router.put("/event/:event_id/start", new StartEventController().handle);
+router.put("/event/:event_id/finish", new FinishEventController().handle);
+router.delete("/event/:event_id", new DeleteEventController().handle);
 
 router.get("/advertisings", new ListAdvertisingsController().handle);
 router.post(
